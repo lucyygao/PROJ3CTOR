@@ -16,8 +16,8 @@ function drawCoordinates(x,y){
 
 function clicked(e) {
     drawing = true;
-    var x = e.clientX;
-    var y = e.clientY;
+    var x = e.screenX - e.offsetX;
+    var y = e.screenY - e.offsetY;
     // coordinates.push([x, y]);
     // ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.moveTo(x, y);

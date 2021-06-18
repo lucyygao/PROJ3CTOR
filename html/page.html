@@ -5,10 +5,48 @@
 
   <title>2D Delaunay Triangulation</title>
   <meta name="description" content="2D Delaunay Triangulation">
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+  <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+
+  <style type="text/css">
+    .babylon {
+      border: 1px solid black;
+      width: 800px;
+      height: 800px;
+      float: left;
+      margin-left: 15px;
+    }
+
+    .drawing {
+      border: 1px solid black;
+      width: 800px;
+      height: auto;
+      float: right;
+      margin-right: 15px;
+    }
+
+    #renderCanvas {
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+    }
+
+  </style>
 </head>
 
 <body>
-  <canvas id="canvas" height="800" width="1720"></canvas>
-  <!-- <script type="text/javascript" src="triangulation.js"></script> -->
+  <div class="babylon">
+    <!-- broke af but why -->
+    <!-- <script src="https://cdn.babylonjs.com/viewer/babylon.viewer.js"></script> -->
+    <canvas id="renderCanvas" touch-action="none"></canvas>
+    <script src="../javascript/example.js"></script>
+  </div>
+
+  <div class="drawing">
+    <!-- need to fix offset of the object -->
+    <canvas id="canvas" height="800" width="800"></canvas>
+    <script src="../javascript/linedrawing.js"></script>
+  </div>
 </body>
 </html>
