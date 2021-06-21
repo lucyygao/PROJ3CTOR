@@ -1,6 +1,6 @@
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
-var coordinates = [[100, 100], [100, 200], [311, 305], [562, 311], [620, 620]];
+var coordinates = [];
 var drawing = false;
 var timer = 0;
 
