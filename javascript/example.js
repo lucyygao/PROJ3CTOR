@@ -3,7 +3,7 @@ var createScene = function () {
     var scene = new BABYLON.Scene(engine);
 
     // set camera and light
-    const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10, new BABYLON.Vector3(0, 0, 0));
+    const camera = new BABYLON.ArcRotateCamera("camera", Math.PI/6, Math.PI/3, 30, new BABYLON.Vector3(0, 0, 0));
     camera.attachControl(canvas, true);
     const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0));
     camera.setTarget(BABYLON.Vector3.Zero());
@@ -130,4 +130,7 @@ engine.runRenderLoop(function() {
  * mesh behaviors https://doc.babylonjs.com/divingDeeper/behaviors/meshBehaviors
  * mesh picking https://doc.babylonjs.com/divingDeeper/mesh/interactions/picking_collisions
  * clipping planes https://doc.babylonjs.com/divingDeeper/scene/clipPlanes
+ * html web https://doc.babylonjs.com/start/chap1/first_app
+ *
+ * playground web ver https://playground.babylonjs.com/#9869JE
  */

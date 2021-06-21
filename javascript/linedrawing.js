@@ -16,8 +16,9 @@ function drawCoordinates(x,y){
 
 function clicked(e) {
     drawing = true;
-    var x = e.screenX - e.offsetX;
-    var y = e.screenY - e.offsetY;
+    var rect = canvas.getBoundingClientRect();
+    var x = e.clientX - rect.left;
+    var y = e.clientY - rect.top;
     // coordinates.push([x, y]);
     // ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.moveTo(x, y);
@@ -32,23 +33,27 @@ function moved(e) {
         // draw a dot every so often
         if (timer % 5 == 0) {
             // connect to previous point
-            ctx.lineTo(e.clientX, e.clientY);
+            var rect = canvas.getBoundingClientRect();
+            var x = e.clientX - rect.left;
+            var y = e.clientY - rect.top;
+            ctx.lineTo(x, y);
             ctx.stroke();
-            ctx.moveTo(e.clientX, e.clientY);
+            ctx.moveTo(x, y);
 
             // connect to two random other points
-            var index1 = Math.floor(Math.random() * coordinates.length);
-            var index2 = Math.floor(Math.random() * coordinates.length);
-            ctx.lineTo(coordinates[index1][0], coordinates[index1][1]);
-            ctx.stroke();
-            ctx.moveTo(e.clientX, e.clientY);
-            ctx.lineTo(coordinates[index2][0], coordinates[index2][1]);
-            ctx.stroke();
-            ctx.moveTo(e.clientX, e.clientY);
+            // var index1 = Math.floor(Math.random() * coordinates.length);
+            // var index2 = Math.floor(Math.random() * coordinates.length);
+            // ctx.lineTo(coordinates[index1][0], coordinates[index1][1]);
+            // ctx.stroke();
+            // ctx.moveTo(e.clientX, e.clientY);
+            // ctx.lineTo(coordinates[index2][0], coordinates[index2][1]);
+            // ctx.stroke();
+            // ctx.moveTo(e.clientX, e.clientY);
 
             // draw red dot for point and add to coordinate array
-            drawCoordinates(e.clientX, e.clientY);
-            coordinates.push([e.clientX, e.clientY]);
+
+            drawCoordinates(x, y);
+            coordinates.push([x, y]);
         }
     }
     timer++;
