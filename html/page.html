@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <title>2D Delaunay Triangulation</title>
-  <meta name="description" content="2D Delaunay Triangulation">
+  <title>2D / 3D Line Drawing</title>
+  <meta name="description" content="2D / 3D Line Drawing">
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
   <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
@@ -19,17 +19,27 @@
     }
 
     .drawing {
-      border: 1px solid black;
+      border: 2px solid black;
       width: 800px;
-      height: auto;
+      height: 390px;
       float: right;
       margin-right: 15px;
     }
 
     #renderCanvas {
-        width: 100%;
-        height: 100%;
-        touch-action: none;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+
+    #sculpting {
+      border: 1px solid blueviolet;
+      margin-top: 20px;
+      vertical-align: bottom;
+    }
+
+    #canvas2 {
+      vertical-align: bottom;
     }
 
   </style>
@@ -37,16 +47,22 @@
 
 <body>
   <div class="babylon">
-    <!-- broke af but why -->
     <!-- <script src="https://cdn.babylonjs.com/viewer/babylon.viewer.js"></script> -->
     <canvas id="renderCanvas" touch-action="none"></canvas>
     <script src="../javascript/3dlinedrawing.js"></script>
   </div>
 
-  <div class="drawing">
-    <!-- need to fix offset of the object -->
-    <canvas id="canvas" height="800" width="800"></canvas>
+  <div id="sketching" class="drawing">
+    <!-- canvas will draw outside of the box @-@ -->
+    <canvas id="canvas" height="390" width="800"></canvas>
     <script src="../javascript/linedrawing.js"></script>
   </div>
+
+  <div id="sculpting" class="drawing">
+    <!-- canvas will draw outside of the box @-@ -->
+    <canvas id="canvas2" height="390" width="800" style="border: 1px solid greenyellow;"></canvas>
+    <script src="../javascript/sculpting.js"></script>
+  </div>
+
 </body>
 </html>
