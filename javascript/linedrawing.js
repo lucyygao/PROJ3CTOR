@@ -54,13 +54,17 @@ function moved(e) {
             var x = e.clientX - rectangle.left;
             var y = e.clientY - rectangle.top;
             if (wasoutside) {
+                ctx.lineWidth = 3;
                 ctx.moveTo(x, y);
                 ctx.beginPath();
                 wasoutside = false;
             }
-            ctx.lineTo(x, y);
-            ctx.stroke();
-            ctx.moveTo(x, y);
+            else {
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                ctx.moveTo(x, y);
+            }
+
 
             // draw red dot for point and add to coordinate array
             // drawCoordinates(x, y);
@@ -92,6 +96,9 @@ function draw() {
     }
     ctx.closePath();
 }
+
+
+
 
 // mouse clicks will draw points
 canvas.addEventListener("mousedown", clicked);

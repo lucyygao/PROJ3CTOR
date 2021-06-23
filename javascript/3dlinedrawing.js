@@ -18,11 +18,27 @@ var engine = new BABYLON.Engine(canvas, true);
 var scene = createScene();
 var numshapes = 0;
 var numshapes2 = 0;
+var shape = [];
+var path = [
+    new BABYLON.Vector3(0, 0, 0),
+    new BABYLON.Vector3(0, 0, 5)
+];
+var wireframe = new BABYLON.Mesh("wireframe", scene);
+var material = new BABYLON.StandardMaterial("material", scene);
+material.backFaceCulling = false;
+// wireframe.material = material;
+
 engine.runRenderLoop(function() {
     if (coordinates.length > numshapes) {
         var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 0.2}, scene);
         sphere.position.x = -1 * coordinates[coordinates.length - 1][0] / 70;
         sphere.position.y = -1 * coordinates[coordinates.length - 1][1] / 70;
+        var vec = new BABYLON.Vector3(sphere.position.x, sphere.position.y, 0);
+        shape.push(vec);
+        var wireframe = BABYLON.MeshBuilder.ExtrudeShape("extruded", {shape: shape, path: path, updatable: true}, scene);
+        wireframe.wireframe = true;
+        wireframe.material = material;
+
         numshapes++;
     }
     if (coordinates2.length > numshapes2) {
@@ -31,6 +47,10 @@ engine.runRenderLoop(function() {
         box.position.y = -1 * coordinates2[coordinates2.length - 1][1] / 70;
         numshapes2++;
     }
+
+
+
+
    scene.render();
 });
 

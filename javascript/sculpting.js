@@ -53,13 +53,16 @@ function sculptmoved(e) {
             var x = e.clientX - rectangle.left;
             var y = e.clientY - rectangle.top;
             if (wasoutside2) {
+                ctx2.lineWidth = 3;
                 sculptclicked(e);
-
                 wasoutside2 = false;
             }
-            ctx2.lineTo(x, y);
-            ctx2.stroke();
-            ctx2.moveTo(x, y);
+            else {
+                ctx2.lineTo(x, y);
+                ctx2.stroke();
+                ctx2.moveTo(x, y);
+            }
+
 
             // draw red dot for point and add to coordinate array
             // drawCoordinates(x, y);
