@@ -23,10 +23,8 @@ var path = [
     new BABYLON.Vector3(0, 0, 0),
     new BABYLON.Vector3(0, 0, 5)
 ];
-var wireframe = new BABYLON.Mesh("wireframe", scene);
 var material = new BABYLON.StandardMaterial("material", scene);
 material.backFaceCulling = false;
-// wireframe.material = material;
 
 engine.runRenderLoop(function() {
     if (coordinates.length > numshapes) {
@@ -35,9 +33,9 @@ engine.runRenderLoop(function() {
         sphere.position.y = -1 * coordinates[coordinates.length - 1][1] / 70;
         var vec = new BABYLON.Vector3(sphere.position.x, sphere.position.y, 0);
         shape.push(vec);
-        var wireframe = BABYLON.MeshBuilder.ExtrudeShape("extruded", {shape: shape, path: path, updatable: true}, scene);
-        wireframe.wireframe = true;
-        wireframe.material = material;
+        var extruded = BABYLON.MeshBuilder.ExtrudeShape("extruded", {shape: shape, path: path, cap: BABYLON.Mesh.CAP_ALL, updatable: true}, scene);
+        material.wireframe = true;
+        extruded.material = material;
 
         numshapes++;
     }

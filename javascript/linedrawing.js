@@ -77,6 +77,7 @@ function moved(e) {
 function done(e) {
     ctx.closePath();
     drawing = false;
+    mirror();
 }
 
 function draw() {

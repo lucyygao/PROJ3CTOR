@@ -4,6 +4,8 @@ var coordinates2 = [];
 var drawing2 = false;
 var timer2 = 0;
 var wasoutside2 = false;
+var ymin;
+var ymax;
 
 // drawing2 points
 function sculptdrawCoordinates(x,y){
@@ -93,6 +95,33 @@ function sculptdraw() {
         ctx2.stroke();
     }
     ctx2.closePath();
+}
+
+function mirror() {
+    ymax = coordinates[0][1];
+    ymin = coordinates[0][1];
+    var ycurr;
+    for (var i = 0; i < coordinates.length; i++) {
+        ycurr = coordinates[i][1];
+        if (ycurr > ymax) {
+            ymax = ycurr;
+        }
+        else {
+            if (ycurr < ymin) {
+                ymin = ycurr;
+            }
+        }
+    }
+    ctx2.beginPath();
+    ctx2.lineWidth = 1;
+    ctx2.globalAlpha = 0.2;
+    ctx2.fillStyle = "blue";
+    // ctx2.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx2.setLineDash([6]);
+    ctx2.fillRect(0, ymin, canvas2.width, ymax - ymin);
+
+    ctx2.globalAlpha = 1;
+    ctx2.strokeRect(0, ymin, canvas2.width, ymax - ymin);
 }
 
 // mouse clicks will draw points
