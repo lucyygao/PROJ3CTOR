@@ -9,6 +9,27 @@ var createScene = function () {
     camera.setTarget(new BABYLON.Vector3(-400/70, -400/70, 0));
     light.intensity = 0.7;
 
+    // GUI
+    var UI = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+    var button = BABYLON.GUI.Button.CreateSimpleButton("button", "Wireframe");
+    button.width = "150px";
+    button.height = "40px";
+    button.color = "white";
+    button.background = "gray";
+    button.left = "-280px";
+    button.top = "350px";
+    button.onPointerClickObservable.add(function() {
+        if (button.children[0].text == "Wireframe") {
+            button.children[0].text = "Solid";
+            material.wireframe = false;
+        }
+        else {
+            button.children[0].text = "Wireframe";
+            material.wireframe = true;
+        }
+    });
+
+    UI.addControl(button);
     return scene;
 };
 
@@ -21,10 +42,11 @@ var numshapes2 = 0;
 var shape = [];
 var path = [
     new BABYLON.Vector3(0, 0, 0),
-    new BABYLON.Vector3(0, 0, 5)
+    new BABYLON.Vector3(0, 0, 12)
 ];
 var material = new BABYLON.StandardMaterial("material", scene);
 material.backFaceCulling = false;
+material.wireframe = true;
 
 engine.runRenderLoop(function() {
     if (coordinates.length > numshapes) {
@@ -34,7 +56,6 @@ engine.runRenderLoop(function() {
         var vec = new BABYLON.Vector3(sphere.position.x, sphere.position.y, 0);
         shape.push(vec);
         var extruded = BABYLON.MeshBuilder.ExtrudeShape("extruded", {shape: shape, path: path, cap: BABYLON.Mesh.CAP_ALL, updatable: true}, scene);
-        material.wireframe = true;
         extruded.material = material;
 
         numshapes++;
@@ -45,9 +66,6 @@ engine.runRenderLoop(function() {
         box.position.y = -1 * coordinates2[coordinates2.length - 1][1] / 70;
         numshapes2++;
     }
-
-
-
 
    scene.render();
 });

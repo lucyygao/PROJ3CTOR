@@ -115,7 +115,7 @@ function mirror() {
     ctx2.beginPath();
     ctx2.lineWidth = 1;
     ctx2.globalAlpha = 0.2;
-    ctx2.fillStyle = "blue";
+    ctx2.fillStyle = "gray";
     // ctx2.fillStyle = 'rgba(255, 255, 255, 0.5)';
     ctx2.setLineDash([6]);
     ctx2.fillRect(0, ymin, canvas2.width, ymax - ymin);
