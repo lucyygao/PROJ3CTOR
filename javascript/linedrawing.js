@@ -4,6 +4,8 @@ var coordinates = [];
 var drawing = false;
 var timer = 0;
 var wasoutside = false;
+var drawxmax = 0;
+var drawxmin = 0;
 
 // drawing points
 function drawCoordinates(x,y){
@@ -78,6 +80,23 @@ function done(e) {
     ctx.closePath();
     drawing = false;
     mirror();
+    finddrawbounds();
+}
+
+function finddrawbounds() {
+    // loop thru coordinates and find min and max
+    drawxmax = coordinates[0][0];
+    drawxmin = coordinates[0][0];
+    for (var i = 1; i < coordinates.length; i++) {
+        if (coordinates[i][0] > drawxmax) {
+            drawxmax = coordinates[i][0];
+        }
+            else {
+                if (coordinates[i][0] < drawxmin) {
+                    drawxmin = coordinates[i][0];
+                }
+            }
+    }
 }
 
 function draw() {

@@ -33,16 +33,20 @@ var createScene = function () {
     return scene;
 };
 
-
 var canvas = document.getElementById("renderCanvas");
 var engine = new BABYLON.Engine(canvas, true);
 var scene = createScene();
 var numshapes = 0;
 var numshapes2 = 0;
-var shape = [];
-var path = [
+var frontshape = [];
+var sideshape = [];
+var frontpath = [
     new BABYLON.Vector3(0, 0, 0),
-    new BABYLON.Vector3(0, 0, 12)
+    new BABYLON.Vector3(0, 0, 800/70)
+];
+var sidepath = [
+    new BABYLON.Vector3(0, 0, 0),
+    new BABYLON.Vector3(-800/70, 0, 0)
 ];
 var material = new BABYLON.StandardMaterial("material", scene);
 material.backFaceCulling = false;
@@ -54,17 +58,88 @@ engine.runRenderLoop(function() {
         sphere.position.x = -1 * coordinates[coordinates.length - 1][0] / 70;
         sphere.position.y = -1 * coordinates[coordinates.length - 1][1] / 70;
         var vec = new BABYLON.Vector3(sphere.position.x, sphere.position.y, 0);
-        shape.push(vec);
-        var extruded = BABYLON.MeshBuilder.ExtrudeShape("extruded", {shape: shape, path: path, cap: BABYLON.Mesh.CAP_ALL, updatable: true}, scene);
+        frontshape.push(vec);
+        var extruded = BABYLON.MeshBuilder.ExtrudeShape("extruded", {shape: frontshape, path: frontpath, cap: BABYLON.Mesh.CAP_ALL, updatable: true}, scene);
         extruded.material = material;
 
         numshapes++;
     }
     if (coordinates2.length > numshapes2) {
         var box = BABYLON.MeshBuilder.CreateBox("box", {size: 0.2}, scene);
-        box.position.x = -1 * coordinates2[coordinates2.length - 1][0] / 70;
+        box.position.z = coordinates2[coordinates2.length - 1][0] / 70;
         box.position.y = -1 * coordinates2[coordinates2.length - 1][1] / 70;
+        var vector = new BABYLON.Vector3(box.position.z, box.position.y, 0);
+        sideshape.push(vector);
+        var sideextrude = BABYLON.MeshBuilder.ExtrudeShape("side extrusion", {shape: sideshape, path: sidepath, cap: BABYLON.Mesh.CAP_ALL, updatable: true}, scene);
+        sideextrude.material = material;
         numshapes2++;
+    }
+
+    // if there's input on both screens
+    if (drawxmax != 0 && sculptxmax != 0) {
+        // find and draw edge points?
+        var dot1 = BABYLON.MeshBuilder.CreateSphere("dot1", {diameter: 0.2}, scene);
+        var dot2 = BABYLON.MeshBuilder.CreateSphere("dot2", {diameter: 0.2}, scene);
+        var dot3 = BABYLON.MeshBuilder.CreateSphere("dot3", {diameter: 0.2}, scene);
+        var dot4 = BABYLON.MeshBuilder.CreateSphere("dot4", {diameter: 0.2}, scene);
+        var dot5 = BABYLON.MeshBuilder.CreateSphere("dot5", {diameter: 0.2}, scene);
+        var dot6 = BABYLON.MeshBuilder.CreateSphere("dot6", {diameter: 0.2}, scene);
+        var dot7 = BABYLON.MeshBuilder.CreateSphere("dot7", {diameter: 0.2}, scene);
+        var dot8 = BABYLON.MeshBuilder.CreateSphere("dot8", {diameter: 0.2}, scene);
+
+        dot1.position.x = -1 * drawxmin/70;
+        dot2.position.x = -1 * drawxmax/70;
+        dot3.position.x = -1 * drawxmax/70;
+        dot4.position.x = -1 * drawxmin/70;
+        if (ymin > sculptymin) {
+            dot1.position.y = -1 * ymin/70;
+            dot2.position.y = -1 * ymin/70;
+            dot3.position.y = -1 * ymin/70;
+            dot4.position.y = -1 * ymin/70;
+        }
+        else {
+            dot1.position.y = -1 * sculptymin/70;
+            dot2.position.y = -1 * sculptymin/70;
+            dot3.position.y = -1 * sculptymin/70;
+            dot4.position.y = -1 * sculptymin/70;
+        }
+        dot1.position.z = sculptxmin/70;
+        dot2.position.z = sculptxmin/70;
+        dot3.position.z = sculptxmax/70;
+        dot4.position.z = sculptxmax/70;
+
+        dot5.position.x = -1 * drawxmin/70;
+        dot6.position.x = -1 * drawxmax/70;
+        dot7.position.x = -1 * drawxmax/70;
+        dot8.position.x = -1 * drawxmin/70;
+        if (ymax < sculptymax) {
+            dot5.position.y = -1 * ymax/70;
+            dot6.position.y = -1 * ymax/70;
+            dot7.position.y = -1 * ymax/70;
+            dot8.position.y = -1 * ymax/70;
+        }
+        else {
+            dot5.position.y = -1 * sculptymax/70;
+            dot6.position.y = -1 * sculptymax/70;
+            dot7.position.y = -1 * sculptymax/70;
+            dot8.position.y = -1 * sculptymax/70;
+        }
+        dot5.position.z = sculptxmin/70;
+        dot6.position.z = sculptxmin/70;
+        dot7.position.z = sculptxmax/70;
+        dot8.position.z = sculptxmax/70;
+
+        // add color to distinguish
+        var blue = new BABYLON.StandardMaterial("bluematerial", scene);
+        blue.diffuseColor = new BABYLON.Color3(0, 0, 1);
+        dot1.material = blue;
+        dot2.material = blue;
+        dot3.material = blue;
+        dot4.material = blue;
+        dot5.material = blue;
+        dot6.material = blue;
+        dot7.material = blue;
+        dot8.material = blue;
     }
 
    scene.render();

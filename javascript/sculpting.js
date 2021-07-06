@@ -4,8 +4,12 @@ var coordinates2 = [];
 var drawing2 = false;
 var timer2 = 0;
 var wasoutside2 = false;
-var ymin;
-var ymax;
+var ymin = 0;
+var ymax = 0;
+var sculptxmax = 0;
+var sculptxmin = 0;
+var sculptymax = 0;
+var sculptymin = 0;
 
 // drawing2 points
 function sculptdrawCoordinates(x,y){
@@ -77,6 +81,7 @@ function sculptmoved(e) {
 function sculptdone(e) {
     ctx2.closePath();
     drawing2 = false;
+    findsculptbounds();
 }
 
 function sculptdraw() {
@@ -95,6 +100,32 @@ function sculptdraw() {
         ctx2.stroke();
     }
     ctx2.closePath();
+}
+
+function findsculptbounds() {
+    // loop thru coordinates and find min and max
+    sculptxmax = coordinates2[0][0];
+    sculptxmin = coordinates2[0][0];
+    sculptymax = coordinates2[0][1];
+    sculptymin = coordinates2[0][1];
+    for (var i = 1; i < coordinates2.length; i++) {
+        if (coordinates2[i][0] > sculptxmax) {
+            sculptxmax = coordinates2[i][0];
+        }
+            else {
+                if (coordinates2[i][0] < sculptxmin) {
+                    sculptxmin = coordinates2[i][0];
+                }
+            }
+        if (coordinates2[i][1] > sculptymax) {
+            sculptymax = coordinates2[i][1];
+        }
+        else {
+            if (coordinates2[i][1] < sculptymin) {
+                sculptymin = coordinates2[i][1];
+            }
+        }
+    }
 }
 
 function mirror() {
