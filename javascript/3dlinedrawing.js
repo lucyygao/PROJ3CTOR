@@ -51,6 +51,10 @@ var sidepath = [
 var material = new BABYLON.StandardMaterial("material", scene);
 material.backFaceCulling = false;
 material.wireframe = true;
+var blue = new BABYLON.StandardMaterial("bluematerial", scene);
+blue.diffuseColor = new BABYLON.Color3(0, 0, 1);
+var red = new BABYLON.StandardMaterial("redmaterial", scene);
+red.diffuseColor = new BABYLON.Color3(1, 0, 0);
 
 engine.runRenderLoop(function() {
     if (coordinates.length > numshapes) {
@@ -72,6 +76,22 @@ engine.runRenderLoop(function() {
         sideshape.push(vector);
         var sideextrude = BABYLON.MeshBuilder.ExtrudeShape("side extrusion", {shape: sideshape, path: sidepath, cap: BABYLON.Mesh.CAP_ALL, updatable: true}, scene);
         sideextrude.material = material;
+        box.isPickable = false;
+        sideextrude.isPickable = false;
+
+        var dir = new BABYLON.Vector3(-1, 0, 0);
+        // out = BABYLON.Vector3.TransformCoordinates(out, box.getWorldMatrix());
+        // var dir = out.subtract(box.position);
+        var ray = new BABYLON.Ray(box.position, dir, 10);
+        var rayHelper = new BABYLON.RayHelper(ray);
+		rayHelper.show(scene);
+        var hit = scene.pickWithRay(ray);
+        if (hit.pickedMesh) {
+            var collision = BABYLON.MeshBuilder.CreateSphere("collisiondot", {diameter: 0.2}, scene);
+            collision.position = hit.pickedPoint;
+            collision.material = red;
+        }
+
         numshapes2++;
     }
 
@@ -130,8 +150,6 @@ engine.runRenderLoop(function() {
         dot8.position.z = sculptxmax/70;
 
         // add color to distinguish
-        var blue = new BABYLON.StandardMaterial("bluematerial", scene);
-        blue.diffuseColor = new BABYLON.Color3(0, 0, 1);
         dot1.material = blue;
         dot2.material = blue;
         dot3.material = blue;
@@ -141,6 +159,7 @@ engine.runRenderLoop(function() {
         dot7.material = blue;
         dot8.material = blue;
     }
+
 
    scene.render();
 });
@@ -157,3 +176,4 @@ engine.runRenderLoop(function() {
  *
  * playground web ver https://playground.babylonjs.com/#9869JE
  */
+
