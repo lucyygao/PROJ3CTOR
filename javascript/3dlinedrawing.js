@@ -24,8 +24,16 @@ var createScene = function () {
             material.wireframe = false;
         }
         else {
-            button.children[0].text = "Wireframe";
-            material.wireframe = true;
+            if (button.children[0].text == "Solid") {
+                button.children[0].text = "Invisible";
+                material.alpha = 0;
+            }
+            else {
+                button.children[0].text = "Wireframe";
+                material.wireframe = true;
+                material.alpha = 1;
+            }
+
         }
     });
 
@@ -83,13 +91,15 @@ engine.runRenderLoop(function() {
         // out = BABYLON.Vector3.TransformCoordinates(out, box.getWorldMatrix());
         // var dir = out.subtract(box.position);
         var ray = new BABYLON.Ray(box.position, dir, 10);
-        var rayHelper = new BABYLON.RayHelper(ray);
-		rayHelper.show(scene);
-        var hit = scene.pickWithRay(ray);
-        if (hit.pickedMesh) {
-            var collision = BABYLON.MeshBuilder.CreateSphere("collisiondot", {diameter: 0.2}, scene);
-            collision.position = hit.pickedPoint;
-            collision.material = red;
+        // var rayHelper = new BABYLON.RayHelper(ray);
+		// rayHelper.show(scene);
+        var hit = scene.multiPickWithRay(ray);
+        if (hit) {
+            for (var i = 0; i < hit.length; i++) {
+                var collision = BABYLON.MeshBuilder.CreateSphere("collisiondot", {diameter: 0.2}, scene);
+                collision.position = hit[i].pickedPoint;
+                collision.material = red;
+            }
         }
 
         numshapes2++;
