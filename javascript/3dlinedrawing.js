@@ -1,5 +1,4 @@
 var createScene = function () {
-    // This creates a basic Babylon Scene object (non-mesh)
     var scene = new BABYLON.Scene(engine);
 
     // set camera and light
@@ -48,6 +47,8 @@ var numshapes = 0;
 var numshapes2 = 0;
 var frontshape = [];
 var sideshape = [];
+var intersection = [];
+var indices = [];
 var frontpath = [
     new BABYLON.Vector3(0, 0, 0),
     new BABYLON.Vector3(0, 0, 800/70)
@@ -66,13 +67,17 @@ red.diffuseColor = new BABYLON.Color3(1, 0, 0);
 
 engine.runRenderLoop(function() {
     if (coordinates.length > numshapes) {
-        var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 0.2}, scene);
-        sphere.position.x = -1 * coordinates[coordinates.length - 1][0] / 70;
-        sphere.position.y = -1 * coordinates[coordinates.length - 1][1] / 70;
-        var vec = new BABYLON.Vector3(sphere.position.x, sphere.position.y, 0);
+        var cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 0.2}, scene);
+        cube.position.x = -1 * coordinates[coordinates.length - 1][0] / 70;
+        cube.position.y = -1 * coordinates[coordinates.length - 1][1] / 70;
+        var vec = new BABYLON.Vector3(cube.position.x, cube.position.y, 0);
         frontshape.push(vec);
+        if (frontshape.length == 3) {
+            frontshape.shift();
+        }
         var extruded = BABYLON.MeshBuilder.ExtrudeShape("extruded", {shape: frontshape, path: frontpath, cap: BABYLON.Mesh.CAP_ALL, updatable: true}, scene);
         extruded.material = material;
+        cube.material = material;
 
         numshapes++;
     }
@@ -82,8 +87,12 @@ engine.runRenderLoop(function() {
         box.position.y = -1 * coordinates2[coordinates2.length - 1][1] / 70;
         var vector = new BABYLON.Vector3(box.position.z, box.position.y, 0);
         sideshape.push(vector);
+        if (sideshape.length == 3) {
+            sideshape.shift();
+        }
         var sideextrude = BABYLON.MeshBuilder.ExtrudeShape("side extrusion", {shape: sideshape, path: sidepath, cap: BABYLON.Mesh.CAP_ALL, updatable: true}, scene);
         sideextrude.material = material;
+        box.material = material;
         box.isPickable = false;
         sideextrude.isPickable = false;
 
@@ -96,79 +105,98 @@ engine.runRenderLoop(function() {
         var hit = scene.multiPickWithRay(ray);
         if (hit) {
             for (var i = 0; i < hit.length; i++) {
-                var collision = BABYLON.MeshBuilder.CreateSphere("collisiondot", {diameter: 0.2}, scene);
-                collision.position = hit[i].pickedPoint;
-                collision.material = red;
+                if (hit[i].pickedMesh.id == "extruded") {
+                    var collision = BABYLON.MeshBuilder.CreateBox("collision", {size: 0.1}, scene);
+
+                    // var clone = collision.clone("clone");
+                    collision.position = hit[i].pickedPoint;
+                    collision.material = red;
+                    intersection.push(collision.position.x, collision.position.y, collision.position.z);
+                }
             }
+
+            // make mesh
+            for (var i = 0; i < intersection.length; i += 3) {
+                indices.push(i/3);
+            }
+            var mesh = new BABYLON.Mesh("intersected", scene);
+            var vertex = new BABYLON.VertexData();
+            vertex.positions = intersection;
+            vertex.indices = indices;
+            vertex.applyToMesh(mesh, true);
+
+            var pcs = new BABYLON.PointsCloudSystem("pcs", 1, scene);
+            pcs.addSurfacePoints(mesh, 1000, BABYLON.PointColor.Stated, new BABYLON.Color3(1, 0, 0));
+            pcs.buildMeshAsync().then(() => mesh.dispose());
         }
 
         numshapes2++;
     }
 
     // if there's input on both screens
-    if (drawxmax != 0 && sculptxmax != 0) {
-        // find and draw edge points?
-        var dot1 = BABYLON.MeshBuilder.CreateSphere("dot1", {diameter: 0.2}, scene);
-        var dot2 = BABYLON.MeshBuilder.CreateSphere("dot2", {diameter: 0.2}, scene);
-        var dot3 = BABYLON.MeshBuilder.CreateSphere("dot3", {diameter: 0.2}, scene);
-        var dot4 = BABYLON.MeshBuilder.CreateSphere("dot4", {diameter: 0.2}, scene);
-        var dot5 = BABYLON.MeshBuilder.CreateSphere("dot5", {diameter: 0.2}, scene);
-        var dot6 = BABYLON.MeshBuilder.CreateSphere("dot6", {diameter: 0.2}, scene);
-        var dot7 = BABYLON.MeshBuilder.CreateSphere("dot7", {diameter: 0.2}, scene);
-        var dot8 = BABYLON.MeshBuilder.CreateSphere("dot8", {diameter: 0.2}, scene);
+    // if (drawxmax != 0 && sculptxmax != 0) {
+    //     // find and draw edge points?
+    //     var dot1 = BABYLON.MeshBuilder.CreateSphere("dot1", {diameter: 0.2}, scene);
+    //     var dot2 = BABYLON.MeshBuilder.CreateSphere("dot2", {diameter: 0.2}, scene);
+    //     var dot3 = BABYLON.MeshBuilder.CreateSphere("dot3", {diameter: 0.2}, scene);
+    //     var dot4 = BABYLON.MeshBuilder.CreateSphere("dot4", {diameter: 0.2}, scene);
+    //     var dot5 = BABYLON.MeshBuilder.CreateSphere("dot5", {diameter: 0.2}, scene);
+    //     var dot6 = BABYLON.MeshBuilder.CreateSphere("dot6", {diameter: 0.2}, scene);
+    //     var dot7 = BABYLON.MeshBuilder.CreateSphere("dot7", {diameter: 0.2}, scene);
+    //     var dot8 = BABYLON.MeshBuilder.CreateSphere("dot8", {diameter: 0.2}, scene);
 
-        dot1.position.x = -1 * drawxmin/70;
-        dot2.position.x = -1 * drawxmax/70;
-        dot3.position.x = -1 * drawxmax/70;
-        dot4.position.x = -1 * drawxmin/70;
-        if (ymin > sculptymin) {
-            dot1.position.y = -1 * ymin/70;
-            dot2.position.y = -1 * ymin/70;
-            dot3.position.y = -1 * ymin/70;
-            dot4.position.y = -1 * ymin/70;
-        }
-        else {
-            dot1.position.y = -1 * sculptymin/70;
-            dot2.position.y = -1 * sculptymin/70;
-            dot3.position.y = -1 * sculptymin/70;
-            dot4.position.y = -1 * sculptymin/70;
-        }
-        dot1.position.z = sculptxmin/70;
-        dot2.position.z = sculptxmin/70;
-        dot3.position.z = sculptxmax/70;
-        dot4.position.z = sculptxmax/70;
+    //     dot1.position.x = -1 * drawxmin/70;
+    //     dot2.position.x = -1 * drawxmax/70;
+    //     dot3.position.x = -1 * drawxmax/70;
+    //     dot4.position.x = -1 * drawxmin/70;
+    //     if (ymin > sculptymin) {
+    //         dot1.position.y = -1 * ymin/70;
+    //         dot2.position.y = -1 * ymin/70;
+    //         dot3.position.y = -1 * ymin/70;
+    //         dot4.position.y = -1 * ymin/70;
+    //     }
+    //     else {
+    //         dot1.position.y = -1 * sculptymin/70;
+    //         dot2.position.y = -1 * sculptymin/70;
+    //         dot3.position.y = -1 * sculptymin/70;
+    //         dot4.position.y = -1 * sculptymin/70;
+    //     }
+    //     dot1.position.z = sculptxmin/70;
+    //     dot2.position.z = sculptxmin/70;
+    //     dot3.position.z = sculptxmax/70;
+    //     dot4.position.z = sculptxmax/70;
 
-        dot5.position.x = -1 * drawxmin/70;
-        dot6.position.x = -1 * drawxmax/70;
-        dot7.position.x = -1 * drawxmax/70;
-        dot8.position.x = -1 * drawxmin/70;
-        if (ymax < sculptymax) {
-            dot5.position.y = -1 * ymax/70;
-            dot6.position.y = -1 * ymax/70;
-            dot7.position.y = -1 * ymax/70;
-            dot8.position.y = -1 * ymax/70;
-        }
-        else {
-            dot5.position.y = -1 * sculptymax/70;
-            dot6.position.y = -1 * sculptymax/70;
-            dot7.position.y = -1 * sculptymax/70;
-            dot8.position.y = -1 * sculptymax/70;
-        }
-        dot5.position.z = sculptxmin/70;
-        dot6.position.z = sculptxmin/70;
-        dot7.position.z = sculptxmax/70;
-        dot8.position.z = sculptxmax/70;
+    //     dot5.position.x = -1 * drawxmin/70;
+    //     dot6.position.x = -1 * drawxmax/70;
+    //     dot7.position.x = -1 * drawxmax/70;
+    //     dot8.position.x = -1 * drawxmin/70;
+    //     if (ymax < sculptymax) {
+    //         dot5.position.y = -1 * ymax/70;
+    //         dot6.position.y = -1 * ymax/70;
+    //         dot7.position.y = -1 * ymax/70;
+    //         dot8.position.y = -1 * ymax/70;
+    //     }
+    //     else {
+    //         dot5.position.y = -1 * sculptymax/70;
+    //         dot6.position.y = -1 * sculptymax/70;
+    //         dot7.position.y = -1 * sculptymax/70;
+    //         dot8.position.y = -1 * sculptymax/70;
+    //     }
+    //     dot5.position.z = sculptxmin/70;
+    //     dot6.position.z = sculptxmin/70;
+    //     dot7.position.z = sculptxmax/70;
+    //     dot8.position.z = sculptxmax/70;
 
-        // add color to distinguish
-        dot1.material = blue;
-        dot2.material = blue;
-        dot3.material = blue;
-        dot4.material = blue;
-        dot5.material = blue;
-        dot6.material = blue;
-        dot7.material = blue;
-        dot8.material = blue;
-    }
+    //     // add color to distinguish
+    //     dot1.material = blue;
+    //     dot2.material = blue;
+    //     dot3.material = blue;
+    //     dot4.material = blue;
+    //     dot5.material = blue;
+    //     dot6.material = blue;
+    //     dot7.material = blue;
+    //     dot8.material = blue;
+    // }
 
 
    scene.render();
