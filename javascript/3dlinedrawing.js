@@ -115,6 +115,12 @@ engine.runRenderLoop(function() {
                 }
             }
 
+            /** WORKING ON THIS !! fix the mesh basically, make mesh from points
+             * - https://doc.babylonjs.com/divingDeeper/particles/point_cloud_system/pcs_creation#add-surface--volume-points
+             * - try and simplify and clone instead so less laggy? https://blog.raananweber.com/2015/09/03/scene-optimization-in-babylon-js/
+             * - https://doc.babylonjs.com/divingDeeper/mesh/creation/custom/updatingVertices
+             */
+
             // make mesh
             for (var i = 0; i < intersection.length; i += 3) {
                 indices.push(i/3);
