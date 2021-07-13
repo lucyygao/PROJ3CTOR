@@ -2,10 +2,25 @@ var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 var coordinates = [];
 var drawing = false;
-var timer = 0;
 var wasoutside = false;
 var drawxmax = 0;
 var drawxmin = 0;
+var allcoords = [];
+
+function initialize() {
+    var x = [];
+    var y = [];
+    var z = [];
+    for (var i = 0; i < 800; i++) {
+        z.push(0);
+    }
+    for (var i = 0; i < 400; i++) {
+        y.push(z.slice());
+    }
+    for (var i = 0; i < 800; i++) {
+        allcoords.push(y.slice());
+    }
+}
 
 // drawing points
 function drawCoordinates(x,y){
@@ -28,6 +43,7 @@ function clicked(e) {
         // ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.moveTo(x, y);
         ctx.strokeStyle = 'black';
+        ctx.fillStyle = 'blueviolet';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.lineTo(x, y);
@@ -49,37 +65,35 @@ function outside(e) {
 
 function moved(e) {
     if (drawing && !outside(e)) {
-        // draw a dot every so often
-        if (timer % 2 == 0) {
-            // connect to previous point
-            var rectangle = canvas.getBoundingClientRect();
-            var x = e.clientX - rectangle.left;
-            var y = e.clientY - rectangle.top;
-            if (wasoutside) {
-                ctx.moveTo(x, y);
-                ctx.beginPath();
-                wasoutside = false;
-            }
-            else {
-                ctx.lineTo(x, y);
-                ctx.stroke();
-                ctx.moveTo(x, y);
-            }
+        var rectangle = canvas.getBoundingClientRect();
+        var x = e.clientX - rectangle.left;
+        var y = e.clientY - rectangle.top;
+        if (wasoutside) {
+            done();
+            ctx.moveTo(x, y);
+            ctx.beginPath();
+            wasoutside = false;
+        }
+        else {
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
 
-
-            // draw red dot for point and add to coordinate array
-            // drawCoordinates(x, y);
-            coordinates.push([x, y]);
+        // add coordinates to 3d array
+        coordinates.push([x, y]);
+        for (var i = 0; i < 800; i++) {
+            allcoords[x][y][i] += 1;
         }
     }
-    timer++;
 }
 
 function done(e) {
     ctx.closePath();
+    ctx.fill();
     drawing = false;
     mirror();
     finddrawbounds();
+    updatecoords();
 }
 
 function finddrawbounds() {
@@ -98,30 +112,42 @@ function finddrawbounds() {
     }
 }
 
-function draw() {
-    // draw out all the coordinates
-    for (var i = 0; i < coordinates.length; i++) {
-        drawCoordinates(coordinates[i][0], coordinates[i][1]);
+function updatecoords() {
+    var pixel;
+    for (var i = 0; i < 800; i++) {
+        for (var j = 0; j < 400; j++) {
+            pixel = ctx.getImageData(i, j, 1, 1);
+            if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
+                // LATER UPDATE THIS SO IT EXTRUDES FORWARD FOR ALL Z VALUES - FOR LOOP
+                allcoords[i][j][0] += 1;
+            }
+        }
     }
-
-    // connect to other dots
-    ctx.beginPath();
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 1;
-    for (var j = 0; j < coordinates.length; j++) {
-        ctx.moveTo(coordinates[j][0], coordinates[j][1]);
-        ctx.lineTo(coordinates[j + 1][0], coordinates[j + 1][1]);
-        ctx.stroke();
-    }
-    ctx.closePath();
 }
 
+// function draw() {
+//     // draw out all the coordinates
+//     for (var i = 0; i < coordinates.length; i++) {
+//         drawCoordinates(coordinates[i][0], coordinates[i][1]);
+//     }
+
+//     // connect to other dots
+//     ctx.beginPath();
+//     ctx.strokeStyle = 'black';
+//     ctx.lineWidth = 1;
+//     for (var j = 0; j < coordinates.length; j++) {
+//         ctx.moveTo(coordinates[j][0], coordinates[j][1]);
+//         ctx.lineTo(coordinates[j + 1][0], coordinates[j + 1][1]);
+//         ctx.stroke();
+//     }
+//     ctx.closePath();
+// }
 
 
-
+initialize();
 // mouse clicks will draw points
 canvas.addEventListener("mousedown", clicked);
 canvas.addEventListener("mousemove", moved);
 canvas.addEventListener("mouseup", done);
 
-draw();
+// draw();

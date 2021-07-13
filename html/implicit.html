@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
 
-  <!-- IS THE VERSION OF THE DEMO USING RAYCASTS AND INTERSECTIONS, NOT IMPLICIT SURFACES -->
+  <!-- IMPLICIT SURFACES VERSION -->
 
-  <title>2D / 3D Line Drawing</title>
-  <meta name="description" content="2D / 3D Line Drawing">
+  <title>Implicit Surfaces</title>
+  <meta name="description" content="Implicit Surfaces">
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
   <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
@@ -52,19 +52,17 @@
   <div class="babylon">
     <!-- <script src="https://cdn.babylonjs.com/viewer/babylon.viewer.js"></script> -->
     <canvas id="renderCanvas" touch-action="none"></canvas>
-    <script src="../javascript/3dlinedrawing.js"></script>
+    <script src="../javascript/implicitsurfaces/screen3d.js"></script>
   </div>
 
   <div id="sketching" class="drawing">
-    <!-- canvas will draw outside of the box @-@ -->
     <canvas id="canvas" height="390" width="800"></canvas>
-    <script src="../javascript/linedrawing.js"></script>
+    <script src="../javascript/implicitsurfaces/screen1.js"></script>
   </div>
 
   <div id="sculpting" class="drawing">
-    <!-- canvas will draw outside of the box @-@ -->
-    <canvas id="canvas2" height="390" width="800" style="border: 1px solid greenyellow;"></canvas>
-    <script src="../javascript/sculpting.js"></script>
+    <canvas id="canvas2" height="390" width="800"></canvas>
+    <script src="../javascript/implicitsurfaces/screen2.js"></script>
   </div>
 
 </body>
