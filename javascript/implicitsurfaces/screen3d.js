@@ -44,6 +44,7 @@ var engine = new BABYLON.Engine(canvas, true);
 var scene = createScene();
 var numshapes = 0;
 var numshapes2 = 0;
+var timer = 0;
 var frontshape = [];
 var sideshape = [];
 var intersection = [];
@@ -65,13 +66,34 @@ var red = new BABYLON.StandardMaterial("redmaterial", scene);
 red.diffuseColor = new BABYLON.Color3(1, 0, 0);
 
 var createpoint = function (x, y, z) {
-    var point = BABYLON.MeshBuilder.CreateBox("point", {size: 0.1}, scene);
-    point.position.x = x/70;
-    point.position.y = y/70;
+    var point = BABYLON.MeshBuilder.CreateBox("point", {size: 0.005}, scene);
+    point.position.x = -1 * x/70;
+    point.position.y = -1 * y/70;
     point.position.z = z/70;
+    return point;
+}
+
+var render = function() {
+    for (var i = 0; i < scene.meshes.length; i++) {
+        scene.meshes[i].dispose();
+    }
+
+    for (var i = 0; i < 800; i++) {
+        for (var j = 0; j < 400; j++) {
+            for (var k = 0; k < 800; k++) {
+                if (allcoords[i][j][k] > 1) {
+                    createpoint(i, j, k);
+                }
+            }
+        }
+    }
+    var cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 0.2}, scene);
+
+    // WILL BREAK. BRUH MOMENT
 }
 
 engine.runRenderLoop(function() {
+
 
     // if (coordinates.length > numshapes) {
     //     var cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 0.2}, scene);

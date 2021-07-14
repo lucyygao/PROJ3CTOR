@@ -1,5 +1,6 @@
 var canvas2 = document.getElementById('canvas2');
 var ctx2 = canvas2.getContext('2d');
+var hint = canvas2.getContext('2d');
 var coordinates2 = [];
 var drawing2 = false;
 var timer2 = 0;
@@ -82,6 +83,8 @@ function sculptdone(e) {
     ctx2.closePath();
     drawing2 = false;
     findsculptbounds();
+    sculptupdatecoords();
+    render();
 }
 
 function sculptdraw() {
@@ -128,6 +131,21 @@ function findsculptbounds() {
     }
 }
 
+function sculptupdatecoords() {
+    var pixel;
+    for (var i = 0; i < 800; i++) {
+        for (var j = 0; j < 400; j++) {
+            pixel = ctx2.getImageData(i, j, 1, 1);
+            if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
+                for (var k = 0; k < 800; k++) {
+                    allcoords[k][j][i] += 1;
+                }
+            }
+        }
+    }
+}
+
+
 function mirror() {
     ymax = coordinates[0][1];
     ymin = coordinates[0][1];
@@ -143,16 +161,16 @@ function mirror() {
             }
         }
     }
-    ctx2.beginPath();
-    ctx2.lineWidth = 1;
-    ctx2.globalAlpha = 0.2;
-    ctx2.fillStyle = "gray";
-    // ctx2.fillStyle = 'rgba(255, 255, 255, 0.5)';
-    ctx2.setLineDash([6]);
-    ctx2.fillRect(0, ymin, canvas2.width, ymax - ymin);
+    hint.beginPath();
+    hint.lineWidth = 1;
+    hint.globalAlpha = 0.2;
+    hint.fillStyle = "gray";
+    hint.setLineDash([6]);
+    hint.fillRect(0, ymin, canvas2.width, ymax - ymin);
 
-    ctx2.globalAlpha = 1;
-    ctx2.strokeRect(0, ymin, canvas2.width, ymax - ymin);
+    hint.globalAlpha = 1;
+    hint.strokeRect(0, ymin, canvas2.width, ymax - ymin);
+    hint.closePath();
 }
 
 // mouse clicks will draw points

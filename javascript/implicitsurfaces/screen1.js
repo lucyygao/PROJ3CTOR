@@ -81,9 +81,6 @@ function moved(e) {
 
         // add coordinates to 3d array
         coordinates.push([x, y]);
-        for (var i = 0; i < 800; i++) {
-            allcoords[x][y][i] += 1;
-        }
     }
 }
 
@@ -118,31 +115,13 @@ function updatecoords() {
         for (var j = 0; j < 400; j++) {
             pixel = ctx.getImageData(i, j, 1, 1);
             if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
-                // LATER UPDATE THIS SO IT EXTRUDES FORWARD FOR ALL Z VALUES - FOR LOOP
-                allcoords[i][j][0] += 1;
+                for (var k = 0; k < 800; k++) {
+                    allcoords[i][j][k] += 1;
+                }
             }
         }
     }
 }
-
-// function draw() {
-//     // draw out all the coordinates
-//     for (var i = 0; i < coordinates.length; i++) {
-//         drawCoordinates(coordinates[i][0], coordinates[i][1]);
-//     }
-
-//     // connect to other dots
-//     ctx.beginPath();
-//     ctx.strokeStyle = 'black';
-//     ctx.lineWidth = 1;
-//     for (var j = 0; j < coordinates.length; j++) {
-//         ctx.moveTo(coordinates[j][0], coordinates[j][1]);
-//         ctx.lineTo(coordinates[j + 1][0], coordinates[j + 1][1]);
-//         ctx.stroke();
-//     }
-//     ctx.closePath();
-// }
-
 
 initialize();
 // mouse clicks will draw points
