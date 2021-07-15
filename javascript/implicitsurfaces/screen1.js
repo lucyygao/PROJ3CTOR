@@ -7,17 +7,18 @@ var drawxmax = 0;
 var drawxmin = 0;
 var allcoords = [];
 
+// 800 x 400 x 800 - divide all by 8
 function initialize() {
     var x = [];
     var y = [];
     var z = [];
-    for (var i = 0; i < 800; i++) {
+    for (var i = 0; i < 100; i++) {
         z.push(0);
     }
-    for (var i = 0; i < 400; i++) {
+    for (var i = 0; i < 50; i++) {
         y.push(z.slice());
     }
-    for (var i = 0; i < 800; i++) {
+    for (var i = 0; i < 100; i++) {
         allcoords.push(y.slice());
     }
 }
@@ -89,34 +90,34 @@ function done(e) {
     ctx.fill();
     drawing = false;
     mirror();
-    finddrawbounds();
+    // finddrawbounds();
     updatecoords();
 }
 
-function finddrawbounds() {
-    // loop thru coordinates and find min and max
-    drawxmax = coordinates[0][0];
-    drawxmin = coordinates[0][0];
-    for (var i = 1; i < coordinates.length; i++) {
-        if (coordinates[i][0] > drawxmax) {
-            drawxmax = coordinates[i][0];
-        }
-            else {
-                if (coordinates[i][0] < drawxmin) {
-                    drawxmin = coordinates[i][0];
-                }
-            }
-    }
-}
+// function finddrawbounds() {
+//     // loop thru coordinates and find min and max
+//     drawxmax = coordinates[0][0];
+//     drawxmin = coordinates[0][0];
+//     for (var i = 1; i < coordinates.length; i++) {
+//         if (coordinates[i][0] > drawxmax) {
+//             drawxmax = coordinates[i][0];
+//         }
+//             else {
+//                 if (coordinates[i][0] < drawxmin) {
+//                     drawxmin = coordinates[i][0];
+//                 }
+//             }
+//     }
+// }
 
 function updatecoords() {
     var pixel;
-    for (var i = 0; i < 800; i++) {
-        for (var j = 0; j < 400; j++) {
+    for (var i = 0; i < 800; i += 8) {
+        for (var j = 0; j < 400; j += 8) {
             pixel = ctx.getImageData(i, j, 1, 1);
             if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
-                for (var k = 0; k < 800; k++) {
-                    allcoords[i][j][k] += 1;
+                for (var k = 0; k < 800; k += 8) {
+                    allcoords[i/8][j/8][k/8] += 1;
                 }
             }
         }

@@ -1,3 +1,7 @@
+// const { SolidParticle } = require("babylonjs/Particles/solidParticle");
+// const { SolidParticleSystem } = require("babylonjs/Particles/solidParticleSystem");
+// import * as BABYLON from 'babylonjs';
+
 var createScene = function () {
     var scene = new BABYLON.Scene(engine);
 
@@ -66,30 +70,131 @@ var red = new BABYLON.StandardMaterial("redmaterial", scene);
 red.diffuseColor = new BABYLON.Color3(1, 0, 0);
 
 var createpoint = function (x, y, z) {
-    var point = BABYLON.MeshBuilder.CreateBox("point", {size: 0.005}, scene);
+    var point = BABYLON.MeshBuilder.CreateBox("point", {size: 1}, scene);
     point.position.x = -1 * x/70;
     point.position.y = -1 * y/70;
     point.position.z = z/70;
     return point;
 }
 
-var render = function() {
-    for (var i = 0; i < scene.meshes.length; i++) {
-        scene.meshes[i].dispose();
-    }
+var createmesh = function() {
+    // for (var i = 0; i < scene.meshes.length; i++) {
+    //     scene.meshes[i].dispose();
+    // }
+    // const SPS = new BABYLON.SolidParticleSystem("SPS", scene);
+    // const sphere = BABYLON.MeshBuilder.CreateSphere("s", {});
+    // const poly = BABYLON.MeshBuilder.CreatePolyhedron("p", { type: 2 });
+    // SPS.addShape(sphere, 20); // 20 spheres
+    // SPS.addShape(poly, 120); // 120 polyhedrons
+    // SPS.addShape(sphere, 80); // 80 other spheres
+    // sphere.dispose(); //dispose of original model sphere
+    // poly.dispose(); //dispose of original model poly
 
-    for (var i = 0; i < 800; i++) {
-        for (var j = 0; j < 400; j++) {
-            for (var k = 0; k < 800; k++) {
-                if (allcoords[i][j][k] > 1) {
-                    createpoint(i, j, k);
+    // const mesh = SPS.buildMesh(); // finally builds and displays the SPS mesh
+
+    // // initiate particles function
+    // SPS.initParticles = () => {
+    //     for (let p = 0; p < SPS.nbParticles; p++) {
+    //         const particle = SPS.particles[p];
+    //   	    particle.position.x = BABYLON.Scalar.RandomRange(-50, 50);
+    //         particle.position.y = BABYLON.Scalar.RandomRange(-50, 50);
+    //         particle.position.z = BABYLON.Scalar.RandomRange(-50, 50);
+    //     }
+    // };
+
+    // //Update SPS mesh
+    // SPS.initParticles();
+    // SPS.setParticles();
+
+    const SPS = new BABYLON.SolidParticleSystem("SPS", scene, {expandable: true});
+    const poly = BABYLON.MeshBuilder.CreatePolyhedron("p", {type: 2});
+    SPS.addShape(poly, 500);
+    const mesh = SPS.buildMesh();
+    const count = 0;
+
+    const x = 0;
+    const y = 0;
+    const z = 0;
+    const done = false;
+
+    SPS.initParticles = () => {
+            for (let p = 0; p < SPS.nbParticles; p++) {
+                const particle = SPS.particles[p];
+
+                for (const i = x; i < 800; i += 8) {
+                    for (const j = y; j < 400; j += 8) {
+                        for (const k = z; k < 800; k += 8) {
+                            // never gets into the if statement ; why tho.
+                            if (allcoords[i/8][j/8][k/8] != 0) {
+                                particle.position.x = -1 * i/70;
+                                particle.position.y = -1 * j/70;
+                                particle.position.z = k/70;
+
+
+                                x = i;
+                                y = j;
+                                z = k;
+                                done = true;
+                                break;
+                            }
+                        }
+                        if (done) {
+                            break;
+                        }
+                    }
+                    if (done) {
+                        break;
+                    }
                 }
-            }
-        }
-    }
-    var cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 0.2}, scene);
+                done = false;
 
-    // WILL BREAK. BRUH MOMENT
+
+                // particle.position.x = BABYLON.Scalar.RandomRange(-50, 50);
+                // particle.position.y = BABYLON.Scalar.RandomRange(-50, 50);
+                // particle.position.z = BABYLON.Scalar.RandomRange(-50, 50);
+            }
+        };
+
+    // SPS.initParticles = () => {
+    //     for (const i = 0; i < 800; i += 8) {
+    //         for (const j = 0; j < 400; j += 8) {
+    //             for (const k = 0; k < 800; k += 8) {
+    //                 // if (time >= 100) {
+    //                 //     break;
+    //                 // }
+
+
+    //                 if (allcoords[i/8][j/8][k/8] > 0) {
+    //                     const particle = SPS.particles[count];
+    //                     particle.position.x = -1 * i/70;
+    //                     particle.position.y = -1 * j/70;
+    //                     particle.position.z = k/70;
+    //                     var cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 1}, scene);
+    //                     cube.position.x = 10 + count;
+
+
+    //                     count++;
+    //                 }
+
+    //                 if (count == SPS.nbParticles) {
+    //                     var sphere = BABYLON.MeshBuilder.CreateSphere("cube", {diameter: 0.2}, scene);
+    //                     sphere.position.x = Math.random() * 1000;
+    //                     SPS.addShape(poly, 100);
+    //                 }
+    //             }
+    //             // time = 0;
+    //         }
+    //     }
+    // };
+
+    // clean up remaining particles
+    // if (SPS.nbParticles > count) {
+    //     const removed = SPS.removeParticles(count + 1, SPS.nbParticles - 1);
+    // }
+    SPS.initParticles();
+    SPS.setParticles();
+    SPS.buildMesh();
+    poly.dispose();
 }
 
 engine.runRenderLoop(function() {
@@ -167,72 +272,6 @@ engine.runRenderLoop(function() {
 
     //     numshapes2++;
     // }
-
-    // if there's input on both screens
-    // if (drawxmax != 0 && sculptxmax != 0) {
-    //     // find and draw edge points?
-    //     var dot1 = BABYLON.MeshBuilder.CreateSphere("dot1", {diameter: 0.2}, scene);
-    //     var dot2 = BABYLON.MeshBuilder.CreateSphere("dot2", {diameter: 0.2}, scene);
-    //     var dot3 = BABYLON.MeshBuilder.CreateSphere("dot3", {diameter: 0.2}, scene);
-    //     var dot4 = BABYLON.MeshBuilder.CreateSphere("dot4", {diameter: 0.2}, scene);
-    //     var dot5 = BABYLON.MeshBuilder.CreateSphere("dot5", {diameter: 0.2}, scene);
-    //     var dot6 = BABYLON.MeshBuilder.CreateSphere("dot6", {diameter: 0.2}, scene);
-    //     var dot7 = BABYLON.MeshBuilder.CreateSphere("dot7", {diameter: 0.2}, scene);
-    //     var dot8 = BABYLON.MeshBuilder.CreateSphere("dot8", {diameter: 0.2}, scene);
-
-    //     dot1.position.x = -1 * drawxmin/70;
-    //     dot2.position.x = -1 * drawxmax/70;
-    //     dot3.position.x = -1 * drawxmax/70;
-    //     dot4.position.x = -1 * drawxmin/70;
-    //     if (ymin > sculptymin) {
-    //         dot1.position.y = -1 * ymin/70;
-    //         dot2.position.y = -1 * ymin/70;
-    //         dot3.position.y = -1 * ymin/70;
-    //         dot4.position.y = -1 * ymin/70;
-    //     }
-    //     else {
-    //         dot1.position.y = -1 * sculptymin/70;
-    //         dot2.position.y = -1 * sculptymin/70;
-    //         dot3.position.y = -1 * sculptymin/70;
-    //         dot4.position.y = -1 * sculptymin/70;
-    //     }
-    //     dot1.position.z = sculptxmin/70;
-    //     dot2.position.z = sculptxmin/70;
-    //     dot3.position.z = sculptxmax/70;
-    //     dot4.position.z = sculptxmax/70;
-
-    //     dot5.position.x = -1 * drawxmin/70;
-    //     dot6.position.x = -1 * drawxmax/70;
-    //     dot7.position.x = -1 * drawxmax/70;
-    //     dot8.position.x = -1 * drawxmin/70;
-    //     if (ymax < sculptymax) {
-    //         dot5.position.y = -1 * ymax/70;
-    //         dot6.position.y = -1 * ymax/70;
-    //         dot7.position.y = -1 * ymax/70;
-    //         dot8.position.y = -1 * ymax/70;
-    //     }
-    //     else {
-    //         dot5.position.y = -1 * sculptymax/70;
-    //         dot6.position.y = -1 * sculptymax/70;
-    //         dot7.position.y = -1 * sculptymax/70;
-    //         dot8.position.y = -1 * sculptymax/70;
-    //     }
-    //     dot5.position.z = sculptxmin/70;
-    //     dot6.position.z = sculptxmin/70;
-    //     dot7.position.z = sculptxmax/70;
-    //     dot8.position.z = sculptxmax/70;
-
-    //     // add color to distinguish
-    //     dot1.material = blue;
-    //     dot2.material = blue;
-    //     dot3.material = blue;
-    //     dot4.material = blue;
-    //     dot5.material = blue;
-    //     dot6.material = blue;
-    //     dot7.material = blue;
-    //     dot8.material = blue;
-    // }
-
 
    scene.render();
 });

@@ -1,0 +1,27 @@
+{
+  "name": "triangulation",
+  "version": "1.0.0",
+  "description": "2D Delaunay triangulation algorithm written in JavaScript and Babylon.js in preparation for SURF 2021.",
+  "main": "index.js",
+  "dependencies": {
+    "babylonjs": "^4.2.0",
+    "delaunator": "^5.0.0"
+  },
+  "devDependencies": {
+    "@babylonjs/core": "^4.2.0",
+    "@babylonjs/inspector": "^4.2.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucyygao/triangulation.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lucyygao/triangulation/issues"
+  },
+  "homepage": "https://github.com/lucyygao/triangulation#readme"
+}

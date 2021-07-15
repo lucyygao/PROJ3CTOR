@@ -82,9 +82,9 @@ function sculptmoved(e) {
 function sculptdone(e) {
     ctx2.closePath();
     drawing2 = false;
-    findsculptbounds();
+    // findsculptbounds();
     sculptupdatecoords();
-    render();
+    createmesh();
 }
 
 function sculptdraw() {
@@ -105,40 +105,40 @@ function sculptdraw() {
     ctx2.closePath();
 }
 
-function findsculptbounds() {
-    // loop thru coordinates and find min and max
-    sculptxmax = coordinates2[0][0];
-    sculptxmin = coordinates2[0][0];
-    sculptymax = coordinates2[0][1];
-    sculptymin = coordinates2[0][1];
-    for (var i = 1; i < coordinates2.length; i++) {
-        if (coordinates2[i][0] > sculptxmax) {
-            sculptxmax = coordinates2[i][0];
-        }
-            else {
-                if (coordinates2[i][0] < sculptxmin) {
-                    sculptxmin = coordinates2[i][0];
-                }
-            }
-        if (coordinates2[i][1] > sculptymax) {
-            sculptymax = coordinates2[i][1];
-        }
-        else {
-            if (coordinates2[i][1] < sculptymin) {
-                sculptymin = coordinates2[i][1];
-            }
-        }
-    }
-}
+// function findsculptbounds() {
+//     // loop thru coordinates and find min and max
+//     sculptxmax = coordinates2[0][0];
+//     sculptxmin = coordinates2[0][0];
+//     sculptymax = coordinates2[0][1];
+//     sculptymin = coordinates2[0][1];
+//     for (var i = 1; i < coordinates2.length; i++) {
+//         if (coordinates2[i][0] > sculptxmax) {
+//             sculptxmax = coordinates2[i][0];
+//         }
+//             else {
+//                 if (coordinates2[i][0] < sculptxmin) {
+//                     sculptxmin = coordinates2[i][0];
+//                 }
+//             }
+//         if (coordinates2[i][1] > sculptymax) {
+//             sculptymax = coordinates2[i][1];
+//         }
+//         else {
+//             if (coordinates2[i][1] < sculptymin) {
+//                 sculptymin = coordinates2[i][1];
+//             }
+//         }
+//     }
+// }
 
 function sculptupdatecoords() {
     var pixel;
-    for (var i = 0; i < 800; i++) {
-        for (var j = 0; j < 400; j++) {
+    for (var i = 0; i < 800; i += 8) {
+        for (var j = 0; j < 400; j += 8) {
             pixel = ctx2.getImageData(i, j, 1, 1);
             if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
-                for (var k = 0; k < 800; k++) {
-                    allcoords[k][j][i] += 1;
+                for (var k = 0; k < 800; k += 8) {
+                    allcoords[k/8][j/8][i/8] += 1;
                 }
             }
         }
