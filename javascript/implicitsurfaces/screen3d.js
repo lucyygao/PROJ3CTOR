@@ -139,7 +139,7 @@ var createmesh = function() {
                                 console.log("bruh " + x + " " + y + " " + z + " " + i + " " + j + " " + k + " " + p);
                                 break;
                             }
-                            console.log("inchrementeing " + x + " " + y + " " + z + " " + p);
+                            // console.log("inchrementeing " + x + " " + y + " " + z + " " + p);
                         }
                         if (done) {
                             break;
