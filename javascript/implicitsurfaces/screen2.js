@@ -132,17 +132,29 @@ function sculptdraw() {
 // }
 
 function sculptupdatecoords() {
-    var pixel;
-    for (var i = 0; i < 800; i += 8) {
-        for (var j = 0; j < 400; j += 8) {
-            pixel = ctx2.getImageData(i, j, 1, 1);
-            if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
-                for (var k = 0; k < 800; k += 8) {
-                    allcoords[k/8][j/8][i/8] += 1;
-                }
-            }
+    // var pixel;
+
+    var z;
+    var y;
+    for (var i = 0; i < coordinates2.length; i++) {
+        z = coordinates[i][0];
+        y = coordinates[i][1];
+        for (var k = 0; k < 800; k += 8) {
+            allcoords[Math.round(k/8)][Math.round(y/8)][Math.round(z/8)] += 1;
         }
     }
+
+    // for (var i = 0; i < 800; i += 8) {
+    //     for (var j = 0; j < 400; j += 8) {
+    //         pixel = ctx2.getImageData(i, j, 1, 1);
+    //         if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
+    //             for (var k = 0; k < 800; k += 8) {
+    //                 allcoords[Math.round(k/8)][Math.round(j/8)][Math.round(i/8)] += 1;
+    //             }
+    //         }
+    //     }
+    // }
+    console.table(allcoords);
 }
 
 

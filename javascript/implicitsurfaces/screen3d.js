@@ -107,51 +107,51 @@ var createmesh = function() {
     // SPS.setParticles();
 
     const SPS = new BABYLON.SolidParticleSystem("SPS", scene, {expandable: true});
-    const poly = BABYLON.MeshBuilder.CreatePolyhedron("p", {type: 2});
+    // const cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 0.00001}, scene);
+    const poly = BABYLON.MeshBuilder.CreatePolyhedron("p", {type: 2, size: 0.05});
     SPS.addShape(poly, 500);
     const mesh = SPS.buildMesh();
     const count = 0;
 
-    const x = 0;
-    const y = 0;
-    const z = 0;
-    const done = false;
+    var x = 0;
+    var y = 0;
+    var z = 0;
+    var done = false;
 
     SPS.initParticles = () => {
             for (let p = 0; p < SPS.nbParticles; p++) {
                 const particle = SPS.particles[p];
+                console.log("new particle " + x + " " + y + " " + z + " " + i + " " + j + " " + k + " " +p);
+                for (var i = x; i < 100; i++) {
 
-                for (const i = x; i < 800; i += 8) {
-                    for (const j = y; j < 400; j += 8) {
-                        for (const k = z; k < 800; k += 8) {
-                            // never gets into the if statement ; why tho.
-                            if (allcoords[i/8][j/8][k/8] != 0) {
-                                particle.position.x = -1 * i/70;
-                                particle.position.y = -1 * j/70;
-                                particle.position.z = k/70;
+                    for (var j = y; j < 50; j++) {
+                        for (var k = z; k < 100; k++) {
+                            if (allcoords[i][j][k] != 0) {
+                                particle.position.x = -8 * i / 70;
+                                particle.position.y = -8 * j / 70;
+                                particle.position.z = 8 * k / 70;
 
 
                                 x = i;
                                 y = j;
-                                z = k;
+                                z = k + 1;
                                 done = true;
+                                console.log("bruh " + x + " " + y + " " + z + " " + i + " " + j + " " + k + " " + p);
                                 break;
                             }
+                            console.log("inchrementeing " + x + " " + y + " " + z + " " + p);
                         }
                         if (done) {
                             break;
                         }
+                        // console.log("mid " + x + " " + y + " " + z + " " + p);
                     }
                     if (done) {
+                        // console.log("break out " + x + " " + y + " " + z + " " + p);
                         break;
                     }
                 }
                 done = false;
-
-
-                // particle.position.x = BABYLON.Scalar.RandomRange(-50, 50);
-                // particle.position.y = BABYLON.Scalar.RandomRange(-50, 50);
-                // particle.position.z = BABYLON.Scalar.RandomRange(-50, 50);
             }
         };
 
@@ -193,85 +193,85 @@ var createmesh = function() {
     // }
     SPS.initParticles();
     SPS.setParticles();
-    SPS.buildMesh();
+    // SPS.buildMesh();
     poly.dispose();
 }
 
 engine.runRenderLoop(function() {
 
 
-    // if (coordinates.length > numshapes) {
-    //     var cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 0.2}, scene);
-    //     cube.position.x = -1 * coordinates[coordinates.length - 1][0] / 70;
-    //     cube.position.y = -1 * coordinates[coordinates.length - 1][1] / 70;
-    //     var vec = new BABYLON.Vector3(cube.position.x, cube.position.y, 0);
-    //     frontshape.push(vec);
-    //     if (frontshape.length == 3) {
-    //         frontshape.shift();
-    //     }
-    //     var extruded = BABYLON.MeshBuilder.ExtrudeShape("extruded", {shape: frontshape, path: frontpath, cap: BABYLON.Mesh.CAP_ALL, updatable: true}, scene);
-    //     extruded.material = material;
-    //     cube.material = material;
+    if (coordinates.length > numshapes) {
+        var cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 0.2}, scene);
+        cube.position.x = -1 * coordinates[coordinates.length - 1][0] / 70;
+        cube.position.y = -1 * coordinates[coordinates.length - 1][1] / 70;
+        var vec = new BABYLON.Vector3(cube.position.x, cube.position.y, 0);
+        frontshape.push(vec);
+        if (frontshape.length == 3) {
+            frontshape.shift();
+        }
+        var extruded = BABYLON.MeshBuilder.ExtrudeShape("extruded", {shape: frontshape, path: frontpath, cap: BABYLON.Mesh.CAP_ALL, updatable: true}, scene);
+        extruded.material = material;
+        cube.material = material;
 
-    //     numshapes++;
-    // }
-    // if (coordinates2.length > numshapes2) {
-    //     var box = BABYLON.MeshBuilder.CreateBox("box", {size: 0.2}, scene);
-    //     box.position.z = coordinates2[coordinates2.length - 1][0] / 70;
-    //     box.position.y = -1 * coordinates2[coordinates2.length - 1][1] / 70;
-    //     var vector = new BABYLON.Vector3(box.position.z, box.position.y, 0);
-    //     sideshape.push(vector);
-    //     if (sideshape.length == 3) {
-    //         sideshape.shift();
-    //     }
-    //     var sideextrude = BABYLON.MeshBuilder.ExtrudeShape("side extrusion", {shape: sideshape, path: sidepath, cap: BABYLON.Mesh.CAP_ALL, updatable: true}, scene);
-    //     sideextrude.material = material;
-    //     box.material = material;
-    //     box.isPickable = false;
-    //     sideextrude.isPickable = false;
+        numshapes++;
+    }
+    if (coordinates2.length > numshapes2) {
+        var box = BABYLON.MeshBuilder.CreateBox("box", {size: 0.2}, scene);
+        box.position.z = coordinates2[coordinates2.length - 1][0] / 70;
+        box.position.y = -1 * coordinates2[coordinates2.length - 1][1] / 70;
+        var vector = new BABYLON.Vector3(box.position.z, box.position.y, 0);
+        sideshape.push(vector);
+        if (sideshape.length == 3) {
+            sideshape.shift();
+        }
+        var sideextrude = BABYLON.MeshBuilder.ExtrudeShape("side extrusion", {shape: sideshape, path: sidepath, cap: BABYLON.Mesh.CAP_ALL, updatable: true}, scene);
+        sideextrude.material = material;
+        box.material = material;
+        box.isPickable = false;
+        sideextrude.isPickable = false;
 
-    //     var dir = new BABYLON.Vector3(-1, 0, 0);
-    //     // out = BABYLON.Vector3.TransformCoordinates(out, box.getWorldMatrix());
-    //     // var dir = out.subtract(box.position);
-    //     var ray = new BABYLON.Ray(box.position, dir, 10);
-    //     // var rayHelper = new BABYLON.RayHelper(ray);
-	// 	// rayHelper.show(scene);
-    //     var hit = scene.multiPickWithRay(ray);
-    //     if (hit) {
-    //         for (var i = 0; i < hit.length; i++) {
-    //             if (hit[i].pickedMesh.id == "extruded") {
-    //                 var collision = BABYLON.MeshBuilder.CreateBox("collision", {size: 0.1}, scene);
+        // var dir = new BABYLON.Vector3(-1, 0, 0);
+        // // out = BABYLON.Vector3.TransformCoordinates(out, box.getWorldMatrix());
+        // // var dir = out.subtract(box.position);
+        // var ray = new BABYLON.Ray(box.position, dir, 10);
+        // // var rayHelper = new BABYLON.RayHelper(ray);
+		// // rayHelper.show(scene);
+        // var hit = scene.multiPickWithRay(ray);
+        // if (hit) {
+        //     for (var i = 0; i < hit.length; i++) {
+        //         if (hit[i].pickedMesh.id == "extruded") {
+        //             var collision = BABYLON.MeshBuilder.CreateBox("collision", {size: 0.1}, scene);
 
-    //                 // var clone = collision.clone("clone");
-    //                 collision.position = hit[i].pickedPoint;
-    //                 collision.material = red;
-    //                 intersection.push(collision.position.x, collision.position.y, collision.position.z);
-    //             }
-    //         }
+        //             // var clone = collision.clone("clone");
+        //             collision.position = hit[i].pickedPoint;
+        //             collision.material = red;
+        //             intersection.push(collision.position.x, collision.position.y, collision.position.z);
+        //         }
+        //     }
 
-    //         /** WORKING ON THIS !! fix the mesh basically, make mesh from points
-    //          * - https://doc.babylonjs.com/divingDeeper/particles/point_cloud_system/pcs_creation#add-surface--volume-points
-    //          * - try and simplify and clone instead so less laggy? https://blog.raananweber.com/2015/09/03/scene-optimization-in-babylon-js/
-    //          * - https://doc.babylonjs.com/divingDeeper/mesh/creation/custom/updatingVertices
-    //          */
+            /** WORKING ON THIS !! fix the mesh basically, make mesh from points
+             * - https://doc.babylonjs.com/divingDeeper/particles/point_cloud_system/pcs_creation#add-surface--volume-points
+             * - try and simplify and clone instead so less laggy? https://blog.raananweber.com/2015/09/03/scene-optimization-in-babylon-js/
+             * - https://doc.babylonjs.com/divingDeeper/mesh/creation/custom/updatingVertices
+             */
 
-    //         // make mesh
-    //         for (var i = 0; i < intersection.length; i += 3) {
-    //             indices.push(i/3);
-    //         }
-    //         var mesh = new BABYLON.Mesh("intersected", scene);
-    //         var vertex = new BABYLON.VertexData();
-    //         vertex.positions = intersection;
-    //         vertex.indices = indices;
-    //         vertex.applyToMesh(mesh, true);
+            // make mesh
+            // for (var i = 0; i < intersection.length; i += 3) {
+            //     indices.push(i/3);
+            // }
+            // var mesh = new BABYLON.Mesh("intersected", scene);
+            // var vertex = new BABYLON.VertexData();
+            // vertex.positions = intersection;
+            // vertex.indices = indices;
+            // vertex.applyToMesh(mesh, true);
 
-    //         var pcs = new BABYLON.PointsCloudSystem("pcs", 1, scene);
-    //         pcs.addSurfacePoints(mesh, 1000, BABYLON.PointColor.Stated, new BABYLON.Color3(1, 0, 0));
-    //         pcs.buildMeshAsync().then(() => mesh.dispose());
-    //     }
+            // var pcs = new BABYLON.PointsCloudSystem("pcs", 1, scene);
+            // pcs.addSurfacePoints(mesh, 1000, BABYLON.PointColor.Stated, new BABYLON.Color3(1, 0, 0));
+            // pcs.buildMeshAsync().then(() => mesh.dispose());
+        // }
 
-    //     numshapes2++;
-    // }
+        numshapes2++;
+    }
 
    scene.render();
 });

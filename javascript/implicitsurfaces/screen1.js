@@ -111,17 +111,27 @@ function done(e) {
 // }
 
 function updatecoords() {
-    var pixel;
-    for (var i = 0; i < 800; i += 8) {
-        for (var j = 0; j < 400; j += 8) {
-            pixel = ctx.getImageData(i, j, 1, 1);
-            if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
-                for (var k = 0; k < 800; k += 8) {
-                    allcoords[i/8][j/8][k/8] += 1;
-                }
-            }
+    // var pixel;
+
+    var x;
+    var y;
+    for (var i = 0; i < coordinates2.length; i++) {
+        x = coordinates2[i][0];
+        y = coordinates2[i][1];
+        for (var k = 0; k < 800; k += 8) {
+            allcoords[Math.round(x/8)][Math.round(y/8)][Math.round(k/8)] += 1;
         }
     }
+    // for (var i = 0; i < 800; i += 8) {
+    //     for (var j = 0; j < 400; j += 8) {
+    //         pixel = ctx.getImageData(i, j, 1, 1);
+    //         if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
+    //             for (var k = 0; k < 800; k += 8) {
+    //                 allcoords[Math.round(i/8)][Math.round(j/8)][Math.round(k/8)] += 1;
+    //             }
+    //         }
+    //     }
+    // }
 }
 
 initialize();
