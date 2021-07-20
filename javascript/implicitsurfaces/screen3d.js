@@ -68,6 +68,10 @@ var blue = new BABYLON.StandardMaterial("bluematerial", scene);
 blue.diffuseColor = new BABYLON.Color3(0, 0, 1);
 var red = new BABYLON.StandardMaterial("redmaterial", scene);
 red.diffuseColor = new BABYLON.Color3(1, 0, 0);
+var green = new BABYLON.StandardMaterial("greenmaterial", scene);
+green.diffuseColor = new BABYLON.Color3(0, 1, 0);
+var black = new BABYLON.StandardMaterial("blackmaterial", scene);
+black.diffuseColor = new BABYLON.Color3(0, 0, 0);
 
 var createpoint = function (x, y, z) {
     var point = BABYLON.MeshBuilder.CreateBox("point", {size: 1}, scene);
@@ -106,10 +110,11 @@ var createmesh = function() {
     // SPS.initParticles();
     // SPS.setParticles();
 
-    const SPS = new BABYLON.SolidParticleSystem("SPS", scene, {expandable: true});
+    const SPS = new BABYLON.SolidParticleSystem("SPS", scene, {expandable: true, useModelMaterial: true});
     // const cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 0.00001}, scene);
     const poly = BABYLON.MeshBuilder.CreatePolyhedron("p", {type: 2, size: 0.05});
-    SPS.addShape(poly, 500);
+
+    SPS.addShape(poly, 10000);
     const mesh = SPS.buildMesh();
     const count = 0;
 
@@ -121,35 +126,60 @@ var createmesh = function() {
     SPS.initParticles = () => {
             for (let p = 0; p < SPS.nbParticles; p++) {
                 const particle = SPS.particles[p];
-                console.log("new particle " + x + " " + y + " " + z + " " + i + " " + j + " " + k + " " +p);
-                for (var i = x; i < 100; i++) {
+                // console.log("new particle " + x + " " + y + " " + z + " " + i + " " + j + " " + k + " " +p);
 
+                for (var i = x; i < 100; i++) {
+                    // console.log("inchrementeing " + x + " " + y + " " + z + " " + p);
                     for (var j = y; j < 50; j++) {
                         for (var k = z; k < 100; k++) {
                             if (allcoords[i][j][k] != 0) {
+                                // if (allcoords[i][j][k] == 100) {
+                                //     particle.materialIndex = 0;
+                                // }
+                                // else {
+                                //     if (allcoords[i][j][k] == 200) {
+                                //         particle.materialIndex = 1;
+                                //     }
+                                //     else {
+                                //         if (allcoords[i][j][k] == 300) {
+                                //             particle.materialIndex = 2;
+                                //         }
+                                //         else {
+                                //             particle.materialIndex = 3;
+                                //         }
+                                //     }
+                                // }
                                 particle.position.x = -8 * i / 70;
                                 particle.position.y = -8 * j / 70;
                                 particle.position.z = 8 * k / 70;
-
 
                                 x = i;
                                 y = j;
                                 z = k + 1;
                                 done = true;
-                                console.log("bruh " + x + " " + y + " " + z + " " + i + " " + j + " " + k + " " + p);
+                                // console.log("bruh " + particle.position.x + " " + particle.position.y + " " + particle.position.z + " " + i + " " + j + " " + k);
                                 break;
                             }
-                            // console.log("inchrementeing " + x + " " + y + " " + z + " " + p);
+                            else {
+                                if (k == 99) {
+                                    z = 0;
+                                }
+                            }
+
                         }
                         if (done) {
+                            // console.log("mid " + x + " " + y + " " + z + " " + p);
                             break;
                         }
-                        // console.log("mid " + x + " " + y + " " + z + " " + p);
+
                     }
                     if (done) {
                         // console.log("break out " + x + " " + y + " " + z + " " + p);
                         break;
                     }
+                }
+                if (x == 99) {
+                    break;
                 }
                 done = false;
             }
@@ -194,12 +224,11 @@ var createmesh = function() {
     SPS.initParticles();
     SPS.setParticles();
     // SPS.buildMesh();
+    SPS.setMultiMaterial([blue, red, green, black]);
     poly.dispose();
 }
 
 engine.runRenderLoop(function() {
-
-
     if (coordinates.length > numshapes) {
         var cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 0.2}, scene);
         cube.position.x = -1 * coordinates[coordinates.length - 1][0] / 70;

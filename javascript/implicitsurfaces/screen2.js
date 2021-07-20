@@ -54,7 +54,7 @@ function sculptoutside(e) {
 function sculptmoved(e) {
     if (drawing2 && !sculptoutside(e)) {
         // draw a dot every so often
-        if (timer2 % 2 == 0) {
+        if (timer2 % 5 == 0) {
             // connect to previous point
             var rectangle = canvas2.getBoundingClientRect();
             var x = e.clientX - rectangle.left;
@@ -137,10 +137,10 @@ function sculptupdatecoords() {
     var z;
     var y;
     for (var i = 0; i < coordinates2.length; i++) {
-        z = coordinates[i][0];
-        y = coordinates[i][1];
-        for (var k = 0; k < 800; k += 8) {
-            allcoords[Math.round(k/8)][Math.round(y/8)][Math.round(z/8)] += 1;
+        z = coordinates2[i][0];
+        y = coordinates2[i][1];
+        for (var k = 0; k < 100; k++) {
+            allcoords[k][Math.round(y/8)][Math.round(z/8)] += 1;
         }
     }
 

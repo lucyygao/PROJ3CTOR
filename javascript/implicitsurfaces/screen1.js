@@ -6,6 +6,7 @@ var wasoutside = false;
 var drawxmax = 0;
 var drawxmin = 0;
 var allcoords = [];
+var timer = 0;
 
 // 800 x 400 x 800 - divide all by 8
 function initialize() {
@@ -81,7 +82,10 @@ function moved(e) {
         }
 
         // add coordinates to 3d array
-        coordinates.push([x, y]);
+        if (timer % 5 == 0) {
+            coordinates.push([x, y]);
+        }
+        timer++;
     }
 }
 
@@ -115,13 +119,14 @@ function updatecoords() {
 
     var x;
     var y;
-    for (var i = 0; i < coordinates2.length; i++) {
-        x = coordinates2[i][0];
-        y = coordinates2[i][1];
-        for (var k = 0; k < 800; k += 8) {
-            allcoords[Math.round(x/8)][Math.round(y/8)][Math.round(k/8)] += 1;
+    for (var i = 0; i < coordinates.length; i++) {
+        x = coordinates[i][0];
+        y = coordinates[i][1];
+        for (var k = 0; k < 100; k++) {
+            allcoords[Math.round(x/8)][Math.round(y/8)][k] += 1;
         }
     }
+    console.table(allcoords);
     // for (var i = 0; i < 800; i += 8) {
     //     for (var j = 0; j < 400; j += 8) {
     //         pixel = ctx.getImageData(i, j, 1, 1);
