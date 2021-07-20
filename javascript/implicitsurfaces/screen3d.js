@@ -114,7 +114,7 @@ var createmesh = function() {
     // const cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 0.00001}, scene);
     const poly = BABYLON.MeshBuilder.CreatePolyhedron("p", {type: 2, size: 0.05});
 
-    SPS.addShape(poly, 10000);
+    SPS.addShape(poly, 70000);
     const mesh = SPS.buildMesh();
     const count = 0;
 
@@ -123,104 +123,106 @@ var createmesh = function() {
     var z = 0;
     var done = false;
 
+    SPS.mesh.hasVertexAlpha = true;
+
     SPS.initParticles = () => {
-            for (let p = 0; p < SPS.nbParticles; p++) {
-                const particle = SPS.particles[p];
-                // console.log("new particle " + x + " " + y + " " + z + " " + i + " " + j + " " + k + " " +p);
+        var p = 0;
+        for (var i = 0; i < 100; i++) {
+            for (var j = 0; j < 50; j++) {
+                for (var k = 0; k < 100; k++) {
+                    if (allcoords[i][j][k] != 0 && p < 50000) {
+                        const particle = SPS.particles[p];
+                        particle.color.a = allcoords[i][j][k]/50;
+                        particle.materialIndex = 0;
 
-                for (var i = x; i < 100; i++) {
-                    // console.log("inchrementeing " + x + " " + y + " " + z + " " + p);
-                    for (var j = y; j < 50; j++) {
-                        for (var k = z; k < 100; k++) {
-                            if (allcoords[i][j][k] != 0) {
-                                // if (allcoords[i][j][k] == 100) {
-                                //     particle.materialIndex = 0;
-                                // }
-                                // else {
-                                //     if (allcoords[i][j][k] == 200) {
-                                //         particle.materialIndex = 1;
-                                //     }
-                                //     else {
-                                //         if (allcoords[i][j][k] == 300) {
-                                //             particle.materialIndex = 2;
-                                //         }
-                                //         else {
-                                //             particle.materialIndex = 3;
-                                //         }
-                                //     }
-                                // }
-                                particle.position.x = -8 * i / 70;
-                                particle.position.y = -8 * j / 70;
-                                particle.position.z = 8 * k / 70;
-
-                                x = i;
-                                y = j;
-                                z = k + 1;
-                                done = true;
-                                // console.log("bruh " + particle.position.x + " " + particle.position.y + " " + particle.position.z + " " + i + " " + j + " " + k);
-                                break;
-                            }
-                            else {
-                                if (k == 99) {
-                                    z = 0;
-                                }
-                            }
-
-                        }
-                        if (done) {
-                            // console.log("mid " + x + " " + y + " " + z + " " + p);
-                            break;
-                        }
-
-                    }
-                    if (done) {
-                        // console.log("break out " + x + " " + y + " " + z + " " + p);
-                        break;
+                        particle.position.x = -8 * i / 70;
+                        particle.position.y = -8 * j / 70;
+                        particle.position.z = 8 * k / 70;
+                        p++;
                     }
                 }
-                if (x == 99) {
-                    break;
-                }
-                done = false;
             }
-        };
+        }
+    };
 
     // SPS.initParticles = () => {
-    //     for (const i = 0; i < 800; i += 8) {
-    //         for (const j = 0; j < 400; j += 8) {
-    //             for (const k = 0; k < 800; k += 8) {
-    //                 // if (time >= 100) {
-    //                 //     break;
-    //                 // }
+    //         for (let p = 0; p < SPS.nbParticles; p++) {
+    //             const particle = SPS.particles[p];
+    //             console.log("new particle " + x + " " + y + " " + z + " " + i + " " + j + " " + k + " " +p);
 
+    //             for (var i = x; i < 100; i++) {
+    //                 // console.log("inchrementeing " + x + " " + y + " " + z + " " + p);
+    //                 for (var j = y; j < 50; j++) {
+    //                     for (var k = z; k < 100; k++) {
+    //                         if (allcoords[i][j][k] != 0) {
+    //                             particle.color.a = allcoords[i][j][k]/50;
 
-    //                 if (allcoords[i/8][j/8][k/8] > 0) {
-    //                     const particle = SPS.particles[count];
-    //                     particle.position.x = -1 * i/70;
-    //                     particle.position.y = -1 * j/70;
-    //                     particle.position.z = k/70;
-    //                     var cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 1}, scene);
-    //                     cube.position.x = 10 + count;
+    //                             // if (allcoords[i][j][k] == 100) {
+    //                                 particle.materialIndex = 0;
+    //                             // }
+    //                             // else {
+    //                             //     if (allcoords[i][j][k] == 200) {
+    //                             //         particle.materialIndex = 1;
+    //                             //     }
+    //                             //     else {
+    //                             //         if (allcoords[i][j][k] == 300) {
+    //                             //             particle.materialIndex = 2;
+    //                             //         }
+    //                             //         else {
+    //                             //             particle.materialIndex = 3;
+    //                             //         }
+    //                             //     }
+    //                             // }
+    //                             particle.position.x = -8 * i / 70;
+    //                             particle.position.y = -8 * j / 70;
+    //                             particle.position.z = 8 * k / 70;
 
+    //                             x = i;
+    //                             y = j;
+    //                             z = k + 1;
+    //                             if (k >= 99) {
+    //                                 z = 0;
+    //                                 y++;
+    //                             }
+    //                             done = true;
+    //                             console.log("bruh " + particle.position.x + " " + particle.position.y + " " + particle.position.z + " " + i + " " + j + " " + k);
+    //                             break;
+    //                         }
+    //                     }
+    //                     if (j == 49) {
+    //                         y = 0;
+    //                         x++;
+    //                     }
 
-    //                     count++;
+    //                     if (done) {
+    //                         // console.log("mid " + x + " " + y + " " + z + " " + p);
+    //                         break;
+    //                     }
+    //                     // else {
+    //                     //
+    //                     // }
+
     //                 }
-
-    //                 if (count == SPS.nbParticles) {
-    //                     var sphere = BABYLON.MeshBuilder.CreateSphere("cube", {diameter: 0.2}, scene);
-    //                     sphere.position.x = Math.random() * 1000;
-    //                     SPS.addShape(poly, 100);
+    //                 if (done) {
+    //                     // console.log("break out " + x + " " + y + " " + z + " " + p);
+    //                     break;
     //                 }
     //             }
-    //             // time = 0;
+    //             if (x == 99) {
+    //                 break;
+    //             }
+    //             done = false;
     //         }
-    //     }
-    // };
+    //     };
+
 
     // clean up remaining particles
     // if (SPS.nbParticles > count) {
     //     const removed = SPS.removeParticles(count + 1, SPS.nbParticles - 1);
     // }
+
+    // console.table(allcoords);
+
     SPS.initParticles();
     SPS.setParticles();
     // SPS.buildMesh();

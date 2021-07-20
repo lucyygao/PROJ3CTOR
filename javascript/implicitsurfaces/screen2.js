@@ -29,6 +29,9 @@ function sculptclicked(e) {
         var x = e.clientX - rectangle.left;
         var y = e.clientY - rectangle.top;
         coordinates2.push([x, y]);
+        for (var k = 0; k < 100; k++) {
+            allcoords[k][Math.floor(y/8)][Math.floor(x/8)] += 1;
+        }
         // drawCoordinates(x, y);
         // ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
         ctx2.moveTo(x, y);
@@ -54,36 +57,41 @@ function sculptoutside(e) {
 function sculptmoved(e) {
     if (drawing2 && !sculptoutside(e)) {
         // draw a dot every so often
-        if (timer2 % 5 == 0) {
+        if (timer2 % 3 == 0) {
             // connect to previous point
             var rectangle = canvas2.getBoundingClientRect();
             var x = e.clientX - rectangle.left;
             var y = e.clientY - rectangle.top;
             if (wasoutside2) {
-                ctx2.lineWidth = 3;
-                sculptclicked(e);
+                // sculptclicked(e);
+                done2(e);
+                ctx2.moveTo(x, y);
+                ctx2.beginPath();
                 wasoutside2 = false;
             }
             else {
                 ctx2.lineTo(x, y);
                 ctx2.stroke();
-                ctx2.moveTo(x, y);
+                // ctx2.moveTo(x, y);
             }
-
-
-            // draw red dot for point and add to coordinate array
-            // drawCoordinates(x, y);
+            // add to coordinates array
             coordinates2.push([x, y]);
+            for (var k = 0; k < 100; k++) {
+                allcoords[k][Math.floor(y/8)][Math.floor(x/8)] += 1;
+            }
         }
+        timer2++;
     }
-    timer2++;
+
 }
 
 function sculptdone(e) {
     ctx2.closePath();
     drawing2 = false;
     // findsculptbounds();
-    sculptupdatecoords();
+    // sculptupdatecoords();
+    console.table(allcoords);
+    console.log("beet");
     createmesh();
 }
 
@@ -140,7 +148,7 @@ function sculptupdatecoords() {
         z = coordinates2[i][0];
         y = coordinates2[i][1];
         for (var k = 0; k < 100; k++) {
-            allcoords[k][Math.round(y/8)][Math.round(z/8)] += 1;
+            allcoords[k][Math.floor(y/8)][Math.floor(z/8)] += 1;
         }
     }
 

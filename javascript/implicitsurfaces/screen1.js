@@ -22,6 +22,8 @@ function initialize() {
     for (var i = 0; i < 100; i++) {
         allcoords.push(y.slice());
     }
+    console.table(allcoords);
+    console.log("reet");
 }
 
 // drawing points
@@ -41,6 +43,9 @@ function clicked(e) {
         var x = e.clientX - rectangle.left;
         var y = e.clientY - rectangle.top;
         coordinates.push([x, y]);
+        for (var k = 0; k < 100; k++) {
+            allcoords[Math.floor(x/8)][Math.floor(y/8)][k] += 1;
+        }
         // drawCoordinates(x, y);
         // ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.moveTo(x, y);
@@ -67,23 +72,27 @@ function outside(e) {
 
 function moved(e) {
     if (drawing && !outside(e)) {
-        var rectangle = canvas.getBoundingClientRect();
-        var x = e.clientX - rectangle.left;
-        var y = e.clientY - rectangle.top;
-        if (wasoutside) {
-            done();
-            ctx.moveTo(x, y);
-            ctx.beginPath();
-            wasoutside = false;
-        }
-        else {
-            ctx.lineTo(x, y);
-            ctx.stroke();
-        }
-
-        // add coordinates to 3d array
-        if (timer % 5 == 0) {
+        if (timer % 3 == 0) {
+            var rectangle = canvas.getBoundingClientRect();
+            var x = e.clientX - rectangle.left;
+            var y = e.clientY - rectangle.top;
+            if (wasoutside) {
+                // clicked(e);
+                done();
+                ctx.moveTo(x, y);
+                ctx.beginPath();
+                wasoutside = false;
+            }
+            else {
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                // ctx.moveTo(x, y);
+            }
+            // add coordinates to array
             coordinates.push([x, y]);
+            for (var k = 0; k < 100; k++) {
+                allcoords[Math.floor(x/8)][Math.floor(y/8)][k] += 1;
+            }
         }
         timer++;
     }
@@ -94,8 +103,10 @@ function done(e) {
     ctx.fill();
     drawing = false;
     mirror();
+    console.table(allcoords);
+    console.log("skeet");
     // finddrawbounds();
-    updatecoords();
+    // updatecoords();
 }
 
 // function finddrawbounds() {
@@ -123,7 +134,7 @@ function updatecoords() {
         x = coordinates[i][0];
         y = coordinates[i][1];
         for (var k = 0; k < 100; k++) {
-            allcoords[Math.round(x/8)][Math.round(y/8)][k] += 1;
+            allcoords[Math.floor(x/8)][Math.floor(y/8)][k] += 1;
         }
     }
     console.table(allcoords);
