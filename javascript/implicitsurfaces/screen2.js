@@ -36,6 +36,7 @@ function sculptclicked(e) {
         // ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
         ctx2.moveTo(x, y);
         ctx2.strokeStyle = 'black';
+        ctx2.fillStyle = 'blueviolet';
         ctx2.lineWidth = 1;
         ctx2.beginPath();
         ctx2.lineTo(x, y);
@@ -76,9 +77,9 @@ function sculptmoved(e) {
             }
             // add to coordinates array
             coordinates2.push([x, y]);
-            for (var k = 0; k < 100; k++) {
-                allcoords[k][Math.floor(y/8)][Math.floor(x/8)] += 1;
-            }
+            // for (var k = 0; k < 100; k++) {
+            //     allcoords[k][Math.floor(y/8)][Math.floor(x/8)] += 1;
+            // }
         }
         timer2++;
     }
@@ -87,9 +88,10 @@ function sculptmoved(e) {
 
 function sculptdone(e) {
     ctx2.closePath();
+    ctx2.fill();
     drawing2 = false;
     // findsculptbounds();
-    // sculptupdatecoords();
+    sculptupdatecoords();
     console.table(allcoords);
     console.log("beet");
     createmesh();
@@ -140,29 +142,28 @@ function sculptdraw() {
 // }
 
 function sculptupdatecoords() {
-    // var pixel;
+    var pixel;
 
-    var z;
-    var y;
-    for (var i = 0; i < coordinates2.length; i++) {
-        z = coordinates2[i][0];
-        y = coordinates2[i][1];
-        for (var k = 0; k < 100; k++) {
-            allcoords[k][Math.floor(y/8)][Math.floor(z/8)] += 1;
-        }
-    }
-
-    // for (var i = 0; i < 800; i += 8) {
-    //     for (var j = 0; j < 400; j += 8) {
-    //         pixel = ctx2.getImageData(i, j, 1, 1);
-    //         if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
-    //             for (var k = 0; k < 800; k += 8) {
-    //                 allcoords[Math.round(k/8)][Math.round(j/8)][Math.round(i/8)] += 1;
-    //             }
-    //         }
+    // var z;
+    // var y;
+    // for (var i = 0; i < coordinates2.length; i++) {
+    //     z = coordinates2[i][0];
+    //     y = coordinates2[i][1];
+    //     for (var k = 0; k < 100; k++) {
+    //         allcoords[k][Math.floor(y/8)][Math.floor(z/8)] += 1;
     //     }
     // }
-    console.table(allcoords);
+
+    for (var i = 0; i < 800; i += 8) {
+        for (var j = 0; j < 400; j += 8) {
+            pixel = ctx2.getImageData(i, j, 1, 1);
+            if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
+                for (var k = 0; k < 100; k++) {
+                    allcoords[k][Math.round(j/8)][Math.round(i/8)] += 1;
+                }
+            }
+        }
+    }
 }
 
 

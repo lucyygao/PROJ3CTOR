@@ -10,18 +10,21 @@ var timer = 0;
 
 // 800 x 400 x 800 - divide all by 8
 function initialize() {
-    var x = [];
-    var y = [];
-    var z = [];
-    for (var i = 0; i < 100; i++) {
-        z.push(0);
-    }
-    for (var i = 0; i < 50; i++) {
-        y.push(z.slice());
-    }
-    for (var i = 0; i < 100; i++) {
-        allcoords.push(y.slice());
-    }
+    allcoords = Array(100).fill().map(() => Array(50).fill().map(() => Array(100).fill(0)));
+
+
+    // var x = [];
+    // var y = [];
+    // var z = [];
+    // for (var i = 0; i < 100; i++) {
+    //     z.push(0);
+    // }
+    // for (var i = 0; i < 50; i++) {
+    //     y.push(z.slice());
+    // }
+    // for (var i = 0; i < 100; i++) {
+    //     allcoords.push(y.slice());
+    // }
     console.table(allcoords);
     console.log("reet");
 }
@@ -90,9 +93,9 @@ function moved(e) {
             }
             // add coordinates to array
             coordinates.push([x, y]);
-            for (var k = 0; k < 100; k++) {
-                allcoords[Math.floor(x/8)][Math.floor(y/8)][k] += 1;
-            }
+            // for (var k = 0; k < 100; k++) {
+            //     allcoords[Math.floor(x/8)][Math.floor(y/8)][k] += 1;
+            // }
         }
         timer++;
     }
@@ -102,11 +105,9 @@ function done(e) {
     ctx.closePath();
     ctx.fill();
     drawing = false;
-    mirror();
-    console.table(allcoords);
-    console.log("skeet");
+    // mirror();
     // finddrawbounds();
-    // updatecoords();
+    updatecoords();
 }
 
 // function finddrawbounds() {
@@ -126,28 +127,28 @@ function done(e) {
 // }
 
 function updatecoords() {
-    // var pixel;
+    var pixel;
 
-    var x;
-    var y;
-    for (var i = 0; i < coordinates.length; i++) {
-        x = coordinates[i][0];
-        y = coordinates[i][1];
-        for (var k = 0; k < 100; k++) {
-            allcoords[Math.floor(x/8)][Math.floor(y/8)][k] += 1;
-        }
-    }
-    console.table(allcoords);
-    // for (var i = 0; i < 800; i += 8) {
-    //     for (var j = 0; j < 400; j += 8) {
-    //         pixel = ctx.getImageData(i, j, 1, 1);
-    //         if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
-    //             for (var k = 0; k < 800; k += 8) {
-    //                 allcoords[Math.round(i/8)][Math.round(j/8)][Math.round(k/8)] += 1;
-    //             }
-    //         }
+    // var x;
+    // var y;
+    // for (var i = 0; i < coordinates.length; i++) {
+    //     x = coordinates[i][0];
+    //     y = coordinates[i][1];
+    //     for (var k = 0; k < 100; k++) {
+    //         allcoords[Math.floor(x/8)][Math.floor(y/8)][k] += 1;
     //     }
     // }
+
+    for (var i = 0; i < 800; i += 8) {
+        for (var j = 0; j < 400; j += 8) {
+            pixel = ctx.getImageData(i, j, 1, 1);
+            if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
+                for (var k = 0; k < 100; k++) {
+                    allcoords[Math.round(i/8)][Math.round(j/8)][k] += 1;
+                }
+            }
+        }
+    }
 }
 
 initialize();
