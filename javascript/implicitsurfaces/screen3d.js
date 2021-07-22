@@ -1,7 +1,3 @@
-// const { SolidParticle } = require("babylonjs/Particles/solidParticle");
-// const { SolidParticleSystem } = require("babylonjs/Particles/solidParticleSystem");
-// import * as BABYLON from 'babylonjs';
-
 var createScene = function () {
     var scene = new BABYLON.Scene(engine);
 
@@ -68,6 +64,7 @@ var blue = new BABYLON.StandardMaterial("bluematerial", scene);
 blue.diffuseColor = new BABYLON.Color3(0, 0, 1);
 var red = new BABYLON.StandardMaterial("redmaterial", scene);
 red.diffuseColor = new BABYLON.Color3(1, 0, 0);
+red.backFaceCulling = false;
 var green = new BABYLON.StandardMaterial("greenmaterial", scene);
 green.diffuseColor = new BABYLON.Color3(0, 1, 0);
 var black = new BABYLON.StandardMaterial("blackmaterial", scene);
@@ -82,36 +79,7 @@ var createpoint = function (x, y, z) {
 }
 
 var createmesh = function() {
-    // for (var i = 0; i < scene.meshes.length; i++) {
-    //     scene.meshes[i].dispose();
-    // }
-    // const SPS = new BABYLON.SolidParticleSystem("SPS", scene);
-    // const sphere = BABYLON.MeshBuilder.CreateSphere("s", {});
-    // const poly = BABYLON.MeshBuilder.CreatePolyhedron("p", { type: 2 });
-    // SPS.addShape(sphere, 20); // 20 spheres
-    // SPS.addShape(poly, 120); // 120 polyhedrons
-    // SPS.addShape(sphere, 80); // 80 other spheres
-    // sphere.dispose(); //dispose of original model sphere
-    // poly.dispose(); //dispose of original model poly
-
-    // const mesh = SPS.buildMesh(); // finally builds and displays the SPS mesh
-
-    // // initiate particles function
-    // SPS.initParticles = () => {
-    //     for (let p = 0; p < SPS.nbParticles; p++) {
-    //         const particle = SPS.particles[p];
-    //   	    particle.position.x = BABYLON.Scalar.RandomRange(-50, 50);
-    //         particle.position.y = BABYLON.Scalar.RandomRange(-50, 50);
-    //         particle.position.z = BABYLON.Scalar.RandomRange(-50, 50);
-    //     }
-    // };
-
-    // //Update SPS mesh
-    // SPS.initParticles();
-    // SPS.setParticles();
-
     const SPS = new BABYLON.SolidParticleSystem("SPS", scene, {expandable: true, useModelMaterial: true});
-    // const cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 0.00001}, scene);
     const poly = BABYLON.MeshBuilder.CreatePolyhedron("p", {type: 2, size: 0.05});
 
     SPS.addShape(poly, 70000);
@@ -123,7 +91,6 @@ var createmesh = function() {
     var z = 0;
     var done = false;
 
-
     SPS.mesh.hasVertexAlpha = true;
 
     SPS.initParticles = () => {
@@ -131,23 +98,15 @@ var createmesh = function() {
         for (var i = 0; i < 100; i++) {
             for (var j = 0; j < 50; j++) {
                 for (var k = 0; k < 100; k++) {
-                    if (allcoords[i][j][k] > 0 && p < 70000) {
+                    if (allcoords[i][j][k] == 2 && p < 70000) {
                         const particle = SPS.particles[p];
-                        if (allcoords[i][j][k] == 1) {
-                            particle.color.a = 0.05;
-                            particle.materialIndex = 0;
-                        }
-                        else {
-                            particle.color.a = 1;
-                            particle.materialIndex = 1;
-                        }
-
-
+                        particle.color.a = 1;
+                        particle.materialIndex = 1;
                         particle.position.x = -8 * i / 70;
                         particle.position.y = -8 * j / 70;
                         particle.position.z = 8 * k / 70;
                         p++;
-                        console.log(particle.position.x + " " + particle.position.y + " " + particle.position.z + " " + p);
+                        // console.log(particle.position.x + " " + particle.position.y + " " + particle.position.z + " " + p);
                     }
                 }
             }
@@ -157,11 +116,6 @@ var createmesh = function() {
         //     const removed = SPS.removeParticles(p + 1, SPS.nbParticles - 1);
         // }
     };
-
-
-
-
-    // console.table(allcoords);
 
     SPS.initParticles();
     SPS.setParticles();
@@ -200,47 +154,6 @@ engine.runRenderLoop(function() {
         box.material = material;
         box.isPickable = false;
         sideextrude.isPickable = false;
-
-        // var dir = new BABYLON.Vector3(-1, 0, 0);
-        // // out = BABYLON.Vector3.TransformCoordinates(out, box.getWorldMatrix());
-        // // var dir = out.subtract(box.position);
-        // var ray = new BABYLON.Ray(box.position, dir, 10);
-        // // var rayHelper = new BABYLON.RayHelper(ray);
-		// // rayHelper.show(scene);
-        // var hit = scene.multiPickWithRay(ray);
-        // if (hit) {
-        //     for (var i = 0; i < hit.length; i++) {
-        //         if (hit[i].pickedMesh.id == "extruded") {
-        //             var collision = BABYLON.MeshBuilder.CreateBox("collision", {size: 0.1}, scene);
-
-        //             // var clone = collision.clone("clone");
-        //             collision.position = hit[i].pickedPoint;
-        //             collision.material = red;
-        //             intersection.push(collision.position.x, collision.position.y, collision.position.z);
-        //         }
-        //     }
-
-            /** WORKING ON THIS !! fix the mesh basically, make mesh from points
-             * - https://doc.babylonjs.com/divingDeeper/particles/point_cloud_system/pcs_creation#add-surface--volume-points
-             * - try and simplify and clone instead so less laggy? https://blog.raananweber.com/2015/09/03/scene-optimization-in-babylon-js/
-             * - https://doc.babylonjs.com/divingDeeper/mesh/creation/custom/updatingVertices
-             */
-
-            // make mesh
-            // for (var i = 0; i < intersection.length; i += 3) {
-            //     indices.push(i/3);
-            // }
-            // var mesh = new BABYLON.Mesh("intersected", scene);
-            // var vertex = new BABYLON.VertexData();
-            // vertex.positions = intersection;
-            // vertex.indices = indices;
-            // vertex.applyToMesh(mesh, true);
-
-            // var pcs = new BABYLON.PointsCloudSystem("pcs", 1, scene);
-            // pcs.addSurfacePoints(mesh, 1000, BABYLON.PointColor.Stated, new BABYLON.Color3(1, 0, 0));
-            // pcs.buildMeshAsync().then(() => mesh.dispose());
-        // }
-
         numshapes2++;
     }
 

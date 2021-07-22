@@ -38,11 +38,29 @@
     #sculpting {
       border: 1px solid blueviolet;
       margin-top: 20px;
+      position: relative;
+      height: 390px;
+      width: 800px;
+    }
+
+    #sculpting canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    /* canvas {
       vertical-align: bottom;
+    } */
+
+    #hintlayer {
+      z-index: 1;
+      background: transparent;
     }
 
     #canvas2 {
-      vertical-align: bottom;
+      z-index: 2;
+      background: transparent;
     }
 
   </style>
@@ -62,6 +80,7 @@
 
   <div id="sculpting" class="drawing">
     <canvas id="canvas2" height="390" width="800"></canvas>
+    <canvas id="hintlayer" height="390" width="800"></canvas>
     <script src="../javascript/implicitsurfaces/screen2.js"></script>
   </div>
 

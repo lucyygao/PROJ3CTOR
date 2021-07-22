@@ -11,20 +11,6 @@ var timer = 0;
 // 800 x 400 x 800 - divide all by 8
 function initialize() {
     allcoords = Array(100).fill().map(() => Array(50).fill().map(() => Array(100).fill(0)));
-
-
-    // var x = [];
-    // var y = [];
-    // var z = [];
-    // for (var i = 0; i < 100; i++) {
-    //     z.push(0);
-    // }
-    // for (var i = 0; i < 50; i++) {
-    //     y.push(z.slice());
-    // }
-    // for (var i = 0; i < 100; i++) {
-    //     allcoords.push(y.slice());
-    // }
     console.table(allcoords);
     console.log("reet");
 }
@@ -105,7 +91,7 @@ function done(e) {
     ctx.closePath();
     ctx.fill();
     drawing = false;
-    // mirror();
+    mirror();
     // finddrawbounds();
     updatecoords();
 }

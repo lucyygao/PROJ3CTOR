@@ -1,6 +1,6 @@
 var canvas2 = document.getElementById('canvas2');
 var ctx2 = canvas2.getContext('2d');
-var hint = canvas2.getContext('2d');
+var hint = hintlayer.getContext('2d');
 var coordinates2 = [];
 var drawing2 = false;
 var timer2 = 0;
@@ -34,6 +34,8 @@ function sculptclicked(e) {
         }
         // drawCoordinates(x, y);
         // ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+
+        // draw layer
         ctx2.moveTo(x, y);
         ctx2.strokeStyle = 'black';
         ctx2.fillStyle = 'blueviolet';
@@ -41,6 +43,15 @@ function sculptclicked(e) {
         ctx2.beginPath();
         ctx2.lineTo(x, y);
         ctx2.stroke();
+
+        // hint layer
+        // hint.moveTo(x, y);
+        // hint.strokeStyle = 'black';
+        // hint.fillStyle = 'blueviolet';
+        // hint.lineWidth = 1;
+        // hint.beginPath();
+        // hint.lineTo(x, y);
+        // hint.stroke();
     }
 }
 
@@ -68,11 +79,15 @@ function sculptmoved(e) {
                 done2(e);
                 ctx2.moveTo(x, y);
                 ctx2.beginPath();
+                // hint.moveTo(x, y);
+                // hint.beginPath();
                 wasoutside2 = false;
             }
             else {
                 ctx2.lineTo(x, y);
                 ctx2.stroke();
+                // hint.lineTo(x, y);
+                // hint.stroke();
                 // ctx2.moveTo(x, y);
             }
             // add to coordinates array
@@ -89,6 +104,8 @@ function sculptmoved(e) {
 function sculptdone(e) {
     ctx2.closePath();
     ctx2.fill();
+    // hint.closePath();
+    // hint.fill();
     drawing2 = false;
     // findsculptbounds();
     sculptupdatecoords();
@@ -107,12 +124,19 @@ function sculptdraw() {
     ctx2.beginPath();
     ctx2.strokeStyle = 'black';
     ctx2.lineWidth = 1;
+    // hint.beginPath();
+    // hint.strokeStyle = 'black';
+    // hint.lineWidth = 1;
     for (var j = 0; j < coordinates2.length; j++) {
         ctx2.moveTo(coordinates2[j][0], coordinates2[j][1]);
         ctx2.lineTo(coordinates2[j + 1][0], coordinates2[j + 1][1]);
         ctx2.stroke();
+        // hint.moveTo(coordinates2[j][0], coordinates2[j][1]);
+        // hint.lineTo(coordinates2[j + 1][0], coordinates2[j + 1][1]);
+        // hint.stroke();
     }
     ctx2.closePath();
+    // hint.closePath();
 }
 
 // function findsculptbounds() {
@@ -194,9 +218,13 @@ function mirror() {
     hint.closePath();
 }
 
-// mouse clicks will draw points
+// mouse clicks will draw
 canvas2.addEventListener("mousedown", sculptclicked);
 canvas2.addEventListener("mousemove", sculptmoved);
 canvas2.addEventListener("mouseup", sculptdone);
+
+// hintlayer.addEventListener("mousedown", sculptclicked);
+// hintlayer.addEventListener("mousemove", sculptmoved);
+// hintlayer.addEventListener("mouseup", sculptdone);
 
 sculptdraw();
