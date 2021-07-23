@@ -130,7 +130,7 @@ function updatecoords() {
             pixel = ctx.getImageData(i, j, 1, 1);
             if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
                 for (var k = 0; k < 100; k++) {
-                    allcoords[Math.round(i/8)][Math.round(j/8)][k] += 1;
+                    allcoords[Math.round(i/8)][Math.round(j/8)][k] = 1;
                 }
             }
         }

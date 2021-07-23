@@ -67,43 +67,79 @@ red.diffuseColor = new BABYLON.Color3(1, 0, 0);
 red.backFaceCulling = false;
 
 var createpointcloud = function() {
-    var pcs = new BABYLON.PointsCloudSystem("pcs", 1, scene);
-    pcs.addPoints(10000);
-    // pcs.initParticles = function() {
-    //     for (var p = 0; p < pcs.nbParticles; p++) {
-    //         pcs.particles[p].velocity = BABYLON.Vector3.Zero();
-    //         pcs.particles[p].acceleration = pcs.particles[p].position.scale(0.01);
-    //     }
-    //  }
-
-    //  pcs.addSurfacePoints(model, 10000, BABYLON.PointColor.Color);
-    //  pcs.buildMeshAsync().then(() => {
-    //    model.dispose()
-    //    pcs.initParticles();
-    //    pcs.setParticles();
-    //  });
-
-     pcs.initParticles = function() {
+    var pcs = new BABYLON.PointsCloudSystem("pcs", 3, scene, {updatable: true});
+    pcs.addPoints(20000);
+    pcs.computeBoundingBox = true;
+    pcs.initParticles = function() {
         var p = 0;
         for (var i = 0; i < 100; i++) {
             for (var j = 0; j < 50; j++) {
                 for (var k = 0; k < 100; k++) {
-                    if (allcoords[i][j][k] == 2 && p < 50000) {
+                    if (allcoords[i][j][k] == 2 && p < pcs.nbParticles && isedge(i, j, k)) {
                         const particle = pcs.particles[p];
                         particle.position.x = -8 * i / 70;
                         particle.position.y = -8 * j / 70;
                         particle.position.z = 8 * k / 70;
+                        particle.color = new BABYLON.Color4(Math.random()/2 + 0.5, 0, 0, 1);
                         p++;
                         // console.log(particle.position.x + " " + particle.position.y + " " + particle.position.z + " " + p);
                     }
                 }
             }
         }
+
+        // make the rest invisible
+        for (var n = p; n < pcs.nbParticles; n++) {
+            const extra = pcs.particles[n];
+            extra.color = new BABYLON.Color4(0, 0, 0, 0);
+        }
     }
     pcs.buildMeshAsync().then(() => {
         pcs.initParticles();
+        // pcs.buildMeshAsync();
         pcs.setParticles();
+
     });
+}
+
+var isedge = function(i, j, k) {
+    // check i values
+    if (i > 0) {
+        if (allcoords[i - 1][j][k] != 2) {
+            return true;
+        }
+    }
+    if (i < 99) {
+        if (allcoords[i + 1][j][k] != 2) {
+            return true;
+        }
+    }
+
+    // check j
+    if (j > 0) {
+        if (allcoords[i][j - 1][k] != 2) {
+            return true;
+        }
+    }
+    if (j < 49) {
+        if (allcoords[i][j + 1][k] != 2) {
+            return true;
+        }
+    }
+
+    // check k
+    if (k > 0) {
+        if (allcoords[i][j][k - 1] != 2) {
+            return true;
+        }
+    }
+    if (k < 99) {
+        if (allcoords[i][j][k + 1] != 2) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 var createmesh = function() {
