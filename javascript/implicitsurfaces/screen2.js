@@ -109,9 +109,8 @@ function sculptdone(e) {
     drawing2 = false;
     // findsculptbounds();
     sculptupdatecoords();
-    console.table(allcoords);
-    console.log("beet");
-    createmesh();
+    createpointcloud();
+    // createmesh();
 }
 
 function sculptdraw() {

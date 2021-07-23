@@ -60,29 +60,57 @@ var sidepath = [
 var material = new BABYLON.StandardMaterial("material", scene);
 material.backFaceCulling = false;
 material.wireframe = true;
-var blue = new BABYLON.StandardMaterial("bluematerial", scene);
-blue.diffuseColor = new BABYLON.Color3(0, 0, 1);
+// var blue = new BABYLON.StandardMaterial("bluematerial", scene);
+// blue.diffuseColor = new BABYLON.Color3(0, 0, 1);
 var red = new BABYLON.StandardMaterial("redmaterial", scene);
 red.diffuseColor = new BABYLON.Color3(1, 0, 0);
 red.backFaceCulling = false;
-var green = new BABYLON.StandardMaterial("greenmaterial", scene);
-green.diffuseColor = new BABYLON.Color3(0, 1, 0);
-var black = new BABYLON.StandardMaterial("blackmaterial", scene);
-black.diffuseColor = new BABYLON.Color3(0, 0, 0);
 
-var createpoint = function (x, y, z) {
-    var point = BABYLON.MeshBuilder.CreateBox("point", {size: 1}, scene);
-    point.position.x = -1 * x/70;
-    point.position.y = -1 * y/70;
-    point.position.z = z/70;
-    return point;
+var createpointcloud = function() {
+    var pcs = new BABYLON.PointsCloudSystem("pcs", 1, scene);
+    pcs.addPoints(10000);
+    // pcs.initParticles = function() {
+    //     for (var p = 0; p < pcs.nbParticles; p++) {
+    //         pcs.particles[p].velocity = BABYLON.Vector3.Zero();
+    //         pcs.particles[p].acceleration = pcs.particles[p].position.scale(0.01);
+    //     }
+    //  }
+
+    //  pcs.addSurfacePoints(model, 10000, BABYLON.PointColor.Color);
+    //  pcs.buildMeshAsync().then(() => {
+    //    model.dispose()
+    //    pcs.initParticles();
+    //    pcs.setParticles();
+    //  });
+
+     pcs.initParticles = function() {
+        var p = 0;
+        for (var i = 0; i < 100; i++) {
+            for (var j = 0; j < 50; j++) {
+                for (var k = 0; k < 100; k++) {
+                    if (allcoords[i][j][k] == 2 && p < 50000) {
+                        const particle = pcs.particles[p];
+                        particle.position.x = -8 * i / 70;
+                        particle.position.y = -8 * j / 70;
+                        particle.position.z = 8 * k / 70;
+                        p++;
+                        // console.log(particle.position.x + " " + particle.position.y + " " + particle.position.z + " " + p);
+                    }
+                }
+            }
+        }
+    }
+    pcs.buildMeshAsync().then(() => {
+        pcs.initParticles();
+        pcs.setParticles();
+    });
 }
 
 var createmesh = function() {
     const SPS = new BABYLON.SolidParticleSystem("SPS", scene, {expandable: true, useModelMaterial: true});
     const poly = BABYLON.MeshBuilder.CreatePolyhedron("p", {type: 2, size: 0.05});
-
-    SPS.addShape(poly, 70000);
+    poly.material = red;
+    SPS.addShape(poly, 50000);
     const mesh = SPS.buildMesh();
     const count = 0;
 
@@ -98,10 +126,8 @@ var createmesh = function() {
         for (var i = 0; i < 100; i++) {
             for (var j = 0; j < 50; j++) {
                 for (var k = 0; k < 100; k++) {
-                    if (allcoords[i][j][k] == 2 && p < 70000) {
+                    if (allcoords[i][j][k] == 2 && p < 50000) {
                         const particle = SPS.particles[p];
-                        particle.color.a = 1;
-                        particle.materialIndex = 1;
                         particle.position.x = -8 * i / 70;
                         particle.position.y = -8 * j / 70;
                         particle.position.z = 8 * k / 70;
@@ -112,15 +138,15 @@ var createmesh = function() {
             }
         }
         // clean up remaining particles
-        // if (SPS.nbParticles > p) {
-        //     const removed = SPS.removeParticles(p + 1, SPS.nbParticles - 1);
-        // }
+        if (SPS.nbParticles > p) {
+            console.log(p + " " + SPS.nbParticles);
+            const removed = SPS.removeParticles(p, SPS.nbParticles - 1);
+        }
     };
 
     SPS.initParticles();
+    SPS.buildMesh();
     SPS.setParticles();
-    // SPS.buildMesh();
-    SPS.setMultiMaterial([blue, red, green, black]);
     poly.dispose();
 }
 
