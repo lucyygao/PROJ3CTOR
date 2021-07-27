@@ -177,12 +177,12 @@ function sculptupdatecoords() {
     //     }
     // }
 
-    for (var i = 0; i < 800; i += 8) {
-        for (var j = 0; j < 400; j += 8) {
-            pixel = ctx2.getImageData(i, j, 1, 1);
+    for (var i = 0; i < 100; i++) {
+        for (var j = 0; j < 50; j++) {
+            pixel = ctx2.getImageData(i*8, j*8, 1, 1);
             if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
                 for (var k = 0; k < 100; k++) {
-                    allcoords[k][Math.round(j/8)][Math.round(i/8)] += 1;
+                    allcoords[k][j][i] += 1;
                 }
             }
         }

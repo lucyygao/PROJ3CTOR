@@ -83,7 +83,7 @@ var createpointcloud = function() {
                         particle.position.x = -8 * i / 70;
                         particle.position.y = -8 * j / 70;
                         particle.position.z = 8 * k / 70;
-                        particle.color = new BABYLON.Color4(Math.random()/2 + 0.5, 0, 0, 1);
+                        particle.color = new BABYLON.Color4((50-j)/50, 0, 0, 1);
                         p++;
                         // console.log(particle.position.x + " " + particle.position.y + " " + particle.position.z + " " + p);
                     }
