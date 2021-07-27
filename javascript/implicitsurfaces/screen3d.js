@@ -72,9 +72,12 @@ var createpointcloud = function() {
     pcs.computeBoundingBox = true;
     pcs.initParticles = function() {
         var p = 0;
+
+        // go through allcoords matrix to find particle positions
         for (var i = 0; i < 100; i++) {
             for (var j = 0; j < 50; j++) {
                 for (var k = 0; k < 100; k++) {
+                    // must have value of 2 (double intersection) and on the surface
                     if (allcoords[i][j][k] == 2 && p < pcs.nbParticles && isedge(i, j, k)) {
                         const particle = pcs.particles[p];
                         particle.position.x = -8 * i / 70;
@@ -88,15 +91,17 @@ var createpointcloud = function() {
             }
         }
 
-        // make the rest invisible
+        // make the remaining particles infinite distance away and the same color as background
         for (var n = p; n < pcs.nbParticles; n++) {
             const extra = pcs.particles[n];
-            extra.color = new BABYLON.Color4(0, 0, 0, 0);
+            extra.position.x = Infinity;
+            extra.position.y = Infinity;
+            extra.position.z = Infinity;
+            extra.color = new BABYLON.Color4(0.2, 0.2, 0.3, 1);
         }
     }
     pcs.buildMeshAsync().then(() => {
         pcs.initParticles();
-        // pcs.buildMeshAsync();
         pcs.setParticles();
 
     });
