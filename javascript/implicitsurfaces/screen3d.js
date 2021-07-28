@@ -60,14 +60,12 @@ var sidepath = [
 var material = new BABYLON.StandardMaterial("material", scene);
 material.backFaceCulling = false;
 material.wireframe = true;
-// var blue = new BABYLON.StandardMaterial("bluematerial", scene);
-// blue.diffuseColor = new BABYLON.Color3(0, 0, 1);
 var red = new BABYLON.StandardMaterial("redmaterial", scene);
 red.diffuseColor = new BABYLON.Color3(1, 0, 0);
 red.backFaceCulling = false;
 
 var createpointcloud = function() {
-    var pcs = new BABYLON.PointsCloudSystem("pcs", 3, scene, {updatable: true});
+    var pcs = new BABYLON.PointsCloudSystem("pcs", 5, scene, {updatable: true});
     pcs.addPoints(20000);
     pcs.computeBoundingBox = true;
     pcs.initParticles = function() {
@@ -85,7 +83,6 @@ var createpointcloud = function() {
                         particle.position.z = 8 * k / 70;
                         particle.color = new BABYLON.Color4((50-j)/50, 0, 0, 1);
                         p++;
-                        // console.log(particle.position.x + " " + particle.position.y + " " + particle.position.z + " " + p);
                     }
                 }
             }
@@ -147,19 +144,13 @@ var isedge = function(i, j, k) {
     return false;
 }
 
+// SOLID PARTICLE SYSTEM VERSION -- CURRENTLY NOT USED, LAGGY BECAUSE TOO MANY PARTICLES
 var createmesh = function() {
     const SPS = new BABYLON.SolidParticleSystem("SPS", scene, {expandable: true, useModelMaterial: true});
     const poly = BABYLON.MeshBuilder.CreatePolyhedron("p", {type: 2, size: 0.05});
     poly.material = red;
     SPS.addShape(poly, 50000);
     const mesh = SPS.buildMesh();
-    const count = 0;
-
-    var x = 0;
-    var y = 0;
-    var z = 0;
-    var done = false;
-
     SPS.mesh.hasVertexAlpha = true;
 
     SPS.initParticles = () => {
@@ -173,7 +164,6 @@ var createmesh = function() {
                         particle.position.y = -8 * j / 70;
                         particle.position.z = 8 * k / 70;
                         p++;
-                        // console.log(particle.position.x + " " + particle.position.y + " " + particle.position.z + " " + p);
                     }
                 }
             }
@@ -192,7 +182,7 @@ var createmesh = function() {
 }
 
 engine.runRenderLoop(function() {
-    if (timer > 0 && coordinates.length > numshapes) {
+    if (coordinates.length > numshapes) {
         var cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 0.2}, scene);
         cube.position.x = -1 * coordinates[coordinates.length - 1][0] / 70;
         cube.position.y = -1 * coordinates[coordinates.length - 1][1] / 70;
@@ -207,7 +197,7 @@ engine.runRenderLoop(function() {
 
         numshapes++;
     }
-    if (timer2 > 0 && coordinates2.length > numshapes2) {
+    if (coordinates2.length > numshapes2) {
         var box = BABYLON.MeshBuilder.CreateBox("box", {size: 0.2}, scene);
         box.position.z = coordinates2[coordinates2.length - 1][0] / 70;
         box.position.y = -1 * coordinates2[coordinates2.length - 1][1] / 70;
