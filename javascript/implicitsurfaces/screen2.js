@@ -132,6 +132,6 @@ function mirror() {
 }
 
 // mouse clicks will draw
-canvas2.addEventListener("mousedown", sculptclicked);
-canvas2.addEventListener("mousemove", sculptmoved);
-canvas2.addEventListener("mouseup", sculptdone);
+canvas2.addEventListener("pointerdown", sculptclicked);
+canvas2.addEventListener("pointermove", sculptmoved);
+canvas2.addEventListener("pointerup", sculptdone);

@@ -66,7 +66,7 @@ red.backFaceCulling = false;
 
 var createpointcloud = function() {
     var pcs = new BABYLON.PointsCloudSystem("pcs", 5, scene, {updatable: true});
-    pcs.addPoints(20000);
+    pcs.addPoints(60000);
     pcs.computeBoundingBox = true;
     pcs.initParticles = function() {
         var p = 0;
@@ -100,7 +100,7 @@ var createpointcloud = function() {
     pcs.buildMeshAsync().then(() => {
         pcs.initParticles();
         pcs.setParticles();
-
+        pcs.mesh.material.pointsCloud = true;
     });
 }
 

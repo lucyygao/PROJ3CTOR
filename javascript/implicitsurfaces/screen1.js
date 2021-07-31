@@ -92,6 +92,6 @@ function updatecoords() {
 
 initialize();
 // mouse clicks will draw points
-canvas.addEventListener("mousedown", clicked);
-canvas.addEventListener("mousemove", moved);
-canvas.addEventListener("mouseup", done);
+canvas.addEventListener("pointerdown", clicked);
+canvas.addEventListener("pointermove", moved);
+canvas.addEventListener("pointerup", done);
