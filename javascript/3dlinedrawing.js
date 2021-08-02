@@ -124,15 +124,20 @@ engine.runRenderLoop(function() {
             for (var i = 0; i < intersection.length; i += 3) {
                 indices.push(i/3);
             }
+
+            var normals = [];
+            BABYLON.VertexData.ComputeNormals(intersection, indices, normals);
+
             var mesh = new BABYLON.Mesh("intersected", scene);
             var vertex = new BABYLON.VertexData();
             vertex.positions = intersection;
             vertex.indices = indices;
+            vertex.normals = normals;
             vertex.applyToMesh(mesh, true);
 
-            var pcs = new BABYLON.PointsCloudSystem("pcs", 1, scene);
-            pcs.addSurfacePoints(mesh, 1000, BABYLON.PointColor.Stated, new BABYLON.Color3(1, 0, 0));
-            pcs.buildMeshAsync().then(() => mesh.dispose());
+            // var pcs = new BABYLON.PointsCloudSystem("pcs", 1, scene);
+            // pcs.addSurfacePoints(mesh, 1000, BABYLON.PointColor.Stated, new BABYLON.Color3(1, 0, 0));
+            // pcs.buildMeshAsync().then(() => mesh.dispose());
         }
 
         numshapes2++;

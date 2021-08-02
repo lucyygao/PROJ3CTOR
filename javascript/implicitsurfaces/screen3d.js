@@ -47,8 +47,6 @@ var numshapes2 = 0;
 var timer = 0;
 var frontshape = [];
 var sideshape = [];
-var intersection = [];
-var indices = [];
 var frontpath = [
     new BABYLON.Vector3(0, 0, 0),
     new BABYLON.Vector3(0, 0, 800/70)
@@ -64,8 +62,13 @@ var red = new BABYLON.StandardMaterial("redmaterial", scene);
 red.diffuseColor = new BABYLON.Color3(1, 0, 0);
 red.backFaceCulling = false;
 
+
 var createpointcloud = function() {
-    var pcs = new BABYLON.PointsCloudSystem("pcs", 5, scene, {updatable: true});
+    var positions = [];
+    var indices = [];
+
+
+    var pcs = new BABYLON.PointsCloudSystem("pcs", 7, scene, {updatable: true});
     pcs.addPoints(60000);
     pcs.computeBoundingBox = true;
     pcs.initParticles = function() {
@@ -83,6 +86,14 @@ var createpointcloud = function() {
                         particle.position.z = 8 * k / 70;
                         particle.color = new BABYLON.Color4((50-j)/50, 0, 0, 1);
                         p++;
+
+                        if (p % 10 == 0) {
+                            positions.push(-1 * i);
+                            positions.push(-1 * j);
+                            positions.push(k);
+                            indices.push(p);
+                        }
+
                     }
                 }
             }
@@ -97,10 +108,50 @@ var createpointcloud = function() {
             extra.color = new BABYLON.Color4(0.2, 0.2, 0.3, 1);
         }
     }
+
+    var customMesh = new BABYLON.Mesh("custom", scene);
+
+    // var positions = [-5, 2, -3, -7, -2, -3, -3, -2, -3, 5, 2, 3, 7, -2, 3, 3, -2, 3];
+    // var indices = [0, 1, 2, 3, 4, 5];
+
+    //Empty array to contain calculated values or normals added
+    var normals = [];
+
+    //Calculations of normals added
+    BABYLON.VertexData.ComputeNormals(positions, indices, normals);
+
+    var vertexData = new BABYLON.VertexData();
+
+    vertexData.positions = positions;
+    vertexData.indices = indices;
+    vertexData.normals = normals; //Assignment of normal to vertexData added
+
+    vertexData.applyToMesh(customMesh);
+    customMesh.material = material;
+
+    // var normals = [];
+    // var customMesh = new BABYLON.Mesh("custom", scene);
+    // BABYLON.VertexData.ComputeNormals(positions, indices, normals);
+    // var vertexData = new BABYLON.VertexData();
+    // vertexData.positions = positions;
+    // vertexData.indices = indices;
+    // vertexData.normals = normals; //Assignment of normal to vertexData added
+    // vertexData.applyToMesh(customMesh, true);
+
+    console.log(positions);
+    console.log(indices);
+    console.log(normals);
+
+    pcs.updateParticle = function (particle) {
+        particle.rotation.x = normals[particle.idx*3];
+        particle.rotation.y = normals[particle.idx*3 + 1];
+        particle.rotation.z = normals[particle.idx*3 + 2];
+    };
+
     pcs.buildMeshAsync().then(() => {
         pcs.initParticles();
         pcs.setParticles();
-        pcs.mesh.material.pointsCloud = true;
+        pcs.mesh.forceSharedVertices();
     });
 }
 
