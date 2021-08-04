@@ -8,6 +8,16 @@ var createScene = function () {
     camera.setTarget(new BABYLON.Vector3(-400/70, -400/70, 0));
     light.intensity = 0.7;
 
+    // Skybox
+	var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:1000.0}, scene);
+	var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+	skyboxMaterial.backFaceCulling = false;
+	skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("../textures/skybox", scene);
+	skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+	skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+	skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+	skybox.material = skyboxMaterial;
+
     // GUI
     var UI = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
     var button = BABYLON.GUI.Button.CreateSimpleButton("button", "Wireframe");
@@ -62,12 +72,22 @@ var red = new BABYLON.StandardMaterial("redmaterial", scene);
 red.diffuseColor = new BABYLON.Color3(1, 0, 0);
 red.backFaceCulling = false;
 
+var shapeMaterial = new BABYLON.StandardMaterial("shapeMaterial", scene);
+shapeMaterial.reflectionTexture = new BABYLON.CubeTexture("../textures/skybox", scene);
+shapeMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.CUBIC_MODE;
+shapeMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+shapeMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+
+
+var positions = [];
+var indices = [];
+var normals = [];
+var lines = [];
+
+var allpoints = new Map();
+
 
 var createpointcloud = function() {
-    var positions = [];
-    var indices = [];
-
-
     var pcs = new BABYLON.PointsCloudSystem("pcs", 7, scene, {updatable: true});
     pcs.addPoints(60000);
     pcs.computeBoundingBox = true;
@@ -87,13 +107,33 @@ var createpointcloud = function() {
                         particle.color = new BABYLON.Color4((50-j)/50, 0, 0, 1);
                         p++;
 
-                        if (p % 10 == 0) {
-                            positions.push(-1 * i);
-                            positions.push(-1 * j);
-                            positions.push(k);
-                            indices.push(p);
+                        // positions.push(particle.position.x, particle.position.y, particle.position.z);
+                        // indices.push(p);
+
+                        if (allpoints.has(k) == false) {
+                            var arr = [(i, j)];
+                            allpoints.set(k, arr);
+                        }
+                        else {
+                            allpoints.get(k).push((i, j));
                         }
 
+                        // compute normals to do rotations
+                        // if (allcoords[i - 1][j][k] == 2 && allcoords[i + 1][j][k] == 2) {
+                        //     normals.push(0, 0, 1);
+                        // }
+                        // else {
+                        //     if (allcoords[i][j - 1][k] == 2 && allcoords[i][j + 1][k] == 2) {
+                        //         normals.push(0, 0, 1);
+                        //     }
+                        //     else {
+                        //         if (allcoords[i][j][k - 1] == 2 && allcoords[i][j][k + 2] == 2) {
+                        //             normals.push(1, 0, 0);
+                        //         }
+                        //     }
+                        // }
+
+                        // console.log("liiines " + lines);
                     }
                 }
             }
@@ -109,50 +149,70 @@ var createpointcloud = function() {
         }
     }
 
+    console.table(allpoints);
+    var counter = 0;
+    var backwards = 0;
+    var hold = [];
+    console.log("bla");
+    for (let key of allpoints.keys()) {
+        hold = allpoints.get(key);
+        if (backwards % 2 == 0) {
+            console.log("ayo");
+            for (var index = 0; index < hold.length; index += 2) {
+                positions.push(hold[index], hold[index + 1], key);
+                indices.push(counter);
+                counter++;
+            }
+            backwards++;
+        }
+        else {
+            console.log("oya");
+            for (var index = hold.length; index < 0; index -= 2) {
+                positions.push(hold[index - 1], hold[index], key);
+                indices.push(counter);
+                counter++;
+            }
+            backwards++;
+        }
+    }
+
     var customMesh = new BABYLON.Mesh("custom", scene);
-
-    // var positions = [-5, 2, -3, -7, -2, -3, -3, -2, -3, 5, 2, 3, 7, -2, 3, 3, -2, 3];
-    // var indices = [0, 1, 2, 3, 4, 5];
-
-    //Empty array to contain calculated values or normals added
-    var normals = [];
-
-    //Calculations of normals added
     BABYLON.VertexData.ComputeNormals(positions, indices, normals);
-
     var vertexData = new BABYLON.VertexData();
-
     vertexData.positions = positions;
     vertexData.indices = indices;
     vertexData.normals = normals; //Assignment of normal to vertexData added
-
     vertexData.applyToMesh(customMesh);
-    customMesh.material = material;
+    customMesh.material = shapeMaterial;
+    customMesh.material.pointsCloud = true;
+    customMesh.material.pointSize = 10;
+    customMesh.material.backFaceCulling = false;
 
-    // var normals = [];
-    // var customMesh = new BABYLON.Mesh("custom", scene);
-    // BABYLON.VertexData.ComputeNormals(positions, indices, normals);
-    // var vertexData = new BABYLON.VertexData();
-    // vertexData.positions = positions;
-    // vertexData.indices = indices;
-    // vertexData.normals = normals; //Assignment of normal to vertexData added
-    // vertexData.applyToMesh(customMesh, true);
-
-    console.log(positions);
-    console.log(indices);
-    console.log(normals);
-
-    pcs.updateParticle = function (particle) {
-        particle.rotation.x = normals[particle.idx*3];
-        particle.rotation.y = normals[particle.idx*3 + 1];
-        particle.rotation.z = normals[particle.idx*3 + 2];
-    };
+    // var lines = [];
 
     pcs.buildMeshAsync().then(() => {
         pcs.initParticles();
         pcs.setParticles();
-        pcs.mesh.forceSharedVertices();
     });
+
+    // pcs.updateParticle = function (particle) {
+
+
+    //     particle.rotation.x = 0;
+    //     particle.rotation.y = 1;
+    //     particle.rotation.z = 0;
+    //     particle.rotation.x = lines[particle.idx*3];
+    //     particle.rotation.y = lines[particle.idx*3 + 1];
+    //     particle.rotation.z = lines[particle.idx*3 + 2];
+    // };
+
+}
+
+var calculatenormals = function(i, j, k, p) {
+    positions.push(-1 * i);
+    positions.push(-1 * j);
+    positions.push(k);
+    indices.push(p);
 }
 
 var isedge = function(i, j, k) {
