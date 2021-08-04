@@ -1,12 +1,23 @@
+var createbutton = function(left, top, word) {
+    var button = BABYLON.GUI.Button.CreateSimpleButton("button", word);
+    button.width = "150px";
+    button.height = "40px";
+    button.color = "white";
+    button.background = "gray";
+    button.left = left;
+    button.top = top;
+    return button;
+}
+
 var createScene = function () {
     var scene = new BABYLON.Scene(engine);
 
     // set camera and light
     const camera = new BABYLON.ArcRotateCamera("camera", Math.PI/2, Math.PI/2, 20, new BABYLON.Vector3(0, 0, 0));
     camera.attachControl(canvas, true);
-    const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0));
+    const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, -1, 0));
     camera.setTarget(new BABYLON.Vector3(-400/70, -400/70, 0));
-    light.intensity = 0.7;
+    light.intensity = 1;
 
     // Skybox
 	var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:1000.0}, scene);
@@ -20,32 +31,68 @@ var createScene = function () {
 
     // GUI
     var UI = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-    var button = BABYLON.GUI.Button.CreateSimpleButton("button", "Wireframe");
-    button.width = "150px";
-    button.height = "40px";
-    button.color = "white";
-    button.background = "gray";
-    button.left = "-280px";
-    button.top = "350px";
-    button.onPointerClickObservable.add(function() {
-        if (button.children[0].text == "Wireframe") {
-            button.children[0].text = "Solid";
+
+    // changing between wireframe, solid, and invisible mode
+    var style = createbutton("-290px", "350px", "Wireframe");
+    style.onPointerClickObservable.add(function() {
+        if (style.children[0].text == "Wireframe") {
+            style.children[0].text = "Solid";
             material.wireframe = false;
         }
         else {
-            if (button.children[0].text == "Solid") {
-                button.children[0].text = "Invisible";
+            if (style.children[0].text == "Solid") {
+                style.children[0].text = "Invisible";
                 material.alpha = 0;
             }
             else {
-                button.children[0].text = "Wireframe";
+                style.children[0].text = "Wireframe";
                 material.wireframe = true;
                 material.alpha = 1;
             }
         }
     });
 
-    UI.addControl(button);
+    // turning skybox on and off
+    var skybutton = createbutton("-110px", "350px", "Skybox");
+    skybutton.onPointerClickObservable.add(function() {
+        if (skybutton.children[0].text == "Skybox") {
+            skybutton.children[0].text = "No Skybox";
+            skybox.visibility = false;
+        }
+        else {
+            skybutton.children[0].text = "Skybox";
+            skybox.visibility = true;
+        }
+    });
+
+    // changing mesh material
+    var matbutton = createbutton("70px", "350px", "Gold");
+    matbutton.onPointerClickObservable.add(function() {
+        if (matbutton.children[0].text == "Gold") {
+            matbutton.children[0].text = "Blue";
+            cloud.material = blue;
+        }
+        else {
+            if (matbutton.children[0].text == "Blue") {
+                matbutton.children[0].text = "Red";
+                cloud.material = red;
+            }
+            else {
+                if (matbutton.children[0].text == "Red") {
+                    matbutton.children[0].text = "Silver";
+                    cloud.material = white;
+                }
+                else {
+                    matbutton.children[0].text = "Gold";
+                    cloud.material = pbr;
+                }
+            }
+        }
+    });
+
+    UI.addControl(style);
+    UI.addControl(skybutton);
+    UI.addControl(matbutton);
     return scene;
 };
 
@@ -55,6 +102,8 @@ var scene = createScene();
 var numshapes = 0;
 var numshapes2 = 0;
 var timer = 0;
+
+// extrusions
 var frontshape = [];
 var sideshape = [];
 var frontpath = [
@@ -65,154 +114,125 @@ var sidepath = [
     new BABYLON.Vector3(0, 0, 0),
     new BABYLON.Vector3(-800/70, 0, 0)
 ];
+
+// materials
 var material = new BABYLON.StandardMaterial("material", scene);
 material.backFaceCulling = false;
 material.wireframe = true;
 var red = new BABYLON.StandardMaterial("redmaterial", scene);
 red.diffuseColor = new BABYLON.Color3(1, 0, 0);
+red.pointsCloud = true;
+red.pointSize = 10;
 red.backFaceCulling = false;
+var blue = new BABYLON.StandardMaterial("bluematerial", scene);
+blue.pointsCloud = true;
+blue.pointSize = 10;
+blue.diffuseColor = new BABYLON.Color3(0, 0, 0.5);
+blue.backFaceCulling = false;
+var pbr = new BABYLON.PBRSpecularGlossinessMaterial("pbr", scene);
+pbr.diffuseColor = new BABYLON.Color3(1.0, 0.766, 0.336);
+pbr.specularColor = new BABYLON.Color3(1.0, 0.766, 0.336);
+pbr.glossiness = 1.0;
+pbr.environmentTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("../textures/environment.dds", scene);
 
-var shapeMaterial = new BABYLON.StandardMaterial("shapeMaterial", scene);
-shapeMaterial.reflectionTexture = new BABYLON.CubeTexture("../textures/skybox", scene);
-shapeMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.CUBIC_MODE;
-shapeMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-shapeMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+var silver = new BABYLON.PBRSpecularGlossinessMaterial("silver", scene);
+silver.diffuseColor = new BABYLON.Color3(1, 1, 1);
+silver.specularColor = new BABYLON.Color3(1, 1, 1);
+silver.glossiness = 1.0;
+silver.environmentTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("../textures/environment.dds", scene);
+silver.pointsCloud = true;
+silver.pointSize = 10;
+silver.backFaceCulling = false;
 
 
+
+// normals and mesh creation
+var cloud = new BABYLON.Mesh("cloud", scene);
 var positions = [];
 var indices = [];
 var normals = [];
-var lines = [];
-
-var allpoints = new Map();
-
 
 var createpointcloud = function() {
-    var pcs = new BABYLON.PointsCloudSystem("pcs", 7, scene, {updatable: true});
-    pcs.addPoints(60000);
-    pcs.computeBoundingBox = true;
-    pcs.initParticles = function() {
-        var p = 0;
-
-        // go through allcoords matrix to find particle positions
-        for (var i = 0; i < 100; i++) {
-            for (var j = 0; j < 50; j++) {
-                for (var k = 0; k < 100; k++) {
-                    // must have value of 2 (double intersection) and on the surface
-                    if (allcoords[i][j][k] == 2 && p < pcs.nbParticles && isedge(i, j, k)) {
-                        const particle = pcs.particles[p];
-                        particle.position.x = -8 * i / 70;
-                        particle.position.y = -8 * j / 70;
-                        particle.position.z = 8 * k / 70;
-                        particle.color = new BABYLON.Color4((50-j)/50, 0, 0, 1);
-                        p++;
-
-                        // positions.push(particle.position.x, particle.position.y, particle.position.z);
-                        // indices.push(p);
-
-                        if (allpoints.has(k) == false) {
-                            var arr = [(i, j)];
-                            allpoints.set(k, arr);
-                        }
-                        else {
-                            allpoints.get(k).push((i, j));
-                        }
-
-                        // compute normals to do rotations
-                        // if (allcoords[i - 1][j][k] == 2 && allcoords[i + 1][j][k] == 2) {
-                        //     normals.push(0, 0, 1);
-                        // }
-                        // else {
-                        //     if (allcoords[i][j - 1][k] == 2 && allcoords[i][j + 1][k] == 2) {
-                        //         normals.push(0, 0, 1);
-                        //     }
-                        //     else {
-                        //         if (allcoords[i][j][k - 1] == 2 && allcoords[i][j][k + 2] == 2) {
-                        //             normals.push(1, 0, 0);
-                        //         }
-                        //     }
-                        // }
-
-                        // console.log("liiines " + lines);
-                    }
+    var p = 0;
+    // go through allcoords matrix to find particle positions
+    for (var i = 0; i < 100; i++) {
+        for (var j = 0; j < 50; j++) {
+            for (var k = 0; k < 100; k++) {
+                // must have value of 2 (double intersection) and on the surface
+                if (allcoords[i][j][k] == 2 && isedge(i, j, k)) {
+                    positions.push(-8 * i / 70, -8 * j / 70,  8 * k / 70);
+                    indices.push(p);
+                    var norm = calculatenormal(i, j, k);
+                    normals.push(norm.x, norm.y, norm.z);
+                    p++;
                 }
             }
         }
-
-        // make the remaining particles infinite distance away and the same color as background
-        for (var n = p; n < pcs.nbParticles; n++) {
-            const extra = pcs.particles[n];
-            extra.position.x = Infinity;
-            extra.position.y = Infinity;
-            extra.position.z = Infinity;
-            extra.color = new BABYLON.Color4(0.2, 0.2, 0.3, 1);
-        }
     }
 
-    console.table(allpoints);
-    var counter = 0;
-    var backwards = 0;
-    var hold = [];
-    console.log("bla");
-    for (let key of allpoints.keys()) {
-        hold = allpoints.get(key);
-        if (backwards % 2 == 0) {
-            console.log("ayo");
-            for (var index = 0; index < hold.length; index += 2) {
-                positions.push(hold[index], hold[index + 1], key);
-                indices.push(counter);
-                counter++;
-            }
-            backwards++;
-        }
-        else {
-            console.log("oya");
-            for (var index = hold.length; index < 0; index -= 2) {
-                positions.push(hold[index - 1], hold[index], key);
-                indices.push(counter);
-                counter++;
-            }
-            backwards++;
-        }
-    }
-
-    var customMesh = new BABYLON.Mesh("custom", scene);
-    BABYLON.VertexData.ComputeNormals(positions, indices, normals);
     var vertexData = new BABYLON.VertexData();
     vertexData.positions = positions;
     vertexData.indices = indices;
-    vertexData.normals = normals; //Assignment of normal to vertexData added
-    vertexData.applyToMesh(customMesh);
-    customMesh.material = shapeMaterial;
-    customMesh.material.pointsCloud = true;
-    customMesh.material.pointSize = 10;
-    customMesh.material.backFaceCulling = false;
-
-    // var lines = [];
-
-    pcs.buildMeshAsync().then(() => {
-        pcs.initParticles();
-        pcs.setParticles();
-    });
-
-    // pcs.updateParticle = function (particle) {
+    vertexData.normals = normals;
+    vertexData.applyToMesh(cloud);
+    cloud.material = pbr;
+    cloud.material.pointsCloud = true;
+    cloud.material.pointSize = 10;
+    cloud.material.backFaceCulling = false;
 
 
-    //     particle.rotation.x = 0;
-    //     particle.rotation.y = 1;
-    //     particle.rotation.z = 0;
-    //     particle.rotation.x = lines[particle.idx*3];
-    //     particle.rotation.y = lines[particle.idx*3 + 1];
-    //     particle.rotation.z = lines[particle.idx*3 + 2];
-    // };
+    // var pcs = new BABYLON.PointsCloudSystem("pcs", 7, scene, {updatable: true});
+    // pcs.addPoints(60000);
+    // pcs.computeBoundingBox = true;
+    // pcs.initParticles = function() {
+    //     var p = 0;
 
+    //     // go through allcoords matrix to find particle positions
+    //     for (var i = 0; i < 100; i++) {
+    //         for (var j = 0; j < 50; j++) {
+    //             for (var k = 0; k < 100; k++) {
+    //                 // must have value of 2 (double intersection) and on the surface
+    //                 if (allcoords[i][j][k] == 2 && p < pcs.nbParticles && isedge(i, j, k)) {
+    //                     const particle = pcs.particles[p];
+    //                     particle.position.x = -8 * i / 70;
+    //                     particle.position.y = -8 * j / 70;
+    //                     particle.position.z = 8 * k / 70;
+    //                     particle.color = new BABYLON.Color4((50-j)/50, 0, 0, 1);
+    //                     p++;
+
+    //                     positions.push(particle.position.x, particle.position.y, particle.position.z);
+    //                     indices.push(p);
+    //                     var norm = calculatenormal(i, j, k);
+    //                     normals.push(norm.x, norm.y, norm.z);
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     // make the remaining particles infinite distance away and the same color as background
+    //     for (var n = p; n < pcs.nbParticles; n++) {
+    //         const extra = pcs.particles[n];
+    //         extra.position.x = Infinity;
+    //         extra.position.y = Infinity;
+    //         extra.position.z = Infinity;
+    //         extra.color = new BABYLON.Color4(0.2, 0.2, 0.3, 1);
+    //     }
+    // }
+
+    // pcs.buildMeshAsync().then(() => {
+    //     pcs.initParticles();
+    //     pcs.setParticles();
+    // });
 }
 
-var calculatenormals = function(i, j, k, p) {
-    positions.push(-1 * i);
-    positions.push(-1 * j);
-    positions.push(k);
-    indices.push(p);
+var calculatenormal = function(i, j, k) {
+    var x = allcoords[i + 1][j][k] - allcoords[i - 1][j][k];
+    var y = allcoords[i][j + 1][k] - allcoords[i][j - 1][k];
+    var z = allcoords[i][j][k + 1] - allcoords[i][j][k - 1];
+
+    var normal = new BABYLON.Vector3(-x, -y, -z);
+
+    return normal;
 }
 
 var isedge = function(i, j, k) {
