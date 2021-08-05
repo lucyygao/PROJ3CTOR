@@ -3,7 +3,7 @@ var createbutton = function(left, top, word) {
     button.width = "150px";
     button.height = "40px";
     button.color = "white";
-    button.background = "gray";
+    button.background = "#808090";
     button.left = left;
     button.top = top;
     return button;
@@ -56,12 +56,20 @@ var createScene = function () {
     var skybutton = createbutton("-110px", "350px", "Skybox");
     skybutton.onPointerClickObservable.add(function() {
         if (skybutton.children[0].text == "Skybox") {
-            skybutton.children[0].text = "No Skybox";
+            skybutton.children[0].text = "Navy";
             skybox.visibility = false;
         }
         else {
-            skybutton.children[0].text = "Skybox";
-            skybox.visibility = true;
+            if (skybutton.children[0].text == "Navy") {
+                scene.clearColor = new BABYLON.Color3(0.62, 0.62, 0.69);
+                skybutton.children[0].text = "Gray";
+            }
+            else {
+                scene.clearColor = new BABYLON.Color3(0.2, 0.2, 0.3);
+                skybutton.children[0].text = "Skybox";
+                skybox.visibility = true;
+            }
+
         }
     });
 
@@ -80,7 +88,7 @@ var createScene = function () {
             else {
                 if (matbutton.children[0].text == "Red") {
                     matbutton.children[0].text = "Silver";
-                    cloud.material = white;
+                    cloud.material = silver;
                 }
                 else {
                     matbutton.children[0].text = "Gold";
@@ -88,11 +96,51 @@ var createScene = function () {
                 }
             }
         }
+        cloud.material.pointSize = slider.value;
     });
 
+    // deform
+    var deformbutton = createbutton("250px", "350px", "Normal");
+    deformbutton.onPointerClickObservable.add(function() {
+        if (deformbutton.children[0].text == "Normal") {
+            deformbutton.children[0].text = "Sphere";
+            deformsphere();
+        }
+    });
+
+    // slider to change point size
+    var panel = new BABYLON.GUI.StackPanel();
+    panel.width = "220px";
+    panel.left = "-290px";
+    panel.top = "280px";
+
+    var pointsize = new BABYLON.GUI.TextBlock();
+    pointsize.text = "Point Size: 5";
+    pointsize.height = "30px";
+    pointsize.color = "white";
+    // pointsize.left = "-290px";
+    // pointsize.top = "300px";
+    var slider = new BABYLON.GUI.Slider();
+    slider.minimum = 1;
+    slider.maximum = 50;
+    slider.value = 5;
+    slider.height = "20px";
+    slider.width = "160px";
+    slider.color = "#808090";
+    slider.background = "grey";
+    slider.onValueChangedObservable.add(function (value) {
+        cloud.material.pointSize = value;
+        pointsize.text = "Point Size: " + Math.floor(value);
+    });
+
+    // adding everything to UI
     UI.addControl(style);
     UI.addControl(skybutton);
     UI.addControl(matbutton);
+    UI.addControl(panel);
+    panel.addControl(pointsize);
+    panel.addControl(slider);
+    UI.addControl(deformbutton);
     return scene;
 };
 
@@ -174,11 +222,12 @@ var createpointcloud = function() {
     vertexData.positions = positions;
     vertexData.indices = indices;
     vertexData.normals = normals;
-    vertexData.applyToMesh(cloud);
+    vertexData.applyToMesh(cloud, true);
     cloud.material = pbr;
     cloud.material.pointsCloud = true;
     cloud.material.pointSize = 10;
     cloud.material.backFaceCulling = false;
+
 
 
     // var pcs = new BABYLON.PointsCloudSystem("pcs", 7, scene, {updatable: true});
@@ -224,6 +273,17 @@ var createpointcloud = function() {
     //     pcs.setParticles();
     // });
 }
+
+var deformsphere = function() {
+    var pos = cloud.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+    for (var i = 0; i < pos.length; i += 3) {
+        // pos[i] += 5;
+        // pos[i + 1] += 5;
+        pos[i] = Math.sqrt(pos[i]*pos[i] + pos[i + 1]*pos[i + 1]);
+        pos[i + 1] = Math.atan(pos[i + 1]/pos[i]);
+    }
+    cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, pos);
+};
 
 var calculatenormal = function(i, j, k) {
     var x = allcoords[i + 1][j][k] - allcoords[i - 1][j][k];
@@ -349,6 +409,8 @@ engine.runRenderLoop(function() {
 });
 
 /**
+ * textures -- https://github.com/BabylonJS/Babylon.js/tree/master/Playground/textures
+ *
  * extruding polygons https://doc.babylonjs.com/start/chap3/polycar
  * user input https://doc.babylonjs.com/divingDeeper/input/virtualJoysticks
  * meshes https://doc.babylonjs.com/divingDeeper/mesh
