@@ -13,10 +13,11 @@ var createScene = function () {
     var scene = new BABYLON.Scene(engine);
 
     // set camera and light
+    // const camera = new BABYLON.ArcFollowCamera("camera", 1, 1, 5, new BABYLON.Vector3(0, 0, 0), scene);
     const camera = new BABYLON.ArcRotateCamera("camera", Math.PI/2, Math.PI/2, 20, new BABYLON.Vector3(0, 0, 0));
     camera.attachControl(canvas, true);
     const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, -1, 0));
-    camera.setTarget(new BABYLON.Vector3(-400/70, -400/70, 0));
+    camera.setTarget(new BABYLON.Vector3(-400/70, -200/70, 400/70));
     light.intensity = 1;
 
     // Skybox
@@ -100,11 +101,17 @@ var createScene = function () {
     });
 
     // deform
-    var deformbutton = createbutton("250px", "350px", "Normal");
+    var deformbutton = createbutton("250px", "350px", "No Deform");
     deformbutton.onPointerClickObservable.add(function() {
-        if (deformbutton.children[0].text == "Normal") {
+        if (deformbutton.children[0].text == "No Deform") {
             deformbutton.children[0].text = "Sphere";
             deformsphere();
+        }
+        else {
+            if (deformbutton.children[0].text == "Sphere") {
+                deformbutton.children[0].text = "No Deform";
+                undodeform();
+            }
         }
     });
 
@@ -200,6 +207,9 @@ var positions = [];
 var indices = [];
 var normals = [];
 
+var initpos = [];
+var initnorm = [];
+
 var createpointcloud = function() {
     var p = 0;
     // go through allcoords matrix to find particle positions
@@ -228,62 +238,66 @@ var createpointcloud = function() {
     cloud.material.pointSize = 10;
     cloud.material.backFaceCulling = false;
 
+    initpos = [...positions];
+    initnorm = [...normals];
 
-
-    // var pcs = new BABYLON.PointsCloudSystem("pcs", 7, scene, {updatable: true});
-    // pcs.addPoints(60000);
-    // pcs.computeBoundingBox = true;
-    // pcs.initParticles = function() {
-    //     var p = 0;
-
-    //     // go through allcoords matrix to find particle positions
-    //     for (var i = 0; i < 100; i++) {
-    //         for (var j = 0; j < 50; j++) {
-    //             for (var k = 0; k < 100; k++) {
-    //                 // must have value of 2 (double intersection) and on the surface
-    //                 if (allcoords[i][j][k] == 2 && p < pcs.nbParticles && isedge(i, j, k)) {
-    //                     const particle = pcs.particles[p];
-    //                     particle.position.x = -8 * i / 70;
-    //                     particle.position.y = -8 * j / 70;
-    //                     particle.position.z = 8 * k / 70;
-    //                     particle.color = new BABYLON.Color4((50-j)/50, 0, 0, 1);
-    //                     p++;
-
-    //                     positions.push(particle.position.x, particle.position.y, particle.position.z);
-    //                     indices.push(p);
-    //                     var norm = calculatenormal(i, j, k);
-    //                     normals.push(norm.x, norm.y, norm.z);
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     // make the remaining particles infinite distance away and the same color as background
-    //     for (var n = p; n < pcs.nbParticles; n++) {
-    //         const extra = pcs.particles[n];
-    //         extra.position.x = Infinity;
-    //         extra.position.y = Infinity;
-    //         extra.position.z = Infinity;
-    //         extra.color = new BABYLON.Color4(0.2, 0.2, 0.3, 1);
-    //     }
-    // }
-
-    // pcs.buildMeshAsync().then(() => {
-    //     pcs.initParticles();
-    //     pcs.setParticles();
-    // });
+    // camera.setTarget(cloud);
 }
 
 var deformsphere = function() {
     var pos = cloud.getVerticesData(BABYLON.VertexBuffer.PositionKind);
-    for (var i = 0; i < pos.length; i += 3) {
-        // pos[i] += 5;
-        // pos[i + 1] += 5;
-        pos[i] = Math.sqrt(pos[i]*pos[i] + pos[i + 1]*pos[i + 1]);
-        pos[i + 1] = Math.atan(pos[i + 1]/pos[i]);
+    var norms = cloud.getVerticesData(BABYLON.VertexBuffer.NormalKind);
+    var xmin = pos[0];
+    var xmax = pos[0];
+    var ymin = pos[1];
+    var ymax = pos[1];
+    for (var i = 3; i < pos.length; i += 3) {
+        if (pos[i] < xmin) {
+            xmin = pos[i];
+        }
+        else {
+            if (pos[i] > xmax) {
+                xmax = pos[i];
+            }
+        }
+        if (pos[i + 1] < ymin) {
+            ymin = pos[i + 1];
+        }
+        else {
+            if (pos[i + 1] > ymax) {
+                ymax = pos[i + 1];
+            }
+        }
+    }
+
+    var ylen = ymax - ymin;
+    var xlen = xmax - xmin;
+
+    for (var j = 0; j < pos.length; j += 3) {
+        var rho = Math.sqrt(pos[j] ** 2 + pos[j + 1] ** 2 + pos[j + 2] ** 2);
+        var phi = pos[j + 1]/ylen * Math.PI;
+        var theta = pos[j]/xlen * 2 * Math.PI;
+
+        pos[j] = -1 * (rho * Math.sin(phi) * Math.cos(theta));
+        pos[j + 1] = -1 * (rho * Math.sin(phi) * Math.sin(theta));
+        pos[j + 2] = rho * Math.cos(phi);
+
+        // pos[j] = -1 * (rho * Math.sin(phi) * Math.cos(theta)) + xmin + xlen/2;
+        // pos[j + 1] = -1 * (rho * Math.sin(phi) * Math.sin(theta)) + ymin + ylen/2;
+        // pos[j + 2] = rho * Math.cos(phi) + zmin + zlen/2;
+
+        norms[j] = norms[j] * Math.sin(phi) * Math.cos(theta);
+        norms[j + 1] = norms[j + 1] * Math.sin(phi) * Math.sin(theta);
+        norms[j + 2] *= Math.cos(phi);
     }
     cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, pos);
+    cloud.updateVerticesData(BABYLON.VertexBuffer.NormalKind, norms);
 };
+
+var undodeform = function() {
+    cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, initpos);
+    cloud.updateVerticesData(BABYLON.VertexBuffer.NormalKind, initnorm);
+}
 
 var calculatenormal = function(i, j, k) {
     var x = allcoords[i + 1][j][k] - allcoords[i - 1][j][k];
