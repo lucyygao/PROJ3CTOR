@@ -238,6 +238,8 @@ var createpointcloud = function() {
     cloud.material.pointSize = 10;
     cloud.material.backFaceCulling = false;
 
+    cloud.setPivotPoint(cloud.getBoundingInfo().boundingSphere.center);
+
     initpos = [...positions];
     initnorm = [...normals];
 
@@ -245,8 +247,11 @@ var createpointcloud = function() {
 }
 
 var deformsphere = function() {
-    var pos = cloud.getVerticesData(BABYLON.VertexBuffer.PositionKind);
-    var norms = cloud.getVerticesData(BABYLON.VertexBuffer.NormalKind);
+    var center = cloud.getAbsolutePivotPoint();
+    var pos = [...positions];
+    var norms = [...normals];
+    // var pos = cloud.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+    // var norms = cloud.getVerticesData(BABYLON.VertexBuffer.NormalKind);
     var xmin = pos[0];
     var xmax = pos[0];
     var ymin = pos[1];
@@ -274,24 +279,35 @@ var deformsphere = function() {
     var xlen = xmax - xmin;
 
     for (var j = 0; j < pos.length; j += 3) {
-        var rho = Math.sqrt(pos[j] ** 2 + pos[j + 1] ** 2 + pos[j + 2] ** 2);
-        var phi = pos[j + 1]/ylen * Math.PI;
-        var theta = pos[j]/xlen * 2 * Math.PI;
+        // var rho = Math.sqrt(pos[j] ** 2 + pos[j + 1] ** 2 + pos[j + 2] ** 2);
+        var rho = pos[j + 2];
+        var phi = Math.PI * pos[j + 1]/ylen;
+        var theta = 2 * Math.PI * pos[j]/xlen;
 
-        pos[j] = -1 * (rho * Math.sin(phi) * Math.cos(theta));
-        pos[j + 1] = -1 * (rho * Math.sin(phi) * Math.sin(theta));
-        pos[j + 2] = rho * Math.cos(phi);
+        pos[j] = (rho * Math.sin(phi) * Math.cos(theta)) + center.x;
+        pos[j + 1] = (rho * Math.sin(phi) * Math.sin(theta)) + center.y;
+        pos[j + 2] = rho * Math.cos(phi) + center.z;
 
         // pos[j] = -1 * (rho * Math.sin(phi) * Math.cos(theta)) + xmin + xlen/2;
         // pos[j + 1] = -1 * (rho * Math.sin(phi) * Math.sin(theta)) + ymin + ylen/2;
         // pos[j + 2] = rho * Math.cos(phi) + zmin + zlen/2;
 
-        norms[j] = norms[j] * Math.sin(phi) * Math.cos(theta);
-        norms[j + 1] = norms[j + 1] * Math.sin(phi) * Math.sin(theta);
-        norms[j + 2] *= Math.cos(phi);
+        // norms[j] = norms[j] * Math.sin(phi) * Math.cos(theta);
+        // norms[j + 1] = norms[j + 1] * Math.sin(phi) * Math.sin(theta);
+        // norms[j + 2] *= Math.cos(phi);
+
+        norms[j] = pos[j];
+        norms[j + 1] = pos[j + 1];
+        norms[j + 2] = pos[j + 2];
     }
     cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, pos);
     cloud.updateVerticesData(BABYLON.VertexBuffer.NormalKind, norms);
+    // cloud.setPivotPoint(center);
+    // var newcent = cloud.getBoundingInfo().boundingSphere.center;
+    // var axis = new BABYLON.Vector3(center.x - newcent.x, center.y - newcent.y, center.z - newcent.z);
+    // var dist = Math.sqrt(axis.x ** 2 + axis.y ** 2 + axis.z ** 2);
+
+    // cloud.translate(axis, dist, BABYLON.Space.WORLD);
 };
 
 var undodeform = function() {
