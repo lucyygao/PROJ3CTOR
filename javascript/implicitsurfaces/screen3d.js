@@ -109,35 +109,99 @@ var createScene = function () {
         }
         else {
             if (deformbutton.children[0].text == "Sphere") {
-                deformbutton.children[0].text = "No Deform";
-                undodeform();
+                deformbutton.children[0].text = "Spiral";
+                deformspiral();
+            }
+            else {
+                if (deformbutton.children[0].text == "Spiral") {
+                    deformbutton.children[0].text = "Cube";
+                    deformcube();
+                }
+                else {
+                    deformbutton.children[0].text = "No Deform";
+                    undodeform();
+                }
             }
         }
     });
 
-    // slider to change point size
+    // slider to change point size - MAKE A CREATESLIDER FUNCTION PROBABLY !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     var panel = new BABYLON.GUI.StackPanel();
-    panel.width = "220px";
+    panel.width = "250px";
     panel.left = "-290px";
-    panel.top = "280px";
+    panel.top = "200px";
 
     var pointsize = new BABYLON.GUI.TextBlock();
     pointsize.text = "Point Size: 5";
     pointsize.height = "30px";
     pointsize.color = "white";
-    // pointsize.left = "-290px";
-    // pointsize.top = "300px";
-    var slider = new BABYLON.GUI.Slider();
-    slider.minimum = 1;
-    slider.maximum = 50;
-    slider.value = 5;
-    slider.height = "20px";
-    slider.width = "160px";
-    slider.color = "#808090";
-    slider.background = "grey";
-    slider.onValueChangedObservable.add(function (value) {
+    var pointslider = new BABYLON.GUI.Slider();
+    pointslider.minimum = 1;
+    pointslider.maximum = 50;
+    pointslider.value = 5;
+    pointslider.height = "20px";
+    pointslider.width = "160px";
+    pointslider.color = "#808090";
+    pointslider.background = "grey";
+    pointslider.onValueChangedObservable.add(function (value) {
         cloud.material.pointSize = value;
         pointsize.text = "Point Size: " + Math.floor(value);
+    });
+    var phitext = new BABYLON.GUI.TextBlock();
+    phitext.text = "Deformation (phi): 1";
+    phitext.height = "30px";
+    phitext.color = "white";
+    var phislider = new BABYLON.GUI.Slider();
+    phislider.minimum = 0;
+    phislider.maximum = 1;
+    phislider.value = 1;
+    phislider.height = "20px";
+    phislider.width = "160px";
+    phislider.color = "#808090";
+    phislider.background = "grey";
+    phislider.onValueChangedObservable.add(function (value) {
+        phiconst = value;
+        undodeform();
+        deformsphere();
+        phitext.text = "Deformation (phi): " + value.toFixed(2);
+    });
+
+    var thetatext = new BABYLON.GUI.TextBlock();
+    thetatext.text = "Deformation (theta): 1";
+    thetatext.height = "30px";
+    thetatext.color = "white";
+    var thetaslider = new BABYLON.GUI.Slider();
+    thetaslider.minimum = 0;
+    thetaslider.maximum = 1;
+    thetaslider.value = 1;
+    thetaslider.height = "20px";
+    thetaslider.width = "160px";
+    thetaslider.color = "#808090";
+    thetaslider.background = "grey";
+    thetaslider.onValueChangedObservable.add(function (value) {
+        thetaconst = value;
+        undodeform();
+        deformsphere();
+        thetatext.text = "Deformation (theta): " + value.toFixed(2);
+    });
+
+    var size = new BABYLON.GUI.TextBlock();
+    size.text = "Scaling: 1";
+    size.height = "30px";
+    size.color = "white";
+    var sizeslider = new BABYLON.GUI.Slider();
+    sizeslider.minimum = 0;
+    sizeslider.maximum = 10;
+    sizeslider.value = 1;
+    sizeslider.height = "20px";
+    sizeslider.width = "160px";
+    sizeslider.color = "#808090";
+    sizeslider.background = "grey";
+    sizeslider.onValueChangedObservable.add(function (value) {
+        cloud.scaling.x = value;
+        cloud.scaling.y = value;
+        cloud.scaling.z = value;
+        size.text = "Scaling: " + value.toFixed(2);
     });
 
     // adding everything to UI
@@ -146,8 +210,62 @@ var createScene = function () {
     UI.addControl(matbutton);
     UI.addControl(panel);
     panel.addControl(pointsize);
-    panel.addControl(slider);
+    panel.addControl(pointslider);
+    panel.addControl(phitext);
+    panel.addControl(phislider);
+    panel.addControl(thetatext);
+    panel.addControl(thetaslider);
+    panel.addControl(size);
+    panel.addControl(sizeslider);
     UI.addControl(deformbutton);
+
+
+
+    // DELETE LATER ----------------------------------------------------
+    // show axis
+  var showAxis = function(size) {
+    var makeTextPlane = function(text, color, size) {
+    var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
+    dynamicTexture.hasAlpha = true;
+    dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color , "transparent", true);
+    var plane = new BABYLON.Mesh.CreatePlane("TextPlane", size, scene, true);
+    plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", scene);
+    plane.material.backFaceCulling = false;
+    plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
+    plane.material.diffuseTexture = dynamicTexture;
+    return plane;
+     };
+
+    var axisX = BABYLON.Mesh.CreateLines("axisX", [
+      new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
+      new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
+      ], scene);
+    axisX.color = new BABYLON.Color3(1, 0, 0);
+    var xChar = makeTextPlane("X", "red", size / 10);
+    xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0);
+    var axisY = BABYLON.Mesh.CreateLines("axisY", [
+        new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( -0.05 * size, size * 0.95, 0),
+        new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( 0.05 * size, size * 0.95, 0)
+        ], scene);
+    axisY.color = new BABYLON.Color3(0, 1, 0);
+    var yChar = makeTextPlane("Y", "green", size / 10);
+    yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
+    var axisZ = BABYLON.Mesh.CreateLines("axisZ", [
+        new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
+        new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
+        ], scene);
+    axisZ.color = new BABYLON.Color3(0, 0, 1);
+    var zChar = makeTextPlane("Z", "blue", size / 10);
+    zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
+  };
+
+  showAxis(5);
+  // -----------------------------------------------------------------------------
+
+
+
+
+
     return scene;
 };
 
@@ -189,7 +307,6 @@ pbr.diffuseColor = new BABYLON.Color3(1.0, 0.766, 0.336);
 pbr.specularColor = new BABYLON.Color3(1.0, 0.766, 0.336);
 pbr.glossiness = 1.0;
 pbr.environmentTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("../textures/environment.dds", scene);
-
 var silver = new BABYLON.PBRSpecularGlossinessMaterial("silver", scene);
 silver.diffuseColor = new BABYLON.Color3(1, 1, 1);
 silver.specularColor = new BABYLON.Color3(1, 1, 1);
@@ -199,7 +316,9 @@ silver.pointsCloud = true;
 silver.pointSize = 10;
 silver.backFaceCulling = false;
 
-
+// sliders
+var phiconst = 1;
+var thetaconst = 1;
 
 // normals and mesh creation
 var cloud = new BABYLON.Mesh("cloud", scene);
@@ -246,43 +365,51 @@ var createpointcloud = function() {
     // camera.setTarget(cloud);
 }
 
+var deform = function() {
+    var xmin = positions[0];
+    var xmax = positions[0];
+    var ymin = positions[1];
+    var ymax = positions[1];
+    for (var i = 3; i < positions.length; i += 3) {
+        if (positions[i] < xmin) {
+            xmin = positions[i];
+        }
+        else {
+            if (positions[i] > xmax) {
+                xmax = positions[i];
+            }
+        }
+        if (positions[i + 1] < ymin) {
+            ymin = positions[i + 1];
+        }
+        else {
+            if (positions[i + 1] > ymax) {
+                ymax = positions[i + 1];
+            }
+        }
+    }
+    var array = [];
+    array.push(xmax - xmin);
+    array.push(ymax - ymin);
+    array.push(xmin);
+    return array;
+}
+
 var deformsphere = function() {
     var center = cloud.getAbsolutePivotPoint();
     var pos = [...positions];
     var norms = [...normals];
     // var pos = cloud.getVerticesData(BABYLON.VertexBuffer.PositionKind);
     // var norms = cloud.getVerticesData(BABYLON.VertexBuffer.NormalKind);
-    var xmin = pos[0];
-    var xmax = pos[0];
-    var ymin = pos[1];
-    var ymax = pos[1];
-    for (var i = 3; i < pos.length; i += 3) {
-        if (pos[i] < xmin) {
-            xmin = pos[i];
-        }
-        else {
-            if (pos[i] > xmax) {
-                xmax = pos[i];
-            }
-        }
-        if (pos[i + 1] < ymin) {
-            ymin = pos[i + 1];
-        }
-        else {
-            if (pos[i + 1] > ymax) {
-                ymax = pos[i + 1];
-            }
-        }
-    }
 
-    var ylen = ymax - ymin;
-    var xlen = xmax - xmin;
+    var xlen = deform()[0];
+    var ylen = deform()[1];
 
     for (var j = 0; j < pos.length; j += 3) {
         // var rho = Math.sqrt(pos[j] ** 2 + pos[j + 1] ** 2 + pos[j + 2] ** 2);
         var rho = pos[j + 2];
-        var phi = Math.PI * pos[j + 1]/ylen;
-        var theta = 2 * Math.PI * pos[j]/xlen;
+        var phi = phiconst * Math.PI * pos[j + 1]/ylen;
+        var theta = thetaconst * 2 * Math.PI * pos[j]/xlen;
 
         pos[j] = (rho * Math.sin(phi) * Math.cos(theta)) + center.x;
         pos[j + 1] = (rho * Math.sin(phi) * Math.sin(theta)) + center.y;
@@ -301,7 +428,7 @@ var deformsphere = function() {
         norms[j + 2] = pos[j + 2];
     }
     cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, pos);
-    cloud.updateVerticesData(BABYLON.VertexBuffer.NormalKind, norms);
+    // cloud.updateVerticesData(BABYLON.VertexBuffer.NormalKind, norms);
     // cloud.setPivotPoint(center);
     // var newcent = cloud.getBoundingInfo().boundingSphere.center;
     // var axis = new BABYLON.Vector3(center.x - newcent.x, center.y - newcent.y, center.z - newcent.z);
@@ -309,6 +436,70 @@ var deformsphere = function() {
 
     // cloud.translate(axis, dist, BABYLON.Space.WORLD);
 };
+
+var deformspiral = function() {
+    var center = cloud.getAbsolutePivotPoint();
+    var pos = [...positions];
+    var norms = [...normals];
+
+    var ylen = deform()[1];
+
+    for (var j = 0; j < pos.length; j += 3) {
+        var r = Math.sqrt(pos[j] ** 2 + pos[j + 1] ** 2);
+        // var r = pos[j + 2];
+        var theta = pos[j + 1] / ylen * Math.PI * 2;
+        pos[j] = r * Math.cos(theta) + center.x;
+        pos[j + 1] = r * Math.sin(theta) + center.y;
+        // pos[j + 2] += center.z;
+
+        // norms[j] = pos[j];
+        // norms[j + 1] = pos[j + 1];
+        // norms[j + 2] = pos[j + 2];
+    }
+    cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, pos);
+    // cloud.updateVerticesData(BABYLON.VertexBuffer.NormalKind, norms);
+}
+
+var deformcube = function() {
+    var center = cloud.getAbsolutePivotPoint();
+    var pos = [...positions];
+    var norms = [...normals];
+    var xlen = deform()[0];
+    var boundary = xlen / 4 + deform()[2];
+    for (var i = 0; i < pos.length; i += 3) {
+        // top
+        if (pos[i] < boundary) {
+            // pos[i] += xlen/2;
+            // pos[i + 2] += xlen/4;
+            // pos[i + 2] -= xlen / 2;
+            console.log("hey");
+        }
+        else {
+            // right
+            if (pos[i] < boundary + xlen/4) {
+                var hold = pos[i];
+                pos[i] = pos[i + 1];
+                pos[i + 1] = hold;
+                console.log("hey2");
+            }
+            else {
+                // bottom
+                if (pos[i] < boundary + xlen/2) {
+                    pos[i + 1] *= -1;
+                    console.log("hey3");
+                }
+                // left
+                else {
+                    var hold = -1 * pos[i];
+                    pos[i] = -1 * pos[i + 1];
+                    pos[i + 1] = hold;
+                    console.log("hey4");
+                }
+            }
+        }
+    }
+    cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, pos);
+}
 
 var undodeform = function() {
     cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, initpos);
