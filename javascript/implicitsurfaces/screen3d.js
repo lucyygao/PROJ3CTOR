@@ -190,8 +190,8 @@ var createScene = function () {
     size.height = "30px";
     size.color = "white";
     var sizeslider = new BABYLON.GUI.Slider();
-    sizeslider.minimum = 0;
-    sizeslider.maximum = 10;
+    sizeslider.minimum = -5;
+    sizeslider.maximum = 5;
     sizeslider.value = 1;
     sizeslider.height = "20px";
     sizeslider.width = "160px";
@@ -368,8 +368,8 @@ var createpointcloud = function() {
 var deform = function() {
     var xmin = positions[0];
     var xmax = positions[0];
-    var ymin = positions[1];
-    var ymax = positions[1];
+    var zmin = positions[2];
+    var zmax = positions[2];
     for (var i = 3; i < positions.length; i += 3) {
         if (positions[i] < xmin) {
             xmin = positions[i];
@@ -379,18 +379,18 @@ var deform = function() {
                 xmax = positions[i];
             }
         }
-        if (positions[i + 1] < ymin) {
-            ymin = positions[i + 1];
+        if (positions[i + 2] < zmin) {
+            zmin = positions[i + 2];
         }
         else {
-            if (positions[i + 1] > ymax) {
-                ymax = positions[i + 1];
+            if (positions[i + 2] > zmax) {
+                zmax = positions[i + 2];
             }
         }
     }
     var array = [];
     array.push(xmax - xmin);
-    array.push(ymax - ymin);
+    array.push(zmax - zmin);
     array.push(xmin);
     return array;
 }
@@ -403,17 +403,17 @@ var deformsphere = function() {
     // var norms = cloud.getVerticesData(BABYLON.VertexBuffer.NormalKind);
 
     var xlen = deform()[0];
-    var ylen = deform()[1];
+    var zlen = deform()[1];
 
     for (var j = 0; j < pos.length; j += 3) {
         // var rho = Math.sqrt(pos[j] ** 2 + pos[j + 1] ** 2 + pos[j + 2] ** 2);
-        var rho = pos[j + 2];
-        var phi = phiconst * Math.PI * pos[j + 1]/ylen;
-        var theta = thetaconst * 2 * Math.PI * pos[j]/xlen;
+        var rho = pos[j + 1];
+        var phi = phiconst * Math.PI * (zlen-pos[j + 2])/zlen;
+        var theta = thetaconst * 2 * Math.PI * (xlen-pos[j])/xlen;
 
         pos[j] = (rho * Math.sin(phi) * Math.cos(theta)) + center.x;
-        pos[j + 1] = (rho * Math.sin(phi) * Math.sin(theta)) + center.y;
-        pos[j + 2] = rho * Math.cos(phi) + center.z;
+        pos[j + 2] = (rho * Math.sin(phi) * Math.sin(theta)) + center.z;
+        pos[j + 1] = rho * Math.cos(phi) + center.y;
 
         // pos[j] = -1 * (rho * Math.sin(phi) * Math.cos(theta)) + xmin + xlen/2;
         // pos[j + 1] = -1 * (rho * Math.sin(phi) * Math.sin(theta)) + ymin + ylen/2;
@@ -428,6 +428,10 @@ var deformsphere = function() {
         norms[j + 2] = pos[j + 2];
     }
     cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, pos);
+    // cloud.scaling.z = -1;
+    // cloud.scaling.x = -1;
+    // cloud.scaling.y = -1;
+    // cloud.bakeCurrentTransformIntoVertices();
     // cloud.updateVerticesData(BABYLON.VertexBuffer.NormalKind, norms);
     // cloud.setPivotPoint(center);
     // var newcent = cloud.getBoundingInfo().boundingSphere.center;
@@ -472,7 +476,7 @@ var deformcube = function() {
             // pos[i] += xlen/2;
             // pos[i + 2] += xlen/4;
             // pos[i + 2] -= xlen / 2;
-            console.log("hey");
+            // console.log("hey");
         }
         else {
             // right
@@ -480,20 +484,20 @@ var deformcube = function() {
                 var hold = pos[i];
                 pos[i] = pos[i + 1];
                 pos[i + 1] = hold;
-                console.log("hey2");
+                // console.log("hey2");
             }
             else {
                 // bottom
                 if (pos[i] < boundary + xlen/2) {
                     pos[i + 1] *= -1;
-                    console.log("hey3");
+                    // console.log("hey3");
                 }
                 // left
                 else {
                     var hold = -1 * pos[i];
                     pos[i] = -1 * pos[i + 1];
                     pos[i + 1] = hold;
-                    console.log("hey4");
+                    // console.log("hey4");
                 }
             }
         }
