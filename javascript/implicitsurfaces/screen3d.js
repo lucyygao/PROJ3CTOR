@@ -368,6 +368,8 @@ var createpointcloud = function() {
 var deform = function() {
     var xmin = positions[0];
     var xmax = positions[0];
+    var ymin = positions[1];
+    var ymax = positions[1];
     var zmin = positions[2];
     var zmax = positions[2];
     for (var i = 3; i < positions.length; i += 3) {
@@ -377,6 +379,14 @@ var deform = function() {
         else {
             if (positions[i] > xmax) {
                 xmax = positions[i];
+            }
+        }
+        if (positions[i + 1] < ymin) {
+            ymin = positions[i + 1];
+        }
+        else {
+            if (positions[i + 1] > ymax) {
+                ymax = positions[i + 1];
             }
         }
         if (positions[i + 2] < zmin) {
@@ -390,32 +400,132 @@ var deform = function() {
     }
     var array = [];
     array.push(xmax - xmin);
+    array.push(ymax - ymin);
     array.push(zmax - zmin);
     array.push(xmin);
     return array;
 }
 
 var deformsphere = function() {
+
+    var arr = deform();
+    console.log(arr);
+
     var center = cloud.getAbsolutePivotPoint();
+    console.log(center.x + " " + center.y + " " + center.z);
     var pos = [...positions];
     var norms = [...normals];
     // var pos = cloud.getVerticesData(BABYLON.VertexBuffer.PositionKind);
     // var norms = cloud.getVerticesData(BABYLON.VertexBuffer.NormalKind);
 
-    var xlen = deform()[0];
-    var zlen = deform()[1];
+    var xlen = arr[0];
+    var ylen = arr[1];
+    var zlen = arr[2];
 
+    // cloud.position = BABYLON.Vector3.Zero();
+    var axis = new BABYLON.Vector3(-1, 0, 0);
+    var dist = center.x - arr[0]/2;
+    console.log(dist);
+    cloud.translate(axis, dist, BABYLON.Space.WORLD);
+    var axis = new BABYLON.Vector3(0, -1, 0);
+    var dist = center.y - arr[1]/2;
+    console.log(dist);
+    cloud.translate(axis, dist, BABYLON.Space.WORLD);
+    var axis = new BABYLON.Vector3(0, 0, -1);
+    var dist = center.z - arr[2]/2;
+    console.log(dist);
+    cloud.translate(axis, dist, BABYLON.Space.WORLD);
+    // cloud.bakeCurrentTransformIntoVertices();
+    var pivot = new BABYLON.Vector3(arr[0]/2, arr[1]/2, arr[2]/2);
+    cloud.setPivotPoint(pivot);
+
+    var sph = BABYLON.MeshBuilder.CreateSphere("sph", scene);
+    sph.position = cloud.getPivotPoint();
+    for (var j = 0; j < pos.length; j += 3) {
+        // rotate around z axis
+        var theta = -2 * Math.PI * pos[j]/xlen;
+        // pos[j] += center.x;
+        // pos[j + 1] += center.y;
+        // pos[j + 2] += center.z;
+        var newx = (pos[j] * Math.cos(thetaconst * theta) - pos[j + 1] * Math.sin(thetaconst * theta));
+        var newy = (pos[j] * Math.sin(thetaconst * theta) + pos[j + 1] * Math.cos(thetaconst * theta));
+        pos[j] = newx;
+        pos[j + 1] = newy;
+        // pos[j + 2] = newz;
+
+
+
+        // // var rho = Math.sqrt(pos[j] ** 2 + pos[j + 1] ** 2 + pos[j + 2] ** 2);
+        // var rho = pos[j + 1];
+        // var phi = phiconst * Math.PI * pos[j + 2]/zlen;
+        // var theta = thetaconst * 2 * Math.PI * pos[j]/xlen;
+
+        // console.log("b " + pos[j] + " " + pos[j + 1] + " " + pos[j + 2]);
+        // pos[j] = -1 * ((rho * Math.sin(phi) * Math.cos(theta)) + center.x);
+        // pos[j + 2] = (rho * Math.sin(phi) * Math.sin(theta)) + center.z;
+        // pos[j + 1] = -1 * (rho * Math.cos(phi) + center.y);
+
+        // console.log("a " + pos[j] + " " + pos[j + 1] + " " + pos[j + 2]);
+        // // pos[j] = -1 *  + (rho * Math.sin(phi) * Math.cos(theta)) + xmin + xlen/2;
+        // // pos[j + 1] = -1 * (rho * Math.sin(phi) * Math.sin(theta)) + ymin + ylen/2;
+        // // pos[j + 2] = rho * Math.cos(phi) + zmin + zlen/2;
+
+        // // norms[j] = norms[j] * Math.sin(phi) * Math.cos(theta);
+        // // norms[j + 1] = norms[j + 1] * Math.sin(phi) * Math.sin(theta);
+        // // norms[j + 2] *= Math.cos(phi);
+
+        // norms[j] = pos[j];
+        // norms[j + 1] = pos[j + 1];
+        // norms[j + 2] = pos[j + 2];
+    }
+
+    cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, pos);
+
+
+    // morph target - use for slider?
+
+    // var manager = new BABYLON.MorphTargetManager();
+    // cloud.morphTargetManager = manager;
+    // var sphere = BABYLON.Mesh.CreateSphere("sphere", 16, 2, scene);
+    // sphere.setEnabled = false;
+    // var target = BABYLON.MorphTarget.FromMesh(sphere, "sphere", 1);
+    // manager.addTarget(target);
+
+
+    // cloud.scaling.z = -1;
+    // cloud.scaling.x = -1;
+    // cloud.scaling.y = -1;
+
+    // cloud.updateVerticesData(BABYLON.VertexBuffer.NormalKind, norms);
+    // cloud.setPivotPoint(center);
+    // var newcent = cloud.getBoundingInfo().boundingSphere.center;
+    // var axis = new BABYLON.Vector3(center.x - newcent.x, center.y - newcent.y, center.z - newcent.z);
+    // var dist = Math.sqrt(axis.x ** 2 + axis.y ** 2 + axis.z ** 2);
+
+    // cloud.translate(axis, dist, BABYLON.Space.WORLD);
+};
+
+var deformspherebackup = function() {
+    var arr = deform();
+    var pos = [...positions];
+    var norms = [...normals];
+    // var pos = cloud.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+    // var norms = cloud.getVerticesData(BABYLON.VertexBuffer.NormalKind);
+    var xlen = arr[0];
+    var zlen = arr[2];
     for (var j = 0; j < pos.length; j += 3) {
         // var rho = Math.sqrt(pos[j] ** 2 + pos[j + 1] ** 2 + pos[j + 2] ** 2);
         var rho = pos[j + 1];
-        var phi = phiconst * Math.PI * (zlen-pos[j + 2])/zlen;
-        var theta = thetaconst * 2 * Math.PI * (xlen-pos[j])/xlen;
+        var phi = phiconst * Math.PI * pos[j + 2]/zlen;
+        var theta = thetaconst * 2 * Math.PI * pos[j]/xlen;
 
-        pos[j] = (rho * Math.sin(phi) * Math.cos(theta)) + center.x;
+        console.log("b " + pos[j] + " " + pos[j + 1] + " " + pos[j + 2]);
+        pos[j] = -1 * ((rho * Math.sin(phi) * Math.cos(theta)) + center.x);
         pos[j + 2] = (rho * Math.sin(phi) * Math.sin(theta)) + center.z;
-        pos[j + 1] = rho * Math.cos(phi) + center.y;
+        pos[j + 1] = -1 * (rho * Math.cos(phi) + center.y);
 
-        // pos[j] = -1 * (rho * Math.sin(phi) * Math.cos(theta)) + xmin + xlen/2;
+        console.log("a " + pos[j] + " " + pos[j + 1] + " " + pos[j + 2]);
+        // pos[j] = -1 *  + (rho * Math.sin(phi) * Math.cos(theta)) + xmin + xlen/2;
         // pos[j + 1] = -1 * (rho * Math.sin(phi) * Math.sin(theta)) + ymin + ylen/2;
         // pos[j + 2] = rho * Math.cos(phi) + zmin + zlen/2;
 
@@ -427,11 +537,24 @@ var deformsphere = function() {
         norms[j + 1] = pos[j + 1];
         norms[j + 2] = pos[j + 2];
     }
+
     cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, pos);
+
+
+    // morph target - use for slider?
+
+    // var manager = new BABYLON.MorphTargetManager();
+    // cloud.morphTargetManager = manager;
+    // var sphere = BABYLON.Mesh.CreateSphere("sphere", 16, 2, scene);
+    // sphere.setEnabled = false;
+    // var target = BABYLON.MorphTarget.FromMesh(sphere, "sphere", 1);
+    // manager.addTarget(target);
+
+
     // cloud.scaling.z = -1;
     // cloud.scaling.x = -1;
     // cloud.scaling.y = -1;
-    // cloud.bakeCurrentTransformIntoVertices();
+
     // cloud.updateVerticesData(BABYLON.VertexBuffer.NormalKind, norms);
     // cloud.setPivotPoint(center);
     // var newcent = cloud.getBoundingInfo().boundingSphere.center;
