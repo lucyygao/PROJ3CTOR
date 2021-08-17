@@ -90,6 +90,20 @@ function updatecoords() {
     }
 }
 
+function selectclicked(e) {
+    canvas.style.cursor = crosshair;
+
+}
+
+function selectmoved(e) {
+
+}
+
+function selectdone(e) {
+
+}
+
+
 initialize();
 // mouse clicks will draw points
 canvas.addEventListener("pointerdown", clicked);

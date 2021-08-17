@@ -32,8 +32,7 @@ var createScene = function () {
     var scene = new BABYLON.Scene(engine);
 
     // set camera and light
-    // const camera = new BABYLON.ArcFollowCamera("camera", 1, 1, 5, new BABYLON.Vector3(0, 0, 0), scene);
-    const camera = new BABYLON.ArcRotateCamera("camera", Math.PI/2, Math.PI/2, 20, new BABYLON.Vector3(0, 0, 0));
+    camera = new BABYLON.ArcRotateCamera("camera", Math.PI/2, Math.PI/2, 20, new BABYLON.Vector3(0, 0, 0));
     camera.attachControl(canvas, true);
     const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, -1, 0));
     camera.setTarget(new BABYLON.Vector3(-400/70, -200/70, 400/70));
@@ -167,10 +166,47 @@ var createScene = function () {
     var panel = new BABYLON.GUI.StackPanel();
     panel.width = "250px";
     panel.left = "-290px";
-    panel.top = "200px";
+    panel.top = "0px";
 
-    var pointsize = createtext("Point Size: 5");
-    var pointslider = createslider(1, 50, 5);
+    var resetbutton = createbutton("0px", "0px", "Reset");
+    resetbutton.onPointerClickObservable.add(function() {
+        // reset background
+        scene.clearColor = new BABYLON.Color3(0.2, 0.2, 0.3);
+        skybutton.children[0].text = "Skybox";
+        skybox.visibility = true;
+
+        // reset material
+        matbutton.children[0].text = "Gold";
+        cloud.material = pbr;
+
+        // reset deform
+        deformbutton.children[0].text = "No Deform";
+        undodeform();
+        cloud.scaling.x = 1;
+        cloud.scaling.y = 1;
+        cloud.scaling.z = 1;
+
+        // update gui and slider text
+        panel.removeControl(cyltext);
+        panel.removeControl(cylslider);
+        panel.removeControl(radiustext);
+        panel.removeControl(radiusslider);
+        panel.removeControl(phitext);
+        panel.removeControl(phislider);
+        panel.removeControl(thetatext);
+        panel.removeControl(thetaslider);
+        panel.removeControl(spiraltext);
+        panel.removeControl(spiralslider);
+        size.text = "Scaling: 1";
+        squeeze.text = "Squeeze: 1";
+
+        // reset pointsize
+        cloud.material.pointSize = 10;
+        pointsize.text = "Point Size: 10";
+    });
+
+    var pointsize = createtext("Point Size: 10");
+    var pointslider = createslider(1, 30, 10);
     pointslider.onValueChangedObservable.add(function (value) {
         cloud.material.pointSize = value;
         pointsize.text = "Point Size: " + Math.floor(value);
@@ -230,63 +266,70 @@ var createScene = function () {
         size.text = "Scaling: " + value.toFixed(2);
     });
 
+    var squeeze = createtext("Squeeze: 1");
+    var squeezeslider = createslider(-5, 5, 1);
+    squeezeslider.onValueChangedObservable.add(function (value) {
+        cloud.scaling.z = value;
+        squeeze.text = "Squeeze: " + value.toFixed(2);
+    });
+
     // adding everything to UI
     UI.addControl(style);
     UI.addControl(skybutton);
     UI.addControl(matbutton);
     UI.addControl(panel);
+    panel.addControl(resetbutton);
     panel.addControl(pointsize);
     panel.addControl(pointslider);
     panel.addControl(size);
     panel.addControl(sizeslider);
+    panel.addControl(squeeze);
+    panel.addControl(squeezeslider);
 
     UI.addControl(deformbutton);
 
 
 
-    // DELETE LATER ----------------------------------------------------
-    // show axis
-  var showAxis = function(size) {
-    var makeTextPlane = function(text, color, size) {
-    var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
-    dynamicTexture.hasAlpha = true;
-    dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color , "transparent", true);
-    var plane = new BABYLON.Mesh.CreatePlane("TextPlane", size, scene, true);
-    plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", scene);
-    plane.material.backFaceCulling = false;
-    plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
-    plane.material.diffuseTexture = dynamicTexture;
-    return plane;
-     };
+//     // DELETE LATER ----------------------------------------------------
+//     // show axis
+//   var showAxis = function(size) {
+//     var makeTextPlane = function(text, color, size) {
+//     var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
+//     dynamicTexture.hasAlpha = true;
+//     dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color , "transparent", true);
+//     var plane = new BABYLON.Mesh.CreatePlane("TextPlane", size, scene, true);
+//     plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", scene);
+//     plane.material.backFaceCulling = false;
+//     plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
+//     plane.material.diffuseTexture = dynamicTexture;
+//     return plane;
+//      };
 
-    var axisX = BABYLON.Mesh.CreateLines("axisX", [
-      new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
-      new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
-      ], scene);
-    axisX.color = new BABYLON.Color3(1, 0, 0);
-    var xChar = makeTextPlane("X", "red", size / 10);
-    xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0);
-    var axisY = BABYLON.Mesh.CreateLines("axisY", [
-        new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( -0.05 * size, size * 0.95, 0),
-        new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( 0.05 * size, size * 0.95, 0)
-        ], scene);
-    axisY.color = new BABYLON.Color3(0, 1, 0);
-    var yChar = makeTextPlane("Y", "green", size / 10);
-    yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
-    var axisZ = BABYLON.Mesh.CreateLines("axisZ", [
-        new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
-        new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
-        ], scene);
-    axisZ.color = new BABYLON.Color3(0, 0, 1);
-    var zChar = makeTextPlane("Z", "blue", size / 10);
-    zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
-  };
+//     var axisX = BABYLON.Mesh.CreateLines("axisX", [
+//       new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
+//       new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
+//       ], scene);
+//     axisX.color = new BABYLON.Color3(1, 0, 0);
+//     var xChar = makeTextPlane("X", "red", size / 10);
+//     xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0);
+//     var axisY = BABYLON.Mesh.CreateLines("axisY", [
+//         new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( -0.05 * size, size * 0.95, 0),
+//         new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( 0.05 * size, size * 0.95, 0)
+//         ], scene);
+//     axisY.color = new BABYLON.Color3(0, 1, 0);
+//     var yChar = makeTextPlane("Y", "green", size / 10);
+//     yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
+//     var axisZ = BABYLON.Mesh.CreateLines("axisZ", [
+//         new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
+//         new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
+//         ], scene);
+//     axisZ.color = new BABYLON.Color3(0, 0, 1);
+//     var zChar = makeTextPlane("Z", "blue", size / 10);
+//     zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
+//   };
 
-  showAxis(5);
-  // -----------------------------------------------------------------------------
-
-
-
+//   showAxis(5);
+//   // -----------------------------------------------------------------------------
 
 
     return scene;
@@ -295,6 +338,7 @@ var createScene = function () {
 var canvas = document.getElementById("renderCanvas");
 var engine = new BABYLON.Engine(canvas, true);
 var scene = createScene();
+var camera;
 var numshapes = 0;
 var numshapes2 = 0;
 var timer = 0;
@@ -388,7 +432,7 @@ var createpointcloud = function() {
     initpos = [...positions];
     initnorm = [...normals];
 
-    // camera.setTarget(cloud);
+    camera.setTarget(cloud.getAbsolutePivotPoint());
 }
 
 var deform = function() {
@@ -471,7 +515,7 @@ var deformsphere = function() {
 
         pos[j] = (rho * Math.sin(phi) * Math.cos(theta)) + center.x;
         pos[j + 1] = (rho * Math.sin(phi) * Math.sin(theta)) + center.y;
-        pos[j + 2] = -1 * rho * Math.cos(phi) + center.z;
+        pos[j + 2] = rho * Math.cos(phi) + center.z;
     }
     cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, pos);
 };

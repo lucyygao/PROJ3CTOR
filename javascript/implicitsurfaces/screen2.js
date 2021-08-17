@@ -131,6 +131,19 @@ function mirror() {
     hint.closePath();
 }
 
+function selectsculptclicked(e) {
+
+}
+
+function selectsculptmoved(e) {
+
+}
+
+function selectsculptdone(e) {
+
+}
+
+
 // mouse clicks will draw
 canvas2.addEventListener("pointerdown", sculptclicked);
 canvas2.addEventListener("pointermove", sculptmoved);
