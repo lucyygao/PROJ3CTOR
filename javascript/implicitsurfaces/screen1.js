@@ -22,9 +22,25 @@ function clicked(e) {
         var rectangle = canvas.getBoundingClientRect();
         var x = e.clientX - rectangle.left;
         var y = e.clientY - rectangle.top;
-        coordinates.push([x, y]);
-        for (var k = 0; k < 100; k++) {
-            allcoords[Math.floor(x/8)][Math.floor(y/8)][k] += 1;
+        var inbounds = true;
+
+        // extra check if there's a selection
+        if (selected.length > 0) {
+            var xmin = selected[0]
+            var xmax = selected[0] + selected[2];
+            var ymin = selected[1];
+            var ymax = selected[1] + selected[3];
+
+            if (x < xmin || x > xmax || y < ymin || y > ymax) {
+                inbounds = false;
+            }
+        }
+
+        if (inbounds) {
+            coordinates.push([x, y]);
+            for (var k = 0; k < 100; k++) {
+                allcoords[Math.floor(x/8)][Math.floor(y/8)][k] += 5;
+            }
         }
         ctx.moveTo(x, y);
         ctx.strokeStyle = 'black';
@@ -34,7 +50,6 @@ function clicked(e) {
         ctx.lineTo(x, y);
         ctx.stroke();
     }
-
 }
 
 function outside(e) {
@@ -81,12 +96,27 @@ function done(e) {
 
 function updatecoords() {
     var pixel;
-    for (var i = 0; i < 100; i++) {
-        for (var j = 0; j < 50; j++) {
+    var xmin = 0;
+    var xmax = 100;
+    var ymin = 0;
+    var ymax = 50;
+
+
+    // if there's a selection, only update that part
+    if (selected.length > 0) {
+        var xmin = selected[0]
+        var xmax = selected[0] + selected[2];
+        var ymin = selected[1];
+        var ymax = selected[1] + selected[3];
+    }
+
+    for (var i = xmin; i < xmax; i++) {
+        for (var j = ymin; j < ymax; j++) {
             pixel = ctx.getImageData(i*8, j*8, 1, 1);
+
             if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
                 for (var k = 0; k < 100; k++) {
-                    allcoords[i][j][k] = 1;
+                    allcoords[i][j][k] += 5;
                 }
             }
         }
@@ -95,6 +125,7 @@ function updatecoords() {
 
 function selectclicked(e) {
     canvas.style.cursor = "crosshair";
+    selected = [];
     selecting = true;
 
     // clear prev selections
@@ -134,8 +165,7 @@ function selectdone(e) {
     ctx.strokeRect(selected[0], selected[1], selected[2], selected[3]);
     canvas.style.cursor = "auto";
     selecting = false;
-    modify();
-    selected = [];
+    // modify();
     select.closePath();
 }
 

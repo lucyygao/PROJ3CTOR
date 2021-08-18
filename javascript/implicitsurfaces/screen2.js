@@ -21,10 +21,27 @@ function sculptclicked(e) {
         var rectangle = canvas2.getBoundingClientRect();
         var x = e.clientX - rectangle.left;
         var y = e.clientY - rectangle.top;
-        coordinates2.push([x, y]);
-        for (var k = 0; k < 100; k++) {
-            allcoords[k][Math.floor(y/8)][Math.floor(x/8)] += 1;
+        var inbounds = true;
+
+        // extra check if there's a selection
+        if (sculptselected.length > 0) {
+            var xmin = sculptselected[0]
+            var xmax = sculptselected[0] + sculptselected[2];
+            var ymin = sculptselected[1];
+            var ymax = sculptselected[1] + sculptselected[3];
+
+            if (x < xmin || x > xmax || y < ymin || y > ymax) {
+                inbounds = false;
+            }
         }
+
+        if (inbounds) {
+            coordinates2.push([x, y]);
+            for (var k = 0; k < 100; k++) {
+                allcoords[k][Math.floor(y/8)][Math.floor(x/8)] += 2;
+            }
+        }
+
         // draw layer
         ctx2.moveTo(x, y);
         ctx2.strokeStyle = 'black';
@@ -82,24 +99,36 @@ function sculptdone(e) {
 
 function sculptupdatecoords() {
     var pixel;
+    var xmin = 0;
+    var xmax = 100;
+    var ymin = 0;
+    var ymax = 50;
+
+    // if there's a selection, only update that part
+    if (selected.length > 0) {
+        xmin = sculptselected[0]
+        xmax = sculptselected[0] + sculptselected[2];
+        ymin = sculptselected[1];
+        ymax = sculptselected[1] + sculptselected[3];
+    }
 
     // get every eighth pixel and update matrix
-    for (var i = 0; i < 100; i++) {
-        for (var j = 0; j < 50; j++) {
+    for (var i = xmin; i < xmax; i++) {
+        for (var j = ymin; j < ymax; j++) {
             pixel = ctx2.getImageData(i*8, j*8, 1, 1);
 
             // add to matrix only if the pixel isn't the default
             if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
                 for (var k = 0; k < 100; k++) {
-                    allcoords[k][j][i] += 1;
+                    allcoords[k][j][i] += 2;
 
-                    // remove extra line when overlap
-                    if (allcoords[k][j][i] == 3) {
-                        for (var remove = 0; remove <= k; remove++) {
-                            allcoords[remove][j][i] -= 1;
-                        }
-                        break;
-                    }
+                    // // remove extra line when overlap
+                    // if (allcoords[k][j][i] == 3) {
+                    //     for (var remove = 0; remove <= k; remove++) {
+                    //         allcoords[remove][j][i] -= 1;
+                    //     }
+                    //     break;
+                    // }
                 }
             }
         }
@@ -175,7 +204,7 @@ function selectsculptdone(e) {
     ctx2.strokeRect(sculptselected[0], sculptselected[1], sculptselected[2], sculptselected[3]);
     canvas2.style.cursor = "auto";
     sculptselecting = false;
-    modify();
+    // modify();
     sculptselected = [];
     sculptselect.closePath();
 }

@@ -406,7 +406,7 @@ var createpointcloud = function() {
         for (var j = 0; j < 50; j++) {
             for (var k = 0; k < 100; k++) {
                 // must have value of 2 (double intersection) and on the surface
-                if (allcoords[i][j][k] == 2 && isedge(i, j, k)) {
+                if (allcoords[i][j][k] > 5 && allcoords[i][j][k] % 5 == 2 && isedge(i, j, k)) {
                     positions.push(-8 * i / 70, -8 * j / 70,  8 * k / 70);
                     indices.push(p);
                     var norm = calculatenormal(i, j, k);
@@ -424,7 +424,9 @@ var createpointcloud = function() {
     vertexData.applyToMesh(cloud, true);
     cloud.material = pbr;
     cloud.material.pointsCloud = true;
-    cloud.material.pointSize = 10;
+    // console.log(pointslider.value());
+    // figure out to get point value here jflsdkfjklsdjfklsdjf
+    cloud.material.pointSize = pointslider.value();
     cloud.material.backFaceCulling = false;
 
     cloud.setPivotPoint(cloud.getBoundingInfo().boundingSphere.center);
@@ -433,53 +435,6 @@ var createpointcloud = function() {
     initnorm = [...normals];
 
     camera.setTarget(cloud.getAbsolutePivotPoint());
-}
-
-var modify = function() {
-    cloudpos = [...positions];
-    colors = [];
-    var xmin = -8 * selected[0] / 70;
-    var xmax = -8 * (selected[0] + selected[2]) / 70;
-    var ymin = -8 * selected[1] / 70;
-    var ymax = -8 * (selected[1] + selected[3]) / 70;
-    if (selected.length > 0 && sculptselected.length > 0) {
-        for (var i = 0; i < cloudpos.length; i += 3) {
-            if (cloudpos[i] >= xmin && cloudpos[i] <= xmax && cloudpos[i + 1] >= ymin && cloudpos[i + 1] <= ymax) {
-                colors.push(1, 0, 0, 1);
-            }
-            else {
-                colors.push(0, 0, 0, 1);
-            }
-        }
-    }
-    else {
-        if (selected.length > 0) {
-            for (var i = 0; i < cloudpos.length; i += 3) {
-                if (cloudpos[i] >= xmin && cloudpos[i] <= xmax) {
-                    colors.push(1, 0, 0, 1);
-                }
-                else {
-                    colors.push(0, 0, 0, 1);
-                }
-            }
-        }
-        else {
-            if (sculptselected.length > 0) {
-                for (var i = 0; i < cloudpos.length; i += 3) {
-                    if (cloudpos[i + 1] >= ymin && cloudpos[i + 1] <= ymax) {
-                        colors.push(1, 0, 0, 1);
-                    }
-                    else {
-                        colors.push(0, 0, 0, 1);
-                    }
-                }
-            }
-        }
-    }
-    console.log(selected);
-    console.log(sculptselected);
-    console.log(colors);
-    cloud.setVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
 }
 
 var deform = function() {
@@ -675,36 +630,36 @@ var calculatenormal = function(i, j, k) {
 var isedge = function(i, j, k) {
     // check i values
     if (i > 0) {
-        if (allcoords[i - 1][j][k] != 2) {
+        if (allcoords[i - 1][j][k] < 7) {
             return true;
         }
     }
     if (i < 99) {
-        if (allcoords[i + 1][j][k] != 2) {
+        if (allcoords[i + 1][j][k] < 7) {
             return true;
         }
     }
 
     // check j
     if (j > 0) {
-        if (allcoords[i][j - 1][k] != 2) {
+        if (allcoords[i][j - 1][k] < 7) {
             return true;
         }
     }
     if (j < 49) {
-        if (allcoords[i][j + 1][k] != 2) {
+        if (allcoords[i][j + 1][k] < 7) {
             return true;
         }
     }
 
     // check k
     if (k > 0) {
-        if (allcoords[i][j][k - 1] != 2) {
+        if (allcoords[i][j][k - 1] < 7) {
             return true;
         }
     }
     if (k < 99) {
-        if (allcoords[i][j][k + 1] != 2) {
+        if (allcoords[i][j][k + 1] < 7) {
             return true;
         }
     }
