@@ -1,8 +1,11 @@
 var canvas2 = document.getElementById('canvas2');
 var ctx2 = canvas2.getContext('2d');
 var hint = hintlayer.getContext('2d');
+var sculptselect = sculptselectlayer.getContext('2d');
 var coordinates2 = [];
+var sculptselected = [];
 var drawing2 = false;
+var sculptselecting = false;
 var timer2 = 0;
 var wasoutside2 = false;
 var ymin = 0;
@@ -132,17 +135,50 @@ function mirror() {
 }
 
 function selectsculptclicked(e) {
+    canvas2.style.cursor = "crosshair";
+    sculptselecting = true;
 
+    // clear prev selections
+    ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+    ctx2.moveTo(coordinates2[0][0], coordinates2[0][1]);
+    ctx2.beginPath();
+    for (var i = 1; i < coordinates2.length; i++) {
+        ctx2.lineTo(coordinates2[i][0], coordinates2[i][1]);
+        ctx2.stroke();
+    }
+    ctx2.closePath();
+    ctx2.fill();
+
+    var rectangle = sculptselectlayer.getBoundingClientRect();
+    var x = e.clientX - rectangle.left;
+    var y = e.clientY - rectangle.top;
+    sculptselected.push(x, y);
+    sculptselect.beginPath();
 }
 
 function selectsculptmoved(e) {
-
+    if (sculptselecting) {
+        var rectangle = sculptselectlayer.getBoundingClientRect();
+        if (sculptselected.length > 2) {
+            sculptselected.pop();
+            sculptselected.pop();
+        }
+        var width = e.clientX - rectangle.left - sculptselected[0];
+        var height = e.clientY - rectangle.top - sculptselected[1];
+        sculptselected.push(width, height);
+        sculptselect.clearRect(0, 0, sculptselectlayer.width, sculptselectlayer.height);
+        sculptselect.strokeRect(sculptselected[0], sculptselected[1], width, height);
+    }
 }
 
 function selectsculptdone(e) {
-
+    ctx2.strokeRect(sculptselected[0], sculptselected[1], sculptselected[2], sculptselected[3]);
+    canvas2.style.cursor = "auto";
+    sculptselecting = false;
+    modify();
+    sculptselected = [];
+    sculptselect.closePath();
 }
-
 
 // mouse clicks will draw
 canvas2.addEventListener("pointerdown", sculptclicked);

@@ -435,6 +435,53 @@ var createpointcloud = function() {
     camera.setTarget(cloud.getAbsolutePivotPoint());
 }
 
+var modify = function() {
+    cloudpos = [...positions];
+    colors = [];
+    var xmin = -8 * selected[0] / 70;
+    var xmax = -8 * (selected[0] + selected[2]) / 70;
+    var ymin = -8 * selected[1] / 70;
+    var ymax = -8 * (selected[1] + selected[3]) / 70;
+    if (selected.length > 0 && sculptselected.length > 0) {
+        for (var i = 0; i < cloudpos.length; i += 3) {
+            if (cloudpos[i] >= xmin && cloudpos[i] <= xmax && cloudpos[i + 1] >= ymin && cloudpos[i + 1] <= ymax) {
+                colors.push(1, 0, 0, 1);
+            }
+            else {
+                colors.push(0, 0, 0, 1);
+            }
+        }
+    }
+    else {
+        if (selected.length > 0) {
+            for (var i = 0; i < cloudpos.length; i += 3) {
+                if (cloudpos[i] >= xmin && cloudpos[i] <= xmax) {
+                    colors.push(1, 0, 0, 1);
+                }
+                else {
+                    colors.push(0, 0, 0, 1);
+                }
+            }
+        }
+        else {
+            if (sculptselected.length > 0) {
+                for (var i = 0; i < cloudpos.length; i += 3) {
+                    if (cloudpos[i + 1] >= ymin && cloudpos[i + 1] <= ymax) {
+                        colors.push(1, 0, 0, 1);
+                    }
+                    else {
+                        colors.push(0, 0, 0, 1);
+                    }
+                }
+            }
+        }
+    }
+    console.log(selected);
+    console.log(sculptselected);
+    console.log(colors);
+    cloud.setVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
+}
+
 var deform = function() {
     var xmin = positions[0];
     var xmax = positions[0];

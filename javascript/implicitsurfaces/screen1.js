@@ -1,11 +1,14 @@
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
+var select = selectlayer.getContext('2d');
 var coordinates = [];
 var drawing = false;
+var selecting = false;
 var wasoutside = false;
 var drawxmax = 0;
 var drawxmin = 0;
 var allcoords = [];
+var selected = [];
 var timer = 0;
 
 // 800 x 400 x 800 - divide all by 8
@@ -91,16 +94,49 @@ function updatecoords() {
 }
 
 function selectclicked(e) {
-    canvas.style.cursor = crosshair;
+    canvas.style.cursor = "crosshair";
+    selecting = true;
 
+    // clear prev selections
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.moveTo(coordinates[0][0], coordinates[0][1]);
+    ctx.beginPath();
+    for (var i = 1; i < coordinates.length; i++) {
+        ctx.lineTo(coordinates[i][0], coordinates[i][1]);
+        ctx.stroke();
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    var rectangle = selectlayer.getBoundingClientRect();
+    var x = e.clientX - rectangle.left;
+    var y = e.clientY - rectangle.top;
+    selected.push(x, y);
+    select.beginPath();
 }
 
 function selectmoved(e) {
-
+    if (selecting) {
+        var rectangle = selectlayer.getBoundingClientRect();
+        if (selected.length > 2) {
+            selected.pop();
+            selected.pop();
+        }
+        var width = e.clientX - rectangle.left - selected[0];
+        var height = e.clientY - rectangle.top - selected[1];
+        selected.push(width, height);
+        select.clearRect(0, 0, selectlayer.width, selectlayer.height);
+        select.strokeRect(selected[0], selected[1], width, height);
+    }
 }
 
 function selectdone(e) {
-
+    ctx.strokeRect(selected[0], selected[1], selected[2], selected[3]);
+    canvas.style.cursor = "auto";
+    selecting = false;
+    modify();
+    selected = [];
+    select.closePath();
 }
 
 

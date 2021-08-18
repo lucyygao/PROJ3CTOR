@@ -47,20 +47,37 @@
       position: absolute;
       top: 0;
       left: 0;
+      background: transparent;
     }
 
-    /* canvas {
-      vertical-align: bottom;
-    } */
+    #sketching canvas {
+
+      position: absolute;
+      top: 9px;
+    }
+
+    #canvas {
+      z-index: 2;
+      /* border: 5px solid blue; */
+      background: transparent;
+    }
+
+    #selectlayer {
+      z-index: 1;
+      /* border: 5px solid blueviolet; */
+      background: transparent;
+    }
 
     #hintlayer {
-      z-index: 1;
-      background: transparent;
+      z-index: 2;
     }
 
     #canvas2 {
-      z-index: 2;
-      background: transparent;
+      z-index: 3;
+    }
+
+    #sculptselectlayer {
+      z-index: 1;
     }
 
   </style>
@@ -73,17 +90,20 @@
     <script src="../javascript/implicitsurfaces/screen3d.js"></script>
   </div>
 
-  <button id="button" type="button" onclick="select()">Select</button>
+  <button id="button" type="button">Select</button>
   <script src="../javascript/implicitsurfaces/button.js"></script>
+
 
   <div id="sketching" class="drawing">
     <canvas id="canvas" height="390" width="800"></canvas>
+    <canvas id="selectlayer" height="390" width="800"></canvas>
     <script src="../javascript/implicitsurfaces/screen1.js"></script>
   </div>
 
   <div id="sculpting" class="drawing">
     <canvas id="canvas2" height="390" width="800"></canvas>
     <canvas id="hintlayer" height="390" width="800"></canvas>
+    <canvas id="sculptselectlayer" height="390" width="800"></canvas>
     <script src="../javascript/implicitsurfaces/screen2.js"></script>
   </div>
 
