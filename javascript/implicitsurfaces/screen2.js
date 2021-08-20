@@ -7,6 +7,7 @@ var sculptselected = [];
 var drawing2 = false;
 var sculptselecting = false;
 var timer2 = 0;
+var prevlen2 = 0;
 var wasoutside2 = false;
 var ymin = 0;
 var ymax = 0;
@@ -21,27 +22,10 @@ function sculptclicked(e) {
         var rectangle = canvas2.getBoundingClientRect();
         var x = e.clientX - rectangle.left;
         var y = e.clientY - rectangle.top;
-        var inbounds = true;
-
-        // extra check if there's a selection
-        if (sculptselected.length > 0) {
-            var xmin = sculptselected[0]
-            var xmax = sculptselected[0] + sculptselected[2];
-            var ymin = sculptselected[1];
-            var ymax = sculptselected[1] + sculptselected[3];
-
-            if (x < xmin || x > xmax || y < ymin || y > ymax) {
-                inbounds = false;
-            }
+        coordinates2.push([x, y]);
+        for (var k = 0; k < 100; k++) {
+            allcoords[k][Math.floor(y/8)][Math.floor(x/8)] += 2;
         }
-
-        if (inbounds) {
-            coordinates2.push([x, y]);
-            for (var k = 0; k < 100; k++) {
-                allcoords[k][Math.floor(y/8)][Math.floor(x/8)] += 2;
-            }
-        }
-
         // draw layer
         ctx2.moveTo(x, y);
         ctx2.strokeStyle = 'black';
@@ -61,6 +45,18 @@ function sculptoutside(e) {
         done(e);
         wasoutside2 = true;
         return true;
+    }
+
+    // extra check if there's a selection
+    if (sculptselected.length > 0) {
+        var xmin = sculptselected[0]
+        var xmax = sculptselected[0] + sculptselected[2];
+        var ymin = sculptselected[1];
+        var ymax = sculptselected[1] + sculptselected[3];
+
+        if (x < xmin || x > xmax || y < ymin || y > ymax) {
+            return true;
+        }
     }
 }
 
@@ -93,8 +89,11 @@ function sculptdone(e) {
     ctx2.closePath();
     ctx2.fill();
     drawing2 = false;
-    sculptupdatecoords();
-    createpointcloud();
+    if (coordinates2.length != prevlen2) {
+        sculptupdatecoords();
+        createpointcloud();
+    }
+    prevlen2 = coordinates2.length;
 }
 
 function sculptupdatecoords() {
@@ -104,13 +103,13 @@ function sculptupdatecoords() {
     var ymin = 0;
     var ymax = 50;
 
-    // if there's a selection, only update that part
-    if (selected.length > 0) {
-        xmin = sculptselected[0]
-        xmax = sculptselected[0] + sculptselected[2];
-        ymin = sculptselected[1];
-        ymax = sculptselected[1] + sculptselected[3];
-    }
+    // // if there's a selection, only update that part
+    // if (selected.length > 0) {
+    //     xmin = sculptselected[0]
+    //     xmax = sculptselected[0] + sculptselected[2];
+    //     ymin = sculptselected[1];
+    //     ymax = sculptselected[1] + sculptselected[3];
+    // }
 
     // get every eighth pixel and update matrix
     for (var i = xmin; i < xmax; i++) {
@@ -165,6 +164,7 @@ function mirror() {
 
 function selectsculptclicked(e) {
     canvas2.style.cursor = "crosshair";
+    sculptselected = [];
     sculptselecting = true;
 
     // clear prev selections
@@ -205,7 +205,7 @@ function selectsculptdone(e) {
     canvas2.style.cursor = "auto";
     sculptselecting = false;
     // modify();
-    sculptselected = [];
+
     sculptselect.closePath();
 }
 

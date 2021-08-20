@@ -406,7 +406,7 @@ var createpointcloud = function() {
         for (var j = 0; j < 50; j++) {
             for (var k = 0; k < 100; k++) {
                 // must have value of 2 (double intersection) and on the surface
-                if (allcoords[i][j][k] > 5 && allcoords[i][j][k] % 5 == 2 && isedge(i, j, k)) {
+                if (intersection(i, j, k) && isedge(i, j, k)) {
                     positions.push(-8 * i / 70, -8 * j / 70,  8 * k / 70);
                     indices.push(p);
                     var norm = calculatenormal(i, j, k);
@@ -426,7 +426,7 @@ var createpointcloud = function() {
     cloud.material.pointsCloud = true;
     // console.log(pointslider.value());
     // figure out to get point value here jflsdkfjklsdjfklsdjf
-    cloud.material.pointSize = pointslider.value();
+    cloud.material.pointSize = 10;
     cloud.material.backFaceCulling = false;
 
     cloud.setPivotPoint(cloud.getBoundingInfo().boundingSphere.center);
@@ -435,6 +435,17 @@ var createpointcloud = function() {
     initnorm = [...normals];
 
     camera.setTarget(cloud.getAbsolutePivotPoint());
+}
+
+var intersection = function(i, j, k) {
+    var val = allcoords[i][j][k];
+    if (val <= 5) {
+        return false;
+    }
+    if (val % 5 == 0 || val % 2 == 0) {
+        return false;
+    }
+    return ((val % 5) % 2 == 0);
 }
 
 var deform = function() {
