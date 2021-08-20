@@ -678,6 +678,27 @@ var isedge = function(i, j, k) {
     return false;
 }
 
+var createboxes = function(xmin, xmax, ymin, ymax, zmin, zmax) {
+    var c1 = BABYLON.MeshBuilder.CreateBox("c1", {size: 0.2}, scene);
+    var c2 = BABYLON.MeshBuilder.CreateBox("c2", {size: 0.2}, scene);
+    var c3 = BABYLON.MeshBuilder.CreateBox("c3", {size: 0.2}, scene);
+    var c4 = BABYLON.MeshBuilder.CreateBox("c4", {size: 0.2}, scene);
+    var c5 = BABYLON.MeshBuilder.CreateBox("c5", {size: 0.2}, scene);
+    var c6 = BABYLON.MeshBuilder.CreateBox("c6", {size: 0.2}, scene);
+    var c7 = BABYLON.MeshBuilder.CreateBox("c7", {size: 0.2}, scene);
+    var c8 = BABYLON.MeshBuilder.CreateBox("c8", {size: 0.2}, scene);
+
+    c1.position = new BABYLON.Vector3(xmin, ymin, zmin);
+    c2.position = new BABYLON.Vector3(xmin, ymax, zmin);
+    c3.position = new BABYLON.Vector3(xmax, ymin, zmin);
+    c4.position = new BABYLON.Vector3(xmax, ymax, zmin);
+    c5.position = new BABYLON.Vector3(xmin, ymin, zmax);
+    c6.position = new BABYLON.Vector3(xmin, ymax, zmax);
+    c7.position = new BABYLON.Vector3(xmax, ymin, zmax);
+    c8.position = new BABYLON.Vector3(xmax, ymax, zmax);
+    console.log("Created");
+}
+
 // SOLID PARTICLE SYSTEM VERSION -- CURRENTLY NOT USED, LAGGY BECAUSE TOO MANY PARTICLES
 var createmesh = function() {
     const SPS = new BABYLON.SolidParticleSystem("SPS", scene, {expandable: true, useModelMaterial: true});

@@ -23,9 +23,9 @@ function sculptclicked(e) {
         var x = e.clientX - rectangle.left;
         var y = e.clientY - rectangle.top;
         coordinates2.push([x, y]);
-        for (var k = 0; k < 100; k++) {
-            allcoords[k][Math.floor(y/8)][Math.floor(x/8)] += 2;
-        }
+        // for (var k = 0; k < 100; k++) {
+        //     allcoords[k][Math.floor(y/8)][Math.floor(x/8)] += 2;
+        // }
         // draw layer
         ctx2.moveTo(x, y);
         ctx2.strokeStyle = 'black';
@@ -98,22 +98,10 @@ function sculptdone(e) {
 
 function sculptupdatecoords() {
     var pixel;
-    var xmin = 0;
-    var xmax = 100;
-    var ymin = 0;
-    var ymax = 50;
-
-    // // if there's a selection, only update that part
-    // if (selected.length > 0) {
-    //     xmin = sculptselected[0]
-    //     xmax = sculptselected[0] + sculptselected[2];
-    //     ymin = sculptselected[1];
-    //     ymax = sculptselected[1] + sculptselected[3];
-    // }
 
     // get every eighth pixel and update matrix
-    for (var i = xmin; i < xmax; i++) {
-        for (var j = ymin; j < ymax; j++) {
+    for (var i = 0; i < 100; i++) {
+        for (var j = 0; j < 50; j++) {
             pixel = ctx2.getImageData(i*8, j*8, 1, 1);
 
             // add to matrix only if the pixel isn't the default
@@ -205,6 +193,31 @@ function selectsculptdone(e) {
     canvas2.style.cursor = "auto";
     sculptselecting = false;
     // modify();
+
+    if (selected.length > 0 && sculptselected.length > 0) {
+        console.log("yoh");
+        var xmin = selected[0]
+        var xmax = selected[0] + selected[2];
+        var zmin = sculptselected[0]
+        var zmax = sculptselected[0] + sculptselected[2];
+        var ymin, ymax;
+
+        if (selected[1] < sculptselected[1]) {
+            ymin = selected[1];
+        }
+        else {
+            ymin = sculptselected[1];
+        }
+
+        if (selected[1] + selected[3] < sculptselected[1] + sculptselected[3]) {
+            ymax = selected[1] + selected[3];
+        }
+        else {
+            ymax = sculptselected[1] + sculptselected[3];
+        }
+
+        createboxes(-xmin/70, -xmax/70, -ymin/70, -ymax/70, zmin/70, zmax/70);
+    }
 
     sculptselect.closePath();
 }
