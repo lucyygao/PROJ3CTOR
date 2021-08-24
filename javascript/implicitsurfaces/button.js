@@ -14,8 +14,6 @@ function select() {
         canvas2.addEventListener("pointermove", selectsculptmoved);
         canvas2.addEventListener("pointerup", selectsculptdone);
         document.getElementById('button').innerHTML = "Draw";
-        // document.getElementById('canvas').style.zIndex = 1;
-        // document.getElementById('selectlayer').style.zIndex = 2;
     }
     else {
         canvas.removeEventListener("pointerdown", selectclicked);
@@ -32,8 +30,6 @@ function select() {
         canvas2.addEventListener("pointermove", sculptmoved);
         canvas2.addEventListener("pointerup", sculptdone);
         document.getElementById('button').innerHTML = "Select";
-        // document.getElementById('canvas').style.zIndex = 2;
-        // document.getElementById('selectlayer').style.zIndex = 1;
     }
 }
 

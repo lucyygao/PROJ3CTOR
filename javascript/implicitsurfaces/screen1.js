@@ -49,7 +49,7 @@ function outside(e) {
 
     // extra check if there's a selection
     if (selected.length > 0) {
-        var xmin = selected[0]
+        var xmin = selected[0];
         var xmax = selected[0] + selected[2];
         var ymin = selected[1];
         var ymax = selected[1] + selected[3];
@@ -101,12 +101,45 @@ function done(e) {
 
 function updatecoords() {
     var pixel;
-    for (var i = 0; i < 100; i++) {
-        for (var j = 0; j < 50; j++) {
+    var zmin = 0;
+    var zmax = 100;
+    var ymin = 0;
+    var ymax = 50;
+    var xmin = 0;
+    var xmax = 100;
+
+    if (selected.length > 0) {
+        var xmin = Math.floor(selected[0]/8);
+        var xmax = Math.floor((selected[0] + selected[2])/8);
+        var ymin = Math.floor(selected[1]/8);
+        var ymax = Math.floor((selected[1] + selected[3])/8);
+    }
+
+    if (sculptselected.length > 0) {
+        var zmin = Math.floor(sculptselected[0]/8);
+        var zmax = Math.floor((sculptselected[0] + sculptselected[2])/8);
+
+        if (selected.length > 0) {
+            if (sculptselected[1] < selected[1]) {
+                ymin = Math.floor(sculptselected[1]/8);
+            }
+            if (sculptselected[1] + sculptselected[3] < selected[1] + selected[3]) {
+                ymax = Math.floor((sculptselected[1] + sculptselected[3])/8);
+            }
+        }
+        else {
+            ymin = Math.floor(sculptselected[1]/8);
+            ymax = Math.floor((sculptselected[1] + sculptselected[3])/8);
+        }
+    }
+
+    console.log("first " + xmin + " " + xmax + " " + ymin + " " + ymax + " " + zmin + " " + zmax);
+    for (var i = xmin + 1; i < xmax; i++) {
+        for (var j = ymin + 1; j < ymax; j++) {
             pixel = ctx.getImageData(i*8, j*8, 1, 1);
 
             if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
-                for (var k = 0; k < 100; k++) {
+                for (var k = zmin + 1; k < zmax; k++) {
                     allcoords[i][j][k] += 5;
                 }
             }

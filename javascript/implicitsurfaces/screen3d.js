@@ -405,7 +405,7 @@ var createpointcloud = function() {
     for (var i = 0; i < 100; i++) {
         for (var j = 0; j < 50; j++) {
             for (var k = 0; k < 100; k++) {
-                // must have value of 2 (double intersection) and on the surface
+                // must be a double intersection and on the surface
                 if (intersection(i, j, k) && isedge(i, j, k)) {
                     positions.push(-8 * i / 70, -8 * j / 70,  8 * k / 70);
                     indices.push(p);
@@ -445,7 +445,7 @@ var intersection = function(i, j, k) {
     if (val % 5 == 0 || val % 2 == 0) {
         return false;
     }
-    return ((val % 5) % 2 == 0);
+    return true;
 }
 
 var deform = function() {
@@ -696,7 +696,19 @@ var createboxes = function(xmin, xmax, ymin, ymax, zmin, zmax) {
     c6.position = new BABYLON.Vector3(xmin, ymax, zmax);
     c7.position = new BABYLON.Vector3(xmax, ymin, zmax);
     c8.position = new BABYLON.Vector3(xmax, ymax, zmax);
-    console.log("Created");
+
+    var green = new BABYLON.StandardMaterial("greenmaterial", scene);
+    green.diffuseColor = new BABYLON.Color3(0, 1, 0);
+    green.backFaceCulling = false;
+
+    c1.material = green;
+    c2.material = green;
+    c3.material = green;
+    c4.material = green;
+    c5.material = green;
+    c6.material = green;
+    c7.material = green;
+    c8.material = green;
 }
 
 // SOLID PARTICLE SYSTEM VERSION -- CURRENTLY NOT USED, LAGGY BECAUSE TOO MANY PARTICLES

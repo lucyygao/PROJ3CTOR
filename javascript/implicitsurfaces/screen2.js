@@ -49,7 +49,7 @@ function sculptoutside(e) {
 
     // extra check if there's a selection
     if (sculptselected.length > 0) {
-        var xmin = sculptselected[0]
+        var xmin = sculptselected[0];
         var xmax = sculptselected[0] + sculptselected[2];
         var ymin = sculptselected[1];
         var ymax = sculptselected[1] + sculptselected[3];
@@ -98,15 +98,49 @@ function sculptdone(e) {
 
 function sculptupdatecoords() {
     var pixel;
+    var zmin = 0;
+    var zmax = 100;
+    var ymin = 0;
+    var ymax = 50;
+    var xmin = 0;
+    var xmax = 100;
+
+    if (sculptselected.length > 0) {
+        var zmin = Math.floor(sculptselected[0]/8);
+        var zmax = Math.floor((sculptselected[0] + sculptselected[2])/8);
+        var ymin = Math.floor(sculptselected[1]/8);
+        var ymax = Math.floor((sculptselected[1] + sculptselected[3])/8);
+    }
+
+    if (selected.length > 0) {
+        var xmin = Math.floor(selected[0]/8);
+        var xmax = Math.floor((selected[0] + selected[2])/8);
+
+        if (sculptselected.length > 0) {
+            if (selected[1] < sculptselected[1]) {
+                ymin = Math.floor(selected[1]/8);
+            }
+            if (selected[1] + selected[3] < sculptselected[1] + sculptselected[3]) {
+                ymax = Math.floor((selected[1] + selected[3])/8);
+            }
+        }
+        else {
+            ymin = Math.floor(selected[1]/8);
+            ymax = Math.floor((selected[1] + selected[3])/8);
+        }
+    }
+
+    console.log(xmin + " " + xmax + " " + ymin + " " + ymax + " " + zmin + " " + zmax);
+
 
     // get every eighth pixel and update matrix
-    for (var i = 0; i < 100; i++) {
-        for (var j = 0; j < 50; j++) {
+    for (var i = zmin + 1; i < zmax; i++) {
+        for (var j = ymin + 1; j < ymax; j++) {
             pixel = ctx2.getImageData(i*8, j*8, 1, 1);
 
             // add to matrix only if the pixel isn't the default
             if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
-                for (var k = 0; k < 100; k++) {
+                for (var k = xmin + 1; k < xmax; k++) {
                     allcoords[k][j][i] += 2;
 
                     // // remove extra line when overlap
