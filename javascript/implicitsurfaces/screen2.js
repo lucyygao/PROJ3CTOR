@@ -28,8 +28,16 @@ function sculptclicked(e) {
         // }
         // draw layer
         ctx2.moveTo(x, y);
-        ctx2.strokeStyle = 'black';
-        ctx2.fillStyle = 'blueviolet';
+        if (sculptselected.length > 0) {
+            ctx2.globalAlpha = 0.4;
+            ctx2.strokeStyle = 'greenyellow';
+            ctx2.fillStyle = 'green';
+        }
+        else {
+            ctx2.globalAlpha = 1;
+            ctx2.strokeStyle = 'black';
+            ctx2.fillStyle = 'blueviolet';
+        }
         ctx2.lineWidth = 1;
         ctx2.beginPath();
         ctx2.lineTo(x, y);
@@ -134,13 +142,13 @@ function sculptupdatecoords() {
 
 
     // get every eighth pixel and update matrix
-    for (var i = zmin + 1; i < zmax; i++) {
-        for (var j = ymin + 1; j < ymax; j++) {
+    for (var i = zmin; i < zmax; i++) {
+        for (var j = ymin; j < ymax; j++) {
             pixel = ctx2.getImageData(i*8, j*8, 1, 1);
 
             // add to matrix only if the pixel isn't the default
             if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
-                for (var k = xmin + 1; k < xmax; k++) {
+                for (var k = xmin; k < xmax; k++) {
                     allcoords[k][j][i] += 2;
 
                     // // remove extra line when overlap
@@ -191,6 +199,9 @@ function selectsculptclicked(e) {
 
     // clear prev selections
     ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+    ctx2.globalAlpha = 1;
+    ctx2.strokeStyle = 'black';
+    ctx2.fillStyle = 'blueviolet';
     ctx2.moveTo(coordinates2[0][0], coordinates2[0][1]);
     ctx2.beginPath();
     for (var i = 1; i < coordinates2.length; i++) {
@@ -204,6 +215,7 @@ function selectsculptclicked(e) {
     var x = e.clientX - rectangle.left;
     var y = e.clientY - rectangle.top;
     sculptselected.push(x, y);
+    sculptselect.strokeStyle = 'green';
     sculptselect.beginPath();
 }
 
@@ -223,34 +235,14 @@ function selectsculptmoved(e) {
 }
 
 function selectsculptdone(e) {
+    ctx2.strokeStyle = 'greenyellow';
     ctx2.strokeRect(sculptselected[0], sculptselected[1], sculptselected[2], sculptselected[3]);
     canvas2.style.cursor = "auto";
     sculptselecting = false;
     // modify();
 
     if (selected.length > 0 && sculptselected.length > 0) {
-        console.log("yoh");
-        var xmin = selected[0]
-        var xmax = selected[0] + selected[2];
-        var zmin = sculptselected[0]
-        var zmax = sculptselected[0] + sculptselected[2];
-        var ymin, ymax;
-
-        if (selected[1] < sculptselected[1]) {
-            ymin = selected[1];
-        }
-        else {
-            ymin = sculptselected[1];
-        }
-
-        if (selected[1] + selected[3] < sculptselected[1] + sculptselected[3]) {
-            ymax = selected[1] + selected[3];
-        }
-        else {
-            ymax = sculptselected[1] + sculptselected[3];
-        }
-
-        createboxes(-xmin/70, -xmax/70, -ymin/70, -ymax/70, zmin/70, zmax/70);
+        setupboxes();
     }
 
     sculptselect.closePath();
