@@ -402,9 +402,11 @@ var cloud = new BABYLON.Mesh("cloud", scene);
 var positions = [];
 var indices = [];
 var normals = [];
-
 var initpos = [];
 var initnorm = [];
+
+// export
+var objexport = ["g\n"];
 
 var createpointcloud = function() {
     var p = 0;
@@ -418,11 +420,21 @@ var createpointcloud = function() {
                     indices.push(p);
                     var norm = calculatenormal(i, j, k);
                     normals.push(norm.x, norm.y, norm.z);
+                    objexport.push("v " + (-8 * i / 70) + " " + (-8 * j / 70) + " " + (8 * k / 70) + "\n");
+                    // objexport.push("vn " + norm.x + " " + norm.y + " " + norm.z + "\n");
                     p++;
                 }
             }
         }
     }
+    for (var n = 0; n < normals.length; n += 3) {
+        // console.log("bruh");
+        objexport.push("vn " + normals[n] + " " + normals[n + 1] + " " + normals[n + 1] + "\n");
+    }
+    for (var v = 1; v <= positions.length; v += 3) {
+        objexport.push("f " + v + "/" + v + " " + (v + 1) + "/" + (v+1) + " " + (v+2) + "/" + (v+2) + "\n");
+    }
+    objexport.push("g");
 
     var vertexData = new BABYLON.VertexData();
     vertexData.positions = positions;
