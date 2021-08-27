@@ -138,9 +138,6 @@ function sculptupdatecoords() {
         }
     }
 
-    console.log(xmin + " " + xmax + " " + ymin + " " + ymax + " " + zmin + " " + zmax);
-
-
     // get every eighth pixel and update matrix
     for (var i = zmin; i < zmax; i++) {
         for (var j = ymin; j < ymax; j++) {

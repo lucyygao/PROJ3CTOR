@@ -141,7 +141,6 @@ function updatecoords() {
         }
     }
 
-    console.log("first " + xmin + " " + xmax + " " + ymin + " " + ymax + " " + zmin + " " + zmax);
     for (var i = xmin; i < xmax; i++) {
         for (var j = ymin; j < ymax; j++) {
             pixel = ctx.getImageData(i*8, j*8, 1, 1);

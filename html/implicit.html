@@ -12,6 +12,7 @@
   <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
   <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
 
+
   <style type="text/css">
     .babylon {
       border: 1px solid black;
@@ -86,6 +87,15 @@
       z-index: 1;
     }
 
+    button {
+      display: block;
+      margin: 13px;
+    }
+
+    .buttons {
+      display: inline-block;
+    }
+
   </style>
 </head>
 
@@ -94,13 +104,15 @@
     <!-- <script src="https://cdn.babylonjs.com/viewer/babylon.viewer.js"></script> -->
     <canvas id="renderCanvas" touch-action="none"></canvas>
     <script src="../javascript/implicitsurfaces/screen3d.js"></script>
+    <script src="../javascript/implicitsurfaces/marching.js"></script>
   </div>
 
-  <button id="button" type="button">Select</button>
-  <script src="../javascript/implicitsurfaces/button.js"></script>
-  <button id="export" type="button" onclick="exportfile()">Export</button>
-  <script src="../javascript/implicitsurfaces/export.js"></script>
-
+  <div class="buttons">
+    <button id="button" type="button">Select</button>
+    <script src="../javascript/implicitsurfaces/button.js"></script>
+    <button id="export" type="button" onclick="exportfile()">Export</button>
+    <script src="../javascript/implicitsurfaces/export.js"></script>
+  </div>
 
   <div id="sketching" class="drawing">
     <canvas id="canvas" height="390" width="800"></canvas>

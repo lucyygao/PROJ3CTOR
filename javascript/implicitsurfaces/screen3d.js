@@ -170,6 +170,12 @@ var createScene = function () {
         }
     });
 
+    // marching cubes
+    var marchbutton = createbutton("250px", "200px", "Marching Cubes");
+    marchbutton.onPointerClickObservable.add(function() {
+        march();
+    });
+
     var panel = new BABYLON.GUI.StackPanel();
     panel.width = "250px";
     panel.left = "-290px";
@@ -284,6 +290,8 @@ var createScene = function () {
     UI.addControl(style);
     UI.addControl(skybutton);
     UI.addControl(matbutton);
+    UI.addControl(deformbutton);
+    UI.addControl(marchbutton);
     UI.addControl(panel);
     panel.addControl(resetbutton);
     panel.addControl(pointsize);
@@ -292,9 +300,6 @@ var createScene = function () {
     panel.addControl(sizeslider);
     panel.addControl(squeeze);
     panel.addControl(squeezeslider);
-
-    UI.addControl(deformbutton);
-
 
 
     // DELETE LATER ----------------------------------------------------
@@ -431,9 +436,7 @@ var createpointcloud = function() {
         // console.log("bruh");
         objexport.push("vn " + normals[n] + " " + normals[n + 1] + " " + normals[n + 1] + "\n");
     }
-    for (var v = 1; v <= positions.length; v += 3) {
-        objexport.push("f " + v + "/" + v + " " + (v + 1) + "/" + (v+1) + " " + (v+2) + "/" + (v+2) + "\n");
-    }
+    // needs faces, but i don't have the triangles :/
     objexport.push("g");
 
     var vertexData = new BABYLON.VertexData();
@@ -454,6 +457,13 @@ var createpointcloud = function() {
     initnorm = [...normals];
 
     camera.setTarget(cloud.getAbsolutePivotPoint());
+}
+
+var march = function() {
+    // console.log(positions);
+    var posnorms = marchrender(positions, normals);
+    cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, posnorms[0]);
+    cloud.updateVerticesData(BABYLON.VertexBuffer.NormalKind, posnorms[1]);
 }
 
 var intersection = function(i, j, k) {
