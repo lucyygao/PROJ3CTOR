@@ -30,13 +30,13 @@ function sculptclicked(e) {
         ctx2.moveTo(x, y);
         if (sculptselected.length > 0) {
             ctx2.globalAlpha = 0.4;
-            ctx2.strokeStyle = 'greenyellow';
-            ctx2.fillStyle = 'green';
+            ctx2.strokeStyle = '#606375';
+            ctx2.fillStyle = '#606375';
         }
         else {
             ctx2.globalAlpha = 1;
-            ctx2.strokeStyle = 'black';
-            ctx2.fillStyle = 'blueviolet';
+            ctx2.strokeStyle = '#888fa0';
+            ctx2.fillStyle = '#a0acbb';
         }
         ctx2.lineWidth = 1;
         ctx2.beginPath();
@@ -146,7 +146,9 @@ function sculptupdatecoords() {
             // add to matrix only if the pixel isn't the default
             if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
                 for (var k = xmin; k < xmax; k++) {
-                    allcoords[k][j][i] += 2;
+                    if (allcoords[k][j][i] == 0 || allcoords[k][j][i] == 5) {
+                        allcoords[k][j][i] += 2;
+                    }
 
                     // // remove extra line when overlap
                     // if (allcoords[k][j][i] == 3) {
@@ -197,8 +199,8 @@ function selectsculptclicked(e) {
     // clear prev selections
     ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
     ctx2.globalAlpha = 1;
-    ctx2.strokeStyle = 'black';
-    ctx2.fillStyle = 'blueviolet';
+    ctx2.strokeStyle = '#888fa0';
+    ctx2.fillStyle = '#a0acbb';
     ctx2.moveTo(coordinates2[0][0], coordinates2[0][1]);
     ctx2.beginPath();
     for (var i = 1; i < coordinates2.length; i++) {
@@ -212,7 +214,7 @@ function selectsculptclicked(e) {
     var x = e.clientX - rectangle.left;
     var y = e.clientY - rectangle.top;
     sculptselected.push(x, y);
-    sculptselect.strokeStyle = 'green';
+    sculptselect.strokeStyle = '#606375';
     sculptselect.beginPath();
 }
 
@@ -232,7 +234,7 @@ function selectsculptmoved(e) {
 }
 
 function selectsculptdone(e) {
-    ctx2.strokeStyle = 'greenyellow';
+    ctx2.strokeStyle = '#606375';
     ctx2.strokeRect(sculptselected[0], sculptselected[1], sculptselected[2], sculptselected[3]);
     canvas2.style.cursor = "auto";
     sculptselecting = false;

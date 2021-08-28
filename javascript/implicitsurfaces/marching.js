@@ -49,7 +49,6 @@ var count = 0;
 
 var positionArray = [];
 var normalArray = [];
-console.log("before " + positionArray);
 
 ///////////////////////
 // Polygonization

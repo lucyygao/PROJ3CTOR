@@ -1,19 +1,27 @@
 var createbutton = function(left, top, word) {
     var button = BABYLON.GUI.Button.CreateSimpleButton("button", word);
-    button.width = "150px";
-    button.height = "40px";
+    button.width = "180px";
+    button.height = "25px";
     button.color = "white";
-    button.background = "#808090";
-    button.left = left;
-    button.top = top;
+    button.background = "#aaacbc";
+    button.thickness = 0;
+    button.cornerRadius = 10;
+    // button.left = left;
+    // button.top = top;
+    button.fontFamily = "Titillium Web";
+    button.fontSize = 15;
     return button;
 }
 
 var createtext = function(text) {
     var textbox = new BABYLON.GUI.TextBlock();
     textbox.text = text;
-    textbox.height = "30px";
-    textbox.color = "white";
+    textbox.height = "15px";
+    textbox.fontFamily = "Titillium Web";
+    textbox.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    textbox.paddingLeft = "10px";
+    textbox.color = "black";
+    textbox.fontSize = 12;
     return textbox;
 }
 var createslider = function(min, max, value) {
@@ -22,9 +30,11 @@ var createslider = function(min, max, value) {
     slider.maximum = max;
     slider.value = value;
     slider.height = "20px";
-    slider.width = "160px";
-    slider.color = "#808090";
-    slider.background = "grey";
+    slider.width = "190px";
+    slider.color = "#404358";
+    slider.background = "#aaacbc";
+    slider.thumbWidth = "10px";
+    slider.fontFamily = "Titillium Web";
     return slider;
 }
 
@@ -51,16 +61,30 @@ var createScene = function () {
     // GUI
     var UI = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
+    // font - pulled from https://playground.babylonjs.com/#RZU2XN#11
+    let addFont         =   document.createElement('style');
+    addFont.innerHTML   =   `
+    @font-face {
+        font-family: 'Titillium Web';
+        font-style: normal;
+        font-weight: 400;
+        src: url(https://fonts.gstatic.com/s/titilliumweb/v10/NaPecZTIAOhVxoMyOr9n_E7fdM3mDaZRbryhsA.woff2) format('woff2');
+        unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+    `
+    document.head.appendChild(addFont);
+
     // changing between wireframe, solid, and invisible mode
-    var style = createbutton("-290px", "350px", "Wireframe");
+    var style = createbutton("-290px", "350px", "WIREFRAME");
+    style.top = "-20px";
     style.onPointerClickObservable.add(function() {
-        if (style.children[0].text == "Wireframe") {
-            style.children[0].text = "Solid";
+        if (style.children[0].text == "WIREFRAME") {
+            style.children[0].text = "SOLID";
             material.wireframe = false;
         }
         else {
-            if (style.children[0].text == "Solid") {
-                style.children[0].text = "Invisible";
+            if (style.children[0].text == "SOLID") {
+                style.children[0].text = "INVISIBLE";
                 material.alpha = 0;
                 // remove boxes
                 for (var i = 0; i < scene.meshes.length; i++) {
@@ -71,7 +95,7 @@ var createScene = function () {
                 }
             }
             else {
-                style.children[0].text = "Wireframe";
+                style.children[0].text = "WIREFRAME";
                 material.wireframe = true;
                 material.alpha = 1;
             }
@@ -79,20 +103,21 @@ var createScene = function () {
     });
 
     // turning skybox on and off
-    var skybutton = createbutton("-110px", "350px", "Skybox");
+    var skybutton = createbutton("-110px", "350px", "SKYBOX");
+    skybutton.top = "40px";
     skybutton.onPointerClickObservable.add(function() {
-        if (skybutton.children[0].text == "Skybox") {
-            skybutton.children[0].text = "Navy";
+        if (skybutton.children[0].text == "SKYBOX") {
+            skybutton.children[0].text = "NAVY";
             skybox.visibility = false;
         }
         else {
-            if (skybutton.children[0].text == "Navy") {
+            if (skybutton.children[0].text == "NAVY") {
                 scene.clearColor = new BABYLON.Color3(0.62, 0.62, 0.69);
-                skybutton.children[0].text = "Gray";
+                skybutton.children[0].text = "GRAY";
             }
             else {
                 scene.clearColor = new BABYLON.Color3(0.2, 0.2, 0.3);
-                skybutton.children[0].text = "Skybox";
+                skybutton.children[0].text = "SKYBOX";
                 skybox.visibility = true;
             }
 
@@ -100,24 +125,25 @@ var createScene = function () {
     });
 
     // changing mesh material
-    var matbutton = createbutton("70px", "350px", "Gold");
+    var matbutton = createbutton("70px", "350px", "GOLD");
+    matbutton.top = "45px";
     matbutton.onPointerClickObservable.add(function() {
-        if (matbutton.children[0].text == "Gold") {
-            matbutton.children[0].text = "Blue";
+        if (matbutton.children[0].text == "GOLD") {
+            matbutton.children[0].text = "BLUE";
             cloud.material = blue;
         }
         else {
-            if (matbutton.children[0].text == "Blue") {
-                matbutton.children[0].text = "Red";
+            if (matbutton.children[0].text == "BLUE") {
+                matbutton.children[0].text = "RED";
                 cloud.material = red;
             }
             else {
-                if (matbutton.children[0].text == "Red") {
-                    matbutton.children[0].text = "Silver";
+                if (matbutton.children[0].text == "RED") {
+                    matbutton.children[0].text = "SILVER";
                     cloud.material = silver;
                 }
                 else {
-                    matbutton.children[0].text = "Gold";
+                    matbutton.children[0].text = "GOLD";
                     cloud.material = pbr;
                 }
             }
@@ -126,44 +152,52 @@ var createScene = function () {
     });
 
     // deform
-    var deformbutton = createbutton("250px", "350px", "No Deform");
+    var deformbutton = createbutton("250px", "350px", "NONE");
+    deformbutton.top = "105px";
     deformbutton.onPointerClickObservable.add(function() {
-        if (deformbutton.children[0].text == "No Deform") {
-            deformbutton.children[0].text = "Cylinder";
-            panel.addControl(cyltext);
-            panel.addControl(cylslider);
-            panel.addControl(radiustext);
-            panel.addControl(radiusslider);
+        if (deformbutton.children[0].text == "NONE") {
+            deformbutton.children[0].text = "CYLINDRICAL";
+            rect.addControl(cyltext);
+            rect.addControl(cylslider);
+            rect.addControl(radiustext);
+            rect.addControl(radiusslider);
+            rect.height = "620px";
+            menutitle.top = "-290px";
             deformcylinder();
         }
         else {
-            if (deformbutton.children[0].text == "Cylinder") {
-                deformbutton.children[0].text = "Sphere";
-                panel.removeControl(cyltext);
-                panel.removeControl(cylslider);
-                panel.removeControl(radiustext);
-                panel.removeControl(radiusslider);
-                panel.addControl(phitext);
-                panel.addControl(phislider);
-                panel.addControl(thetatext);
-                panel.addControl(thetaslider);
+            if (deformbutton.children[0].text == "CYLINDRICAL") {
+                deformbutton.children[0].text = "SPHERICAL";
+                rect.removeControl(cyltext);
+                rect.removeControl(cylslider);
+                rect.removeControl(radiustext);
+                rect.removeControl(radiusslider);
+                rect.addControl(phitext);
+                rect.addControl(phislider);
+                rect.addControl(thetatext);
+                rect.addControl(thetaslider);
                 deformsphere();
             }
             else {
-                if (deformbutton.children[0].text == "Sphere") {
-                    deformbutton.children[0].text = "Spiral";
-                    panel.removeControl(phitext);
-                    panel.removeControl(phislider);
-                    panel.removeControl(thetatext);
-                    panel.removeControl(thetaslider);
-                    panel.addControl(spiraltext);
-                    panel.addControl(spiralslider);
+                if (deformbutton.children[0].text == "SPHERICAL") {
+                    deformbutton.children[0].text = "SPIRAL";
+                    rect.removeControl(phitext);
+                    rect.removeControl(phislider);
+                    rect.removeControl(thetatext);
+                    rect.removeControl(thetaslider);
+                    rect.addControl(spiraltext);
+                    rect.addControl(spiralslider);
+                    rect.height = "510px";
+                    menutitle.top = "-235px";
+
                     deformspiral();
                 }
                 else {
-                    deformbutton.children[0].text = "No Deform";
-                    panel.removeControl(spiraltext);
-                    panel.removeControl(spiralslider);
+                    deformbutton.children[0].text = "NONE";
+                    rect.removeControl(spiraltext);
+                    rect.removeControl(spiralslider);
+                    rect.height = "400px";
+                    menutitle.top = "-180px";
                     undodeform();
                 }
             }
@@ -171,135 +205,204 @@ var createScene = function () {
     });
 
     // marching cubes
-    var marchbutton = createbutton("250px", "200px", "Marching Cubes");
-    marchbutton.onPointerClickObservable.add(function() {
-        march();
-    });
+    // var marchbutton = createbutton("250px", "200px", "Marching Cubes");
+    // marchbutton.onPointerClickObservable.add(function() {
+    //     march();
+    // });
 
-    var panel = new BABYLON.GUI.StackPanel();
-    panel.width = "250px";
-    panel.left = "-290px";
-    panel.top = "0px";
-
-    var resetbutton = createbutton("0px", "0px", "Reset");
+    var resetbutton = createbutton("0px", "0px", "RESET");
+    resetbutton.top = "160px";
+    resetbutton.height = "40px";
+    resetbutton.fontSize = 20;
     resetbutton.onPointerClickObservable.add(function() {
         // reset background
         scene.clearColor = new BABYLON.Color3(0.2, 0.2, 0.3);
-        skybutton.children[0].text = "Skybox";
+        skybutton.children[0].text = "SKYBOX";
         skybox.visibility = true;
 
         // reset material
-        matbutton.children[0].text = "Gold";
+        matbutton.children[0].text = "GOLD";
         cloud.material = pbr;
 
         // reset deform
-        deformbutton.children[0].text = "No Deform";
+        deformbutton.children[0].text = "NONE";
         undodeform();
         cloud.scaling.x = 1;
         cloud.scaling.y = 1;
         cloud.scaling.z = 1;
 
         // update gui and slider text
-        panel.removeControl(cyltext);
-        panel.removeControl(cylslider);
-        panel.removeControl(radiustext);
-        panel.removeControl(radiusslider);
-        panel.removeControl(phitext);
-        panel.removeControl(phislider);
-        panel.removeControl(thetatext);
-        panel.removeControl(thetaslider);
-        panel.removeControl(spiraltext);
-        panel.removeControl(spiralslider);
-        size.text = "Scaling: 1";
-        squeeze.text = "Squeeze: 1";
+        rect.removeControl(cyltext);
+        rect.removeControl(cylslider);
+        rect.removeControl(radiustext);
+        rect.removeControl(radiusslider);
+        rect.removeControl(phitext);
+        rect.removeControl(phislider);
+        rect.removeControl(thetatext);
+        rect.removeControl(thetaslider);
+        rect.removeControl(spiraltext);
+        rect.removeControl(spiralslider);
+        rect.height = "400px";
+        menutitle.top = "-180px";
+        size.text = "SCALE: 1";
+        squeeze.text = "SQUEEZE: 1";
 
         // reset pointsize
         cloud.material.pointSize = 10;
-        pointsize.text = "Point Size: 10";
+        pointsize.text = "POINT SIZE: 10";
     });
 
-    var pointsize = createtext("Point Size: 10");
+    var pointsize = createtext("POINT SIZE: 10");
+    pointsize.top = "-145px";
     var pointslider = createslider(1, 30, 10);
+    pointslider.top = "-125px";
     pointslider.onValueChangedObservable.add(function (value) {
         cloud.material.pointSize = value;
-        pointsize.text = "Point Size: " + Math.floor(value);
+        pointsize.text = "POINT SIZE: " + Math.floor(value);
     });
 
-    var phitext = createtext("Deformation (phi): 1");
+    var phitext = createtext("DEFORMATION (PHI): 1");
+    phitext.top = "-255px";
     var phislider = createslider(0, 1, 1);
+    phislider.top = "-235px";
     phislider.onValueChangedObservable.add(function (value) {
         phiconst = value;
         undodeform();
         deformsphere();
-        phitext.text = "Deformation (phi): " + value.toFixed(2);
+        phitext.text = "DEFORMATION (PHI): " + value.toFixed(2);
     });
 
-    var thetatext = createtext("Deformation (theta): 1");
+    var thetatext = createtext("DEFORMATION (THETA): 1");
+    thetatext.top = "-200px";
     var thetaslider = createslider(0, 1, 1);
+    thetaslider.top = "-180px";
     thetaslider.onValueChangedObservable.add(function (value) {
         thetaconst = value;
         undodeform();
         deformsphere();
-        thetatext.text = "Deformation (theta): " + value.toFixed(2);
+        thetatext.text = "DEFORMATION (THETA): " + value.toFixed(2);
     });
 
-    var cyltext = createtext("Deformation (theta): 1");
+    var cyltext = createtext("DEFORMATION (THETA): 1");
+    cyltext.top = "-255px";
     var cylslider = createslider(0, 1, 1);
+    cylslider.top = "-235px";
     cylslider.onValueChangedObservable.add(function (value) {
         cylconst = value;
         undodeform();
         deformcylinder();
-        cyltext.text = "Deformation (theta): " + value.toFixed(2);
+        cyltext.text = "DEFORMATION (THETA): " + value.toFixed(2);
     });
 
-    var spiraltext = createtext("Deformation (theta): 1");
+    var spiraltext = createtext("DEFORMATION (THETA): 1");
+    spiraltext.top = "-200px";
     var spiralslider = createslider(0, 1, 1);
+    spiralslider.top = "-180px";
     spiralslider.onValueChangedObservable.add(function (value) {
         spiralconst = value;
         undodeform();
         deformspiral();
-        spiraltext.text = "Deformation (theta): " + value.toFixed(2);
+        spiraltext.text = "DEFORMATION (THETA): " + value.toFixed(2);
     });
 
-    var radiustext = createtext("Radius: 2");
+    var radiustext = createtext("RADIUS: 2");
+    radiustext.top = "-200px";
     var radiusslider = createslider(-5, 5, 2);
+    radiusslider.top = "-180px";
     radiusslider.onValueChangedObservable.add(function (value) {
         radius = value;
         undodeform();
         deformcylinder();
-        radiustext.text = "Radius: " + value.toFixed(2);
+        radiustext.text = "RADIUS: " + value.toFixed(2);
     });
 
-    var size = createtext("Scaling: 1");
+    var size = createtext("SCALE: 1");
+    size.top = "-90px";
     var sizeslider = createslider(-5, 5, 1);
+    sizeslider.top = "-70px";
     sizeslider.onValueChangedObservable.add(function (value) {
         cloud.scaling.x = value;
         cloud.scaling.y = value;
         cloud.scaling.z = value;
-        size.text = "Scaling: " + value.toFixed(2);
+        size.text = "SCALE: " + value.toFixed(2);
     });
 
-    var squeeze = createtext("Squeeze: 1");
+    var squeeze = createtext("SQUEEZE: 1");
+    squeeze.top = "-35px";
+
     var squeezeslider = createslider(-5, 5, 1);
+    squeezeslider.top = "-15px";
     squeezeslider.onValueChangedObservable.add(function (value) {
         cloud.scaling.z = value;
-        squeeze.text = "Squeeze: " + value.toFixed(2);
+        squeeze.text = "SQUEEZE: " + value.toFixed(2);
     });
 
-    // adding everything to UI
-    UI.addControl(style);
-    UI.addControl(skybutton);
-    UI.addControl(matbutton);
-    UI.addControl(deformbutton);
-    UI.addControl(marchbutton);
-    UI.addControl(panel);
-    panel.addControl(resetbutton);
-    panel.addControl(pointsize);
-    panel.addControl(pointslider);
-    panel.addControl(size);
-    panel.addControl(sizeslider);
-    panel.addControl(squeeze);
-    panel.addControl(squeezeslider);
+    var colortext = createtext("COLOR");
+    colortext.top = "20px";
+
+    var deformtext = createtext("DEFORMATION");
+    deformtext.top = "80px";
+
+    var displaytext = createtext("DISPLAY");
+    displaytext.top = "-45px";
+
+    var backgroundtext = createtext("BACKGROUND");
+    backgroundtext.top = "15px";
+
+    // object container
+    var rect = new BABYLON.GUI.Rectangle();
+    rect.height = "400px";
+    rect.cornerRadius = 7;
+    rect.thickness = 0;
+    rect.background = "#827f92";
+    rect.left = "-300px";
+    rect.top = "190px";
+    rect.width = "200px";
+    UI.addControl(rect);
+    var menutitle = createtext("OBJECT PROPERTIES");
+    menutitle.top = "-180px";
+    menutitle.color = "black";
+    menutitle.fontSize = 15;
+    menutitle.paddingLeft = 0;
+    menutitle.outlineWidth = 0.5;
+    menutitle.outlineColor = "black";
+    menutitle.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    rect.addControl(menutitle);
+    rect.addControl(pointsize);
+    rect.addControl(pointslider);
+    rect.addControl(size);
+    rect.addControl(sizeslider);
+    rect.addControl(squeeze);
+    rect.addControl(squeezeslider);
+    rect.addControl(colortext);
+    rect.addControl(matbutton);
+    rect.addControl(deformtext);
+    rect.addControl(deformbutton);
+    rect.addControl(resetbutton);
+
+    // display container
+    var rect2 = new BABYLON.GUI.Rectangle();
+    rect2.height = "200px";
+    rect2.cornerRadius = 7;
+    rect2.thickness = 0;
+    rect2.background = "#827f92";
+    rect2.left = "300px";
+    rect2.top = "290px";
+    rect2.width = "200px";
+    UI.addControl(rect2);
+    var menutitle2 = createtext("DISPLAY PROPERTIES");
+    menutitle2.top = "-80px";
+    menutitle2.color = "black";
+    menutitle2.fontSize = 15;
+    menutitle2.paddingLeft = 0;
+    menutitle2.outlineWidth = 0.5;
+    menutitle2.outlineColor = "black";
+    menutitle2.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    rect2.addControl(menutitle2);
+    rect2.addControl(displaytext);
+    rect2.addControl(style);
+    rect2.addControl(backgroundtext);
+    rect2.addControl(skybutton);
 
 
     // DELETE LATER ----------------------------------------------------
@@ -474,7 +577,8 @@ var intersection = function(i, j, k) {
     if (val % 5 == 0) {
         return false;
     }
-    return ((val % 5) % 2 == 0);
+    return ((val % 5) % 2 == 0)
+    // return val == 7;
 }
 
 var deform = function() {
@@ -734,18 +838,18 @@ var createboxes = function(xmin, xmax, ymin, ymax, zmin, zmax) {
     c7.position = new BABYLON.Vector3(xmax, ymin, zmax);
     c8.position = new BABYLON.Vector3(xmax, ymax, zmax);
 
-    var green = new BABYLON.StandardMaterial("greenmaterial", scene);
-    green.diffuseColor = new BABYLON.Color3(0, 1, 0);
-    green.backFaceCulling = false;
+    var boxcolor = new BABYLON.StandardMaterial("boxmaterial", scene);
+    boxcolor.emissiveColor = new BABYLON.Color3(1, 1, 1);
+    boxcolor.backFaceCulling = false;
 
-    c1.material = green;
-    c2.material = green;
-    c3.material = green;
-    c4.material = green;
-    c5.material = green;
-    c6.material = green;
-    c7.material = green;
-    c8.material = green;
+    c1.material = boxcolor;
+    c2.material = boxcolor;
+    c3.material = boxcolor;
+    c4.material = boxcolor;
+    c5.material = boxcolor;
+    c6.material = boxcolor;
+    c7.material = boxcolor;
+    c8.material = boxcolor;
 }
 
 // SOLID PARTICLE SYSTEM VERSION -- CURRENTLY NOT USED, LAGGY BECAUSE TOO MANY PARTICLES

@@ -30,13 +30,13 @@ function clicked(e) {
         ctx.moveTo(x, y);
         if (selected.length > 0) {
             ctx.globalAlpha = 0.4;
-            ctx.strokeStyle = 'greenyellow';
-            ctx.fillStyle = 'green';
+            ctx.strokeStyle = '#606375';
+            ctx.fillStyle = '#606375';
         }
         else {
             ctx.globalAlpha = 1;
-            ctx.strokeStyle = 'black';
-            ctx.fillStyle = 'blueviolet';
+            ctx.strokeStyle = '#888fa0';
+            ctx.fillStyle = '#a0acbb';
         }
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -147,7 +147,9 @@ function updatecoords() {
 
             if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
                 for (var k = zmin; k < zmax; k++) {
-                    allcoords[i][j][k] += 5;
+                    if (allcoords[i][j][k] == 0 || allcoords[i][j][k] == 2) {
+                        allcoords[i][j][k] += 5;
+                    }
                 }
             }
         }
@@ -162,8 +164,8 @@ function selectclicked(e) {
     // clear prev selections
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.globalAlpha = 1;
-    ctx.strokeStyle = 'black';
-    ctx.fillStyle = 'blueviolet';
+    ctx.strokeStyle = '#888fa0';
+    ctx.fillStyle = '#a0acbb';
     ctx.moveTo(coordinates[0][0], coordinates[0][1]);
     ctx.beginPath();
     for (var i = 1; i < coordinates.length; i++) {
@@ -177,7 +179,7 @@ function selectclicked(e) {
     var x = e.clientX - rectangle.left;
     var y = e.clientY - rectangle.top;
     selected.push(x, y);
-    select.strokeStyle = 'green';
+    select.strokeStyle = '#606375';
     select.beginPath();
 }
 
@@ -197,7 +199,7 @@ function selectmoved(e) {
 }
 
 function selectdone(e) {
-    ctx.strokeStyle = 'greenyellow';
+    ctx.strokeStyle = '#606375';
     ctx.strokeRect(selected[0], selected[1], selected[2], selected[3]);
     canvas.style.cursor = "auto";
     selecting = false;
@@ -230,7 +232,6 @@ function setupboxes() {
 
     createboxes(-xmin/70, -xmax/70, -ymin/70, -ymax/70, zmin/70, zmax/70);
 }
-
 
 initialize();
 // mouse clicks will draw points

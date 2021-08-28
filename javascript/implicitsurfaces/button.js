@@ -1,5 +1,5 @@
-function select() {
-    if (document.getElementById('button').innerHTML == "Select") {
+function changebuttons() {
+    if (document.getElementById('button').innerHTML == "SELECT") {
         canvas.removeEventListener("pointerdown", clicked);
         canvas.removeEventListener("pointermove", moved);
         canvas.removeEventListener("pointerup", done);
@@ -13,7 +13,7 @@ function select() {
         canvas2.addEventListener("pointerdown", selectsculptclicked);
         canvas2.addEventListener("pointermove", selectsculptmoved);
         canvas2.addEventListener("pointerup", selectsculptdone);
-        document.getElementById('button').innerHTML = "Draw";
+        document.getElementById('button').innerHTML = "DRAW";
     }
     else {
         canvas.removeEventListener("pointerdown", selectclicked);
@@ -29,8 +29,19 @@ function select() {
         canvas2.addEventListener("pointerdown", sculptclicked);
         canvas2.addEventListener("pointermove", sculptmoved);
         canvas2.addEventListener("pointerup", sculptdone);
-        document.getElementById('button').innerHTML = "Select";
+        document.getElementById('button').innerHTML = "SELECT";
     }
 }
 
-document.querySelector("#button").onclick = select;
+// not complete
+function undo() {
+
+}
+
+function redo() {
+
+}
+
+function clear() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
