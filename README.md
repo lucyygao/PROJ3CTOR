@@ -1,4 +1,6 @@
-# SURF 2021 - < project name > 
+# SURF 2021 - PROJ3CTOR
 < description >
 
-MAKE PUBLIC LATER??
+< link >
+
+< instructions >
