@@ -1,3 +1,4 @@
+// change the text on the buttons and switch to appropriate event listeners
 function changebuttons() {
     if (document.getElementById('button').innerHTML == "SELECT") {
         canvas.removeEventListener("pointerdown", clicked);
@@ -14,6 +15,7 @@ function changebuttons() {
         canvas2.addEventListener("pointermove", selectsculptmoved);
         canvas2.addEventListener("pointerup", selectsculptdone);
         document.getElementById('button').innerHTML = "DRAW";
+        document.getElementById('button2').innerHTML = "DRAW";
     }
     else {
         canvas.removeEventListener("pointerdown", selectclicked);
@@ -30,6 +32,7 @@ function changebuttons() {
         canvas2.addEventListener("pointermove", sculptmoved);
         canvas2.addEventListener("pointerup", sculptdone);
         document.getElementById('button').innerHTML = "SELECT";
+        document.getElementById('button2').innerHTML = "SELECT";
     }
 }
 

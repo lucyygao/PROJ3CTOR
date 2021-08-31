@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8">
 
-  <!-- IMPLICIT SURFACES VERSION -->
-
   <title>ABOUT</title>
   <meta name="description" content="ABOUT">
 
@@ -39,11 +37,10 @@
       left: 50%;
     }
 
-    a {
+    #link {
       background-color: #e3e3e4;
       border: none;
       padding: 5px 10px;
-      /* font-family: "Titillium Web"; */
       margin-top: 20px;
       border-radius: 3px;
       position: absolute;
@@ -61,9 +58,10 @@
 <body>
     <div>
         <h1>ABOUT</h1>
-        <p>PROJ3CTOR is centered around modeling and sculpting of a 3D mesh from 2D user input. It generates organic volumes in 3D based on the extruded projections of mouse input from two perpendicularly positioned 2D screens using implicit surfaces and point rendering.</p>
-        <p>The top screen is used for sketching the basic profile of the mesh-- for example, a circle for a sphere or cylinder, or a triangle for a triangular prism or a triangular pyramid. The second screen is positioned perpendicular to the first screen, and the user can use this screen to refine the 3D model, carving and sculpting out the true shape they want. Any shape the user draws on the first screen will be extruded and shown on the second screen with dashed lines to hint at its position, from which the user can further edit.</p>
+        <p>PROJ3CTOR is centered around modeling and sculpting a 3D mesh from 2D user input. Using implicit surfaces and point rendering, it generates organic volumes in a 3D space based on the extruded projections of mouse input from two perpendicularly positioned 2D screens.</p>
+        <p>The top 2D screen is used to sketch the basic profile of the shape, whether it be a circle, a square, or a lengthy squiggle. Any shape the user draws on the first screen will be extruded and shown on the second screen with dashed lines to hint at its position, from which the user can further edit. The second screen is positioned perpendicular to the first screen, and the user can then use this screen to refine the 3D model, carving and sculpting out the true shape they want.</p>
+        <p>See the <a href="https://github.com/lucyygao/PROJ3CTOR">documentation</a> page for more instructions or the <a href="demo.html">demo</a> page for some inspiration.</p>
         <p id="credit">This project was created by Lucy Gao under the mentorship of Santiago Lombeyda and Professor George Djorgovski for SURF 2021.</p>
-        <a href="implicit.html">HOME</a>
+        <a id="link" href="implicit.html">HOME</a>
     </div>
 </body>

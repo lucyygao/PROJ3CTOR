@@ -23,9 +23,6 @@ function sculptclicked(e) {
         var x = e.clientX - rectangle.left;
         var y = e.clientY - rectangle.top;
         coordinates2.push([x, y]);
-        // for (var k = 0; k < 100; k++) {
-        //     allcoords[k][Math.floor(y/8)][Math.floor(x/8)] += 2;
-        // }
         // draw layer
         ctx2.moveTo(x, y);
         if (sculptselected.length > 0) {
@@ -113,6 +110,7 @@ function sculptupdatecoords() {
     var xmin = 0;
     var xmax = 100;
 
+    // if there's a selection on the second screen
     if (sculptselected.length > 0) {
         var zmin = Math.floor(sculptselected[0]/8);
         var zmax = Math.floor((sculptselected[0] + sculptselected[2])/8);
@@ -120,6 +118,7 @@ function sculptupdatecoords() {
         var ymax = Math.floor((sculptselected[1] + sculptselected[3])/8);
     }
 
+    // if there's a selection on the first screen
     if (selected.length > 0) {
         var xmin = Math.floor(selected[0]/8);
         var xmax = Math.floor((selected[0] + selected[2])/8);
@@ -149,14 +148,6 @@ function sculptupdatecoords() {
                     if (allcoords[k][j][i] == 0 || allcoords[k][j][i] == 5) {
                         allcoords[k][j][i] += 2;
                     }
-
-                    // // remove extra line when overlap
-                    // if (allcoords[k][j][i] == 3) {
-                    //     for (var remove = 0; remove <= k; remove++) {
-                    //         allcoords[remove][j][i] -= 1;
-                    //     }
-                    //     break;
-                    // }
                 }
             }
         }
@@ -238,8 +229,8 @@ function selectsculptdone(e) {
     ctx2.strokeRect(sculptselected[0], sculptselected[1], sculptselected[2], sculptselected[3]);
     canvas2.style.cursor = "auto";
     sculptselecting = false;
-    // modify();
 
+    // draw boxes if both screens have a selection on them
     if (selected.length > 0 && sculptselected.length > 0) {
         setupboxes();
     }

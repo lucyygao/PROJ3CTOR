@@ -6,8 +6,6 @@ var createbutton = function(left, top, word) {
     button.background = "#aaacbc";
     button.thickness = 0;
     button.cornerRadius = 10;
-    // button.left = left;
-    // button.top = top;
     button.fontFamily = "Titillium Web";
     button.fontSize = 15;
     return button;
@@ -60,8 +58,9 @@ var createScene = function () {
 
     // GUI
     var UI = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+    UI.markAsDirty();
 
-    // font - pulled from https://playground.babylonjs.com/#RZU2XN#11
+    // custom font - pulled from https://playground.babylonjs.com/#RZU2XN#11
     let addFont         =   document.createElement('style');
     addFont.innerHTML   =   `
     @font-face {
@@ -88,7 +87,7 @@ var createScene = function () {
                 material.alpha = 0;
                 // remove boxes
                 for (var i = 0; i < scene.meshes.length; i++) {
-                    if (scene.meshes[i].material.name == "greenmaterial") {
+                    if (scene.meshes[i].material.name == "boxmaterial") {
                         scene.meshes[i].dispose();
                         i--;
                     }
@@ -102,7 +101,7 @@ var createScene = function () {
         }
     });
 
-    // turning skybox on and off
+    // turning skybox on and off, changing background
     var skybutton = createbutton("-110px", "350px", "SKYBOX");
     skybutton.top = "40px";
     skybutton.onPointerClickObservable.add(function() {
@@ -151,7 +150,7 @@ var createScene = function () {
         cloud.material.pointSize = slider.value;
     });
 
-    // deform
+    // deform styles
     var deformbutton = createbutton("250px", "350px", "NONE");
     deformbutton.top = "105px";
     deformbutton.onPointerClickObservable.add(function() {
@@ -204,12 +203,14 @@ var createScene = function () {
         }
     });
 
-    // marching cubes
+    // marching cubes - not in use, didn't finish
     // var marchbutton = createbutton("250px", "200px", "Marching Cubes");
     // marchbutton.onPointerClickObservable.add(function() {
     //     march();
     // });
 
+
+    // reset to initial state
     var resetbutton = createbutton("0px", "0px", "RESET");
     resetbutton.top = "160px";
     resetbutton.height = "40px";
@@ -252,6 +253,7 @@ var createScene = function () {
         pointsize.text = "POINT SIZE: 10";
     });
 
+    // creating sliders
     var pointsize = createtext("POINT SIZE: 10");
     pointsize.top = "-145px";
     var pointslider = createslider(1, 30, 10);
@@ -337,6 +339,7 @@ var createScene = function () {
         squeeze.text = "SQUEEZE: " + value.toFixed(2);
     });
 
+    // gui textboxes
     var colortext = createtext("COLOR");
     colortext.top = "20px";
 
@@ -349,7 +352,7 @@ var createScene = function () {
     var backgroundtext = createtext("BACKGROUND");
     backgroundtext.top = "15px";
 
-    // object container
+    // rectangular container to hold object properties
     var rect = new BABYLON.GUI.Rectangle();
     rect.height = "400px";
     rect.cornerRadius = 7;
@@ -380,7 +383,7 @@ var createScene = function () {
     rect.addControl(deformbutton);
     rect.addControl(resetbutton);
 
-    // display container
+    // display properties container
     var rect2 = new BABYLON.GUI.Rectangle();
     rect2.height = "200px";
     rect2.cornerRadius = 7;
@@ -403,49 +406,6 @@ var createScene = function () {
     rect2.addControl(style);
     rect2.addControl(backgroundtext);
     rect2.addControl(skybutton);
-
-
-//     // DELETE LATER ----------------------------------------------------
-//     // show axis
-//   var showAxis = function(size) {
-//     var makeTextPlane = function(text, color, size) {
-//     var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
-//     dynamicTexture.hasAlpha = true;
-//     dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color , "transparent", true);
-//     var plane = new BABYLON.Mesh.CreatePlane("TextPlane", size, scene, true);
-//     plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", scene);
-//     plane.material.backFaceCulling = false;
-//     plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
-//     plane.material.diffuseTexture = dynamicTexture;
-//     return plane;
-//      };
-
-//     var axisX = BABYLON.Mesh.CreateLines("axisX", [
-//       new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
-//       new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
-//       ], scene);
-//     axisX.color = new BABYLON.Color3(1, 0, 0);
-//     var xChar = makeTextPlane("X", "red", size / 10);
-//     xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0);
-//     var axisY = BABYLON.Mesh.CreateLines("axisY", [
-//         new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( -0.05 * size, size * 0.95, 0),
-//         new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( 0.05 * size, size * 0.95, 0)
-//         ], scene);
-//     axisY.color = new BABYLON.Color3(0, 1, 0);
-//     var yChar = makeTextPlane("Y", "green", size / 10);
-//     yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
-//     var axisZ = BABYLON.Mesh.CreateLines("axisZ", [
-//         new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
-//         new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
-//         ], scene);
-//     axisZ.color = new BABYLON.Color3(0, 0, 1);
-//     var zChar = makeTextPlane("Z", "blue", size / 10);
-//     zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
-//   };
-
-//   showAxis(5);
-//   // -----------------------------------------------------------------------------
-
 
     return scene;
 };
@@ -516,6 +476,7 @@ var initnorm = [];
 // export
 var objexport = ["g\n"];
 
+// render the volume
 var createpointcloud = function() {
     var p = 0;
     // go through allcoords matrix to find particle positions
@@ -529,14 +490,12 @@ var createpointcloud = function() {
                     var norm = calculatenormal(i, j, k);
                     normals.push(norm.x, norm.y, norm.z);
                     objexport.push("v " + (-8 * i / 70) + " " + (-8 * j / 70) + " " + (8 * k / 70) + "\n");
-                    // objexport.push("vn " + norm.x + " " + norm.y + " " + norm.z + "\n");
                     p++;
                 }
             }
         }
     }
     for (var n = 0; n < normals.length; n += 3) {
-        // console.log("bruh");
         objexport.push("vn " + normals[n] + " " + normals[n + 1] + " " + normals[n + 1] + "\n");
     }
     // needs faces, but i don't have the triangles :/
@@ -549,8 +508,6 @@ var createpointcloud = function() {
     vertexData.applyToMesh(cloud, true);
     cloud.material = pbr;
     cloud.material.pointsCloud = true;
-    // console.log(pointslider.value());
-    // figure out to get point value here jflsdkfjklsdjfklsdjf
     cloud.material.pointSize = 10;
     cloud.material.backFaceCulling = false;
 
@@ -562,14 +519,15 @@ var createpointcloud = function() {
     camera.setTarget(cloud.getAbsolutePivotPoint());
 }
 
+// for marching cubes, not in use
 var march = function() {
-    // console.log(positions);
     var posnorms = marchrender(positions, normals);
     cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, posnorms[0]);
     cloud.updateVerticesData(BABYLON.VertexBuffer.NormalKind, posnorms[1]);
 }
 
 var intersection = function(i, j, k) {
+    // points from screen 1 will put a value of 5 into the matrix, points from screen 2 will add on a value of 2
     var val = allcoords[i][j][k];
     if (val <= 5) {
         return false;
@@ -577,10 +535,10 @@ var intersection = function(i, j, k) {
     if (val % 5 == 0) {
         return false;
     }
-    return ((val % 5) % 2 == 0)
-    // return val == 7;
+    return ((val % 5) % 2 == 0);
 }
 
+// get the needed maximums and minimums for deforming
 var deform = function() {
     var xmin = positions[0];
     var xmax = positions[0];
@@ -674,56 +632,14 @@ var deformspiral = function() {
 
     for (var j = 0; j < pos.length; j += 3) {
         var r = Math.sqrt(pos[j] ** 2 + pos[j + 1] ** 2);
-        // var r = pos[j + 2];
         var theta = spiralconst * pos[j + 1] / ylen * Math.PI * 2;
         pos[j] = r * Math.cos(theta) + center.x;
         pos[j + 1] = r * Math.sin(theta) + center.y;
     }
     cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, pos);
-    // cloud.updateVerticesData(BABYLON.VertexBuffer.NormalKind, norms);
 }
 
-// var deformcube = function() {
-//     var center = cloud.getAbsolutePivotPoint();
-//     var pos = [...positions];
-//     var norms = [...normals];
-//     var xlen = deform()[0];
-//     var boundary = xlen / 4 + deform()[2];
-//     for (var i = 0; i < pos.length; i += 3) {
-//         // top
-//         if (pos[i] < boundary) {
-//             // pos[i] += xlen/2;
-//             // pos[i + 2] += xlen/4;
-//             // pos[i + 2] -= xlen / 2;
-//             // console.log("hey");
-//         }
-//         else {
-//             // right
-//             if (pos[i] < boundary + xlen/4) {
-//                 var hold = pos[i];
-//                 pos[i] = pos[i + 1];
-//                 pos[i + 1] = hold;
-//                 // console.log("hey2");
-//             }
-//             else {
-//                 // bottom
-//                 if (pos[i] < boundary + xlen/2) {
-//                     pos[i + 1] *= -1;
-//                     // console.log("hey3");
-//                 }
-//                 // left
-//                 else {
-//                     var hold = -1 * pos[i];
-//                     pos[i] = -1 * pos[i + 1];
-//                     pos[i + 1] = hold;
-//                     // console.log("hey4");
-//                 }
-//             }
-//         }
-//     }
-//     cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, pos);
-// }
-
+// revert back to initial arrays
 var undodeform = function() {
     cloud.updateVerticesData(BABYLON.VertexBuffer.PositionKind, initpos);
     cloud.updateVerticesData(BABYLON.VertexBuffer.NormalKind, initnorm);
@@ -814,7 +730,7 @@ var isedge = function(i, j, k) {
 var createboxes = function(xmin, xmax, ymin, ymax, zmin, zmax) {
     // remove existing boxes
     for (var i = 0; i < scene.meshes.length; i++) {
-        if (scene.meshes[i].material.name == "greenmaterial") {
+        if (scene.meshes[i].material.name == "boxmaterial") {
             scene.meshes[i].dispose();
             i--;
         }
@@ -890,6 +806,8 @@ var createmesh = function() {
 }
 
 engine.runRenderLoop(function() {
+    // creates boxes and wireframe extrusion lines that track cursor position on 2D screens
+    // for first screen
     if (coordinates.length > numshapes) {
         var cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 0.2}, scene);
         cube.position.x = -1 * coordinates[coordinates.length - 1][0] / 70;
@@ -905,6 +823,8 @@ engine.runRenderLoop(function() {
 
         numshapes++;
     }
+
+    // for second screen
     if (coordinates2.length > numshapes2) {
         var box = BABYLON.MeshBuilder.CreateBox("box", {size: 0.2}, scene);
         box.position.z = coordinates2[coordinates2.length - 1][0] / 70;
@@ -926,8 +846,9 @@ engine.runRenderLoop(function() {
 });
 
 /**
- * textures -- https://github.com/BabylonJS/Babylon.js/tree/master/Playground/textures
+ * links for self:
  *
+ * textures https://github.com/BabylonJS/Babylon.js/tree/master/Playground/textures
  * extruding polygons https://doc.babylonjs.com/start/chap3/polycar
  * user input https://doc.babylonjs.com/divingDeeper/input/virtualJoysticks
  * meshes https://doc.babylonjs.com/divingDeeper/mesh

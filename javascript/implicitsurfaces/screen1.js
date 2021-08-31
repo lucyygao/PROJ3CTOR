@@ -12,7 +12,7 @@ var selected = [];
 var timer = 0;
 var prevlen = 0;
 
-// 800 x 400 x 800 - divide all by 8
+// dimensions of space are 800 x 400 x 800 - divide all by 8 to achieve smaller matrix
 function initialize() {
     allcoords = Array(100).fill().map(() => Array(50).fill().map(() => Array(100).fill(0)));
 }
@@ -24,9 +24,6 @@ function clicked(e) {
         var x = e.clientX - rectangle.left;
         var y = e.clientY - rectangle.top;
         coordinates.push([x, y]);
-        // for (var k = 0; k < 100; k++) {
-        //     allcoords[Math.floor(x/8)][Math.floor(y/8)][k] += 5;
-        // }
         ctx.moveTo(x, y);
         if (selected.length > 0) {
             ctx.globalAlpha = 0.4;
@@ -144,7 +141,7 @@ function updatecoords() {
     for (var i = xmin; i < xmax; i++) {
         for (var j = ymin; j < ymax; j++) {
             pixel = ctx.getImageData(i*8, j*8, 1, 1);
-
+            // update matrix if the pixel isn't the default -- this screen will add 5
             if (pixel.data[0] != 0 || pixel.data[1] != 0 || pixel.data[2] != 0 || pixel.data[3] != 0) {
                 for (var k = zmin; k < zmax; k++) {
                     if (allcoords[i][j][k] == 0 || allcoords[i][j][k] == 2) {
@@ -156,6 +153,7 @@ function updatecoords() {
     }
 }
 
+// if there is a selection, use the methods with select in name
 function selectclicked(e) {
     canvas.style.cursor = "crosshair";
     selected = [];
@@ -209,6 +207,7 @@ function selectdone(e) {
     select.closePath();
 }
 
+// send values over to babylonjs side to create boxes where selection is
 function setupboxes() {
     var xmin = selected[0]
     var xmax = selected[0] + selected[2];

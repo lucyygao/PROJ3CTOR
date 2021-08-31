@@ -37,7 +37,6 @@
       margin: 15px;
       margin-left: 20px;
       margin-right: 10px;
-      /* margin-top: 0px; */
       display: inline;
     }
 
@@ -70,7 +69,6 @@
     }
 
     .babylon {
-      /* border: 1px solid black; */
       width: 800px;
       height: 775px;
       float: left;
@@ -80,7 +78,6 @@
     }
 
     .drawing {
-      /* border: 2px solid black; */
       width: 800px;
       height: 390px;
       float: right;
@@ -185,7 +182,7 @@
 <body>
   <div class="title">
     <h1>PROJ3CTOR</h1>
-    <span><a href="about.html">ABOUT</a> | <a id="export" onclick="exportfile()">EXPORT</a> | <a href="demo.html">DEMO</a> | <a href="https://github.com/lucyygao/PROJ3CTOR">DOCUMENTATION</a></span>
+    <span><a href="about.html">ABOUT</a> | <a id="export" onclick="exportfile()">EXPORT VOLUME</a> | <a href="demo.html">DEMO</a> | <a href="https://github.com/lucyygao/PROJ3CTOR">DOCUMENTATION</a></span>
     <script src="../javascript/implicitsurfaces/export.js"></script>
   </div>
   <div class="babylon">
@@ -216,14 +213,12 @@
       <canvas id="sculptselectlayer" height="390" width="800"></canvas>
       <script src="../javascript/implicitsurfaces/screen2.js"></script>
       <span id="views">SIDE VIEW</span>
-      <button id="undo" class="right" onclick="undo()">UNDO</button>
-      <button id="redo" class="right" onclick="redo()">REDO</button>
-      <button id="clear" class="right" onclick="clear()">CLEAR</button>
-      <button id="button" class="right" onclick="changebuttons()">SELECT</button>
+      <button id="undo2" class="right" onclick="undo()">UNDO</button>
+      <button id="redo2" class="right" onclick="redo()">REDO</button>
+      <button id="clear2" class="right" onclick="clear()">CLEAR</button>
+      <button id="button2" class="right" onclick="changebuttons()">SELECT</button>
       <script src="../javascript/implicitsurfaces/button.js"></script>
     </div>
   </div>
-
-
 </body>
 </html>
