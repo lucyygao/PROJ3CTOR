@@ -36,6 +36,7 @@ var createslider = function(min, max, value) {
     return slider;
 }
 
+var UI;
 var createScene = function () {
     var scene = new BABYLON.Scene(engine);
 
@@ -57,7 +58,7 @@ var createScene = function () {
 	skybox.material = skyboxMaterial;
 
     // GUI
-    var UI = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+    UI = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
     UI.markAsDirty();
 
     // custom font - pulled from https://playground.babylonjs.com/#RZU2XN#11
@@ -805,45 +806,57 @@ var createmesh = function() {
     poly.dispose();
 }
 
-engine.runRenderLoop(function() {
-    // creates boxes and wireframe extrusion lines that track cursor position on 2D screens
-    // for first screen
-    if (coordinates.length > numshapes) {
-        var cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 0.2}, scene);
-        cube.position.x = -1 * coordinates[coordinates.length - 1][0] / 70;
-        cube.position.y = -1 * coordinates[coordinates.length - 1][1] / 70;
-        var vec = new BABYLON.Vector3(cube.position.x, cube.position.y, 0);
-        frontshape.push(vec);
-        if (frontshape.length == 3) {
-            frontshape.shift();
-        }
-        var extruded = BABYLON.MeshBuilder.ExtrudeShape("extruded", {shape: frontshape, path: frontpath, cap: BABYLON.Mesh.CAP_ALL, updatable: true}, scene);
-        extruded.material = material;
-        cube.material = material;
-
-        numshapes++;
-    }
-
-    // for second screen
-    if (coordinates2.length > numshapes2) {
-        var box = BABYLON.MeshBuilder.CreateBox("box", {size: 0.2}, scene);
-        box.position.z = coordinates2[coordinates2.length - 1][0] / 70;
-        box.position.y = -1 * coordinates2[coordinates2.length - 1][1] / 70;
-        var vector = new BABYLON.Vector3(box.position.z, box.position.y, 0);
-        sideshape.push(vector);
-        if (sideshape.length == 3) {
-            sideshape.shift();
-        }
-        var sideextrude = BABYLON.MeshBuilder.ExtrudeShape("side extrusion", {shape: sideshape, path: sidepath, cap: BABYLON.Mesh.CAP_ALL, updatable: true}, scene);
-        sideextrude.material = material;
-        box.material = material;
-        box.isPickable = false;
-        sideextrude.isPickable = false;
-        numshapes2++;
-    }
-
-   scene.render();
+scene.executeOnceBeforeRender( function() {
+    UI.markAsDirty;
 });
+
+scene.executeWhenReady(function () {
+    coordinatesinit();
+    coordinates2init();
+    engine.runRenderLoop(function() {
+
+        // console.log("ruh");
+
+        // creates boxes and wireframe extrusion lines that track cursor position on 2D screens
+        // for first screen
+        if (coordinates.length > numshapes) {
+            var cube = BABYLON.MeshBuilder.CreateBox("cube", {size: 0.2}, scene);
+            cube.position.x = -1 * coordinates[coordinates.length - 1][0] / 70;
+            cube.position.y = -1 * coordinates[coordinates.length - 1][1] / 70;
+            var vec = new BABYLON.Vector3(cube.position.x, cube.position.y, 0);
+            frontshape.push(vec);
+            if (frontshape.length == 3) {
+                frontshape.shift();
+            }
+            var extruded = BABYLON.MeshBuilder.ExtrudeShape("extruded", {shape: frontshape, path: frontpath, cap: BABYLON.Mesh.CAP_ALL, updatable: true}, scene);
+            extruded.material = material;
+            cube.material = material;
+
+            numshapes++;
+        }
+
+        // for second screen
+        if (coordinates2.length > numshapes2) {
+            var box = BABYLON.MeshBuilder.CreateBox("box", {size: 0.2}, scene);
+            box.position.z = coordinates2[coordinates2.length - 1][0] / 70;
+            box.position.y = -1 * coordinates2[coordinates2.length - 1][1] / 70;
+            var vector = new BABYLON.Vector3(box.position.z, box.position.y, 0);
+            sideshape.push(vector);
+            if (sideshape.length == 3) {
+                sideshape.shift();
+            }
+            var sideextrude = BABYLON.MeshBuilder.ExtrudeShape("side extrusion", {shape: sideshape, path: sidepath, cap: BABYLON.Mesh.CAP_ALL, updatable: true}, scene);
+            sideextrude.material = material;
+            box.material = material;
+            box.isPickable = false;
+            sideextrude.isPickable = false;
+            numshapes2++;
+        }
+
+       scene.render();
+    });
+});
+
 
 /**
  * links for self:

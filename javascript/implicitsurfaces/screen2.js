@@ -16,6 +16,10 @@ var sculptxmin = 0;
 var sculptymax = 0;
 var sculptymin = 0;
 
+function coordinates2init() {
+    coordinates2 = [];
+}
+
 function sculptclicked(e) {
     if (!sculptoutside(e)){
         drawing2 = true;

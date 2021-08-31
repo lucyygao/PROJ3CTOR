@@ -17,6 +17,10 @@ function initialize() {
     allcoords = Array(100).fill().map(() => Array(50).fill().map(() => Array(100).fill(0)));
 }
 
+function coordinatesinit() {
+    coordinates = [];
+}
+
 function clicked(e) {
     if (!outside(e)) {
         drawing = true;
