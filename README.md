@@ -31,5 +31,10 @@ Hopefully, future work will increase functionality of this tool. I would like to
 - marching cubes to make surfaces smoother (was worked on in `./javascript/implicitsurfaces/marching.js` and `./javascript/implicitsurfaces/marching2.js`, but is unfinished
 - make export include faces and triangles
 
+## Screenshots
+![Main Page](https://github.com/lucyygao/PROJ3CTOR/blob/master/screenshots/1.png "Main Page")
+---
+![Working Main Page](https://github.com/lucyygao/PROJ3CTOR/blob/master/screenshots/2.png "Working Main Page")
+
 ## Credits
 *This project was created under the mentorship of Santiago Lombeyda and George Djorgovski for SURF 2021.*
